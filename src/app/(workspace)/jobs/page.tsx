@@ -1,0 +1,9 @@
+"use client";
+import { useState } from "react";
+import { SectionTitle } from "@/components/section-title";
+import { skillById } from "@/data/catalog";
+import { useSkillmetry } from "@/store/use-skillmetry";
+import { getSkillGaps, selectCareer } from "@/lib/readiness";
+export default function Jobs(){const [description,setDescription]=useState("");const {careerId,skills}=useSkillmetry();const role=selectCareer(careerId);const [feedback,setFeedback]=useState(false);
+ return <><SectionTitle eyebrow="Planned AI feature" title="Job description → roadmap" description="AI-powered extraction is intentionally not enabled until a secure server-side API is connected."/><div className="grid-2"><div className="panel"><label className="field">Job description<textarea className="input" rows={11} placeholder="Paste a job description. Processing is not yet connected." value={description} onChange={e=>{setDescription(e.target.value);setFeedback(false);}}/></label><button type="button" className="btn btn-primary" style={{marginTop:18}} disabled={!description.trim()} onClick={()=>setFeedback(true)}>View implementation status</button>{feedback&&<p className="note" role="status">AI extraction is a P1 task. Do not paste sensitive information. To implement, add authenticated backend parsing, schema validation, skill normalization and input limits.</p>}</div><div className="panel"><h2 style={{fontSize:"1.1rem"}}>Current career gaps (catalog-based)</h2><p className="note">These are based on your selected role, not on the pasted description.</p>{getSkillGaps(role,skills).slice(0,5).map(g=><div className="row between" style={{padding:"13px 0",borderBottom:"1px solid #25344B"}} key={g.skillId}><span className="small">{skillById[g.skillId].label}</span><span className="tag">{g.proficiency}/100</span></div>)}</div></div></>
+}

@@ -1,0 +1,5 @@
+"use client";
+import Link from "next/link";
+import { SectionTitle } from "@/components/section-title";
+import { useSkillmetry } from "@/store/use-skillmetry";
+export default function Settings(){const {name,baselineSource,resetDemo}=useSkillmetry();return <><SectionTitle eyebrow="Account & privacy" title="Control your skill profile" description="Prototype data is stored locally in this browser. Sign-in and cloud sync are not connected."/><div className="panel" style={{maxWidth:700}}><h2 style={{fontSize:"1.1rem"}}>Local profile</h2><p className="small">Student: <strong>{name}</strong></p><p className="small">Data source: <strong>{baselineSource}</strong></p><p className="note">Reset clears the Skillmetry local demo data and restores the sample profile. It does not affect other browser storage.</p><div className="row" style={{flexWrap:"wrap",marginTop:20}}><Link className="btn btn-outline" href="/onboarding">Edit profile</Link><button type="button" className="btn btn-outline" onClick={()=>{if(window.confirm("Reset Skillmetry's local profile to demo data?")) resetDemo()}}>Reset local profile</button></div></div></>}
