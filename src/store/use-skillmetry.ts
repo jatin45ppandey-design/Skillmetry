@@ -21,7 +21,7 @@ type SkillmetryStore = {
   setCareer: (careerId: CareerId) => void;
   setSkill: (skillId: string, value: number) => void;
   completeOnboarding: (name: string, careerId: CareerId, skills: SkillMap) => void;
-  recordAssessment: (attempt: AssessmentAttempt, skillId: string) => void;
+  recordAssessment: (attempt: AssessmentAttempt) => void;
   resetDemo: () => void;
 };
 export const useSkillmetry = create<SkillmetryStore>()(persist((set) => ({
@@ -31,10 +31,9 @@ export const useSkillmetry = create<SkillmetryStore>()(persist((set) => ({
   setCareer: careerId => set({ careerId }),
   setSkill: (skillId, value) => set(s => ({ skills: { ...s.skills, [skillId]: clamp(value) }, baselineSource: "self-reported" })),
   completeOnboarding: (name, careerId, skills) => set({ name, careerId, skills, baselineSource: "self-reported", attempts: [] }),
-  // A short demo quiz adds only 10 proficiency points; it does NOT certify job readiness.
-  recordAssessment: (attempt, skillId) => set(s => ({
-    attempts: [...s.attempts, attempt],
-    skills: attempt.passed ? { ...s.skills, [skillId]: clamp((s.skills[skillId] ?? 0) + 10) } : s.skills
+  // Assessment attempts are evidence signals only. They never mutate self-reported proficiency.
+  recordAssessment: attempt => set(s => ({
+    attempts: [...s.attempts, attempt]
   })),
   resetDemo: () => set({ name: "Demo Student", careerId: "ml-engineer", skills: { ...DEMO_SKILLS }, baselineSource: "demo", attempts: [] })
 }), { name: "skillmetry-demo-v1", partialize: s => ({ name: s.name, careerId: s.careerId, skills: s.skills, baselineSource: s.baselineSource, attempts: s.attempts }) }));
