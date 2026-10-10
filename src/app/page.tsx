@@ -1,30 +1,268 @@
 import Link from "next/link";
-import { ArrowRight, GitBranch, Fingerprint, Gauge, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BadgeCheck,
+  BrainCircuit,
+  CheckCircle2,
+  ChevronRight,
+  CircleDot,
+  Compass,
+  Fingerprint,
+  FlaskConical,
+  GitBranch,
+  LockKeyhole,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from "lucide-react";
 import { Brand } from "@/components/brand";
-const bars = [{ label: "Python", score: 80 },{ label: "ML Foundations", score: 50 },{ label: "SQL", score: 45 },{ label: "Deployment", score: 10 }];
+
+const pillars = [
+  {
+    number: "01",
+    icon: Fingerprint,
+    category: "UNDERSTAND",
+    title: "A skill profile that stays alive.",
+    detail:
+      "Track your current abilities, assessment results and project evidence in one evolving career twin.",
+    highlight: "Self-reported ≠ verified",
+  },
+  {
+    number: "02",
+    icon: GitBranch,
+    category: "NAVIGATE",
+    title: "Not a roadmap for everyone. Yours.",
+    detail:
+      "Explore an interactive skill graph that adapts to your target role, prerequisites and demonstrated progress.",
+    highlight: "Your next step, explained",
+  },
+  {
+    number: "03",
+    icon: FlaskConical,
+    category: "EXPLORE",
+    title: "Try the future before you build it.",
+    detail:
+      "Run what-if scenarios to compare skill paths and projected readiness without changing verified results.",
+    highlight: "Simulated, not guaranteed",
+  },
+];
+
+const steps = [
+  {
+    index: "01",
+    heading: "Choose a direction",
+    description: "Pick a career goal and share the skills you already have.",
+  },
+  {
+    index: "02",
+    heading: "See your skill twin",
+    description: "Get a transparent starting point, with confidence labels.",
+  },
+  {
+    index: "03",
+    heading: "Follow your own map",
+    description: "Explore gaps, prerequisite paths and hands-on missions.",
+  },
+  {
+    index: "04",
+    heading: "Prove progress. Recalculate.",
+    description: "Assessment evidence updates the twin and recommendations.",
+  },
+];
+
+function SkillNode({
+  label,
+  meta,
+  state = "upcoming",
+}: {
+  label: string;
+  meta: string;
+  state?: "complete" | "active" | "upcoming" | "locked";
+}) {
+  return (
+    <div className={"lp-node lp-node--" + state}>
+      <span className="lp-node-icon">
+        {state === "complete" ? <CheckCircle2 size={13} /> : state === "locked" ? <LockKeyhole size={12} /> : <CircleDot size={13} />}
+      </span>
+      <span className="lp-node-copy">
+        <strong>{label}</strong>
+        <small>{meta}</small>
+      </span>
+    </div>
+  );
+}
+
+function ProductPreview() {
+  return (
+    <div className="lp-showcase" aria-label="Illustrative career roadmap interface">
+      <div className="lp-preview-window">
+        <div className="lp-preview-chrome">
+          <div className="lp-window-dots"><i /><i /><i /></div>
+          <div className="lp-preview-address">skillmetry / workspace / roadmap</div>
+          <span className="lp-demo-pill">SAMPLE DATA</span>
+        </div>
+        <div className="lp-preview-workspace">
+          <aside className="lp-preview-sidebar" aria-hidden="true">
+            <div className="lp-sidebar-logo">s.</div>
+            <span className="lp-sidebar-icon lp-sidebar-icon--active"><Compass size={17} /></span>
+            <span className="lp-sidebar-icon"><Fingerprint size={17} /></span>
+            <span className="lp-sidebar-icon"><GitBranch size={17} /></span>
+            <span className="lp-sidebar-icon"><Target size={17} /></span>
+            <span className="lp-sidebar-spacer" />
+            <span className="lp-sidebar-user">S</span>
+          </aside>
+          <div className="lp-preview-main">
+            <div className="lp-preview-titleline">
+              <div>
+                <span className="lp-kicker">YOUR PERSONALIZED PATH</span>
+                <h3>ML Engineer roadmap</h3>
+                <p>Built around your current skill twin</p>
+              </div>
+              <span className="lp-preview-view">Graph view</span>
+            </div>
+            <div className="lp-preview-stats">
+              <div><span>READINESS INDEX</span><strong>48<span>/100</span></strong></div>
+              <div><span>ACTIVE SKILLS</span><strong>04<span>/09</span></strong></div>
+              <div><span>RECOMMENDED NEXT</span><strong className="lp-preview-stats-next">Docker</strong></div>
+            </div>
+            <div className="lp-graph">
+              <div className="lp-graph-heading">
+                <span><GitBranch size={13} /> Skill dependency map</span>
+                <span>FOUNDATION → DEPLOYMENT</span>
+              </div>
+              <div className="lp-graph-flow">
+                <div className="lp-graph-stage">
+                  <span className="lp-stage-title">01 / FOUNDATIONS</span>
+                  <SkillNode label="Python" meta="Demonstrated" state="complete" />
+                  <SkillNode label="SQL" meta="In progress" state="complete" />
+                </div>
+                <span className="lp-graph-connector"><ArrowRight size={15} /></span>
+                <div className="lp-graph-stage">
+                  <span className="lp-stage-title">02 / CORE</span>
+                  <SkillNode label="ML basics" meta="Learning" state="active" />
+                  <SkillNode label="Data prep" meta="Ready to explore" state="upcoming" />
+                </div>
+                <span className="lp-graph-connector"><ArrowRight size={15} /></span>
+                <div className="lp-graph-stage">
+                  <span className="lp-stage-title">03 / APPLIED</span>
+                  <SkillNode label="Docker" meta="Recommended next" state="active" />
+                  <SkillNode label="Deployment" meta="Prerequisites first" state="locked" />
+                </div>
+              </div>
+              <div className="lp-graph-legend">
+                <span><i className="lp-legend-done" /> Demonstrated</span>
+                <span><i className="lp-legend-active" /> Working on</span>
+                <span><i className="lp-legend-locked" /> Coming up</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="lp-whatif">
+        <span className="lp-whatif-icon"><TrendingUp size={15} /></span>
+        <div>
+          <span className="lp-whatif-label">WHAT-IF SIMULATION</span>
+          <strong>48 <ArrowRight size={13} /> 68 <span>potential</span></strong>
+          <small>Learn Docker + deployment</small>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
-  return <>
-    <div className="hero"><div className="container">
-      <nav className="topnav"><Brand/><Link className="btn btn-outline" href="/dashboard">Open demo <ArrowRight size={16}/></Link></nav>
-      <div className="hero-grid"><div>
-        <span className="tag"><Sparkles size={13}/> Beyond static career roadmaps</span>
-        <h1>Don't just learn.<br/><span className="gradient-text">Know your trajectory.</span></h1>
-        <p>Meet your evolving career digital twin. Map your real skills, find your next best move, and explore what your future could look like—before you commit.</p>
-        <div className="hero-actions"><Link className="btn btn-primary" href="/onboarding">Create your skill twin <ArrowRight size={17}/></Link><Link className="btn btn-outline" href="/roadmap">Explore roadmap</Link></div>
-        <p className="note" style={{ marginTop:23 }}>Free local prototype • No account or CV required • Sample data clearly labeled</p>
-      </div><div className="visual" aria-label="Sample career twin dashboard">
-        <div className="visual-heading"><div><div className="eyebrow">Career digital twin</div><h2 style={{ margin:"9px 0 0",fontSize:"1.17rem" }}>ML Engineer Track</h2></div><span className="tag">DEMO</span></div>
-        <div className="muted small">Illustrative role-specific readiness index</div>
-        <div style={{ display:"flex",alignItems:"baseline",gap:12,margin:"11px 0 18px" }}><span className="metric">48</span><span className="muted">/ 100</span><span style={{ marginLeft:"auto",color:"#5CE2BA",fontSize:".85rem" }}>↗ Potential growth</span></div>
-        {bars.map(b=><div key={b.label}><div className="visual-row"><span>{b.label}</span><span>{b.score}%</span></div><div className="progress-track"><div className="progress-fill" style={{ width:`${b.score}%` }}/></div></div>)}
-        <div className="row" style={{ marginTop:28,padding:"15px 13px",background:"#122B38",borderRadius:12,alignItems:"flex-start" }}><Gauge size={19} style={{ color:"#22D3EE",flexShrink:0 }}/><div><strong style={{ fontSize:".87rem" }}>What if you learned Docker?</strong><p className="note" style={{ margin:"6px 0 0" }}>See potential impact—without changing verified progress.</p></div></div>
-      </div></div>
-    </div></div>
-    <div className="container"><div className="feature-strip">
-      <div className="feature"><Fingerprint className="feature-icon" size={27}/><h3>An evolving skill twin</h3><p>Separate what you claim from what you demonstrate. Evidence and assessment matter.</p></div>
-      <div className="feature"><GitBranch className="feature-icon" size={27}/><h3>Adaptive visual roadmaps</h3><p>See prerequisite connections, weak spots and the most useful next steps.</p></div>
-      <div className="feature"><Gauge className="feature-icon" size={27}/><h3>What-if career simulation</h3><p>Try different learning missions and compare projected scores—not hiring probabilities.</p></div>
-    </div></div>
-    <footer className="footer"><div className="container">© Skillmetry • Starter prototype • Built for responsible career exploration</div></footer>
-  </>;
+  return (
+    <main className="lp-page">
+      <div className="lp-ambient" aria-hidden="true" />
+      <div className="lp-shell">
+        <header className="lp-header">
+          <Brand />
+          <nav className="lp-nav-links" aria-label="Main navigation">
+            <a href="#platform">Platform</a>
+            <a href="#how-it-works">How it works</a>
+            <Link href="/careers">Explore careers</Link>
+          </nav>
+          <Link className="lp-nav-cta" href="/dashboard">Enter workspace <ArrowUpRight size={16} /></Link>
+        </header>
+
+        <section className="lp-hero" aria-labelledby="lp-hero-heading">
+          <div className="lp-hero-copy">
+            <div className="lp-eyebrow"><span className="lp-live-dot" /> YOUR CAREER, IN MOTION <span className="lp-eyebrow-spark"><Sparkles size={13} /></span></div>
+            <h1 id="lp-hero-heading">A roadmap that <em>knows</em> where you stand.</h1>
+            <p className="lp-hero-description">
+              Meet your career digital twin. Discover the skills you need, show what you actually know, and find the smartest next move.
+            </p>
+            <div className="lp-hero-actions">
+              <Link className="lp-button lp-button--primary" href="/onboarding">
+                Build your skill twin <ArrowUpRight size={18} />
+              </Link>
+              <Link className="lp-button lp-button--quiet" href="/roadmap">
+                Explore a roadmap <ArrowRight size={17} />
+              </Link>
+            </div>
+            <div className="lp-trust">
+              <span><ShieldCheck size={15} /> No CV required</span>
+              <span><BadgeCheck size={15} /> Evidence-aware progress</span>
+              <span><Sparkles size={15} /> Free demo</span>
+            </div>
+          </div>
+          <ProductPreview />
+        </section>
+
+        <div className="lp-value-strip" aria-label="How Skillmetry helps you grow">
+          <span>ONE CONTINUOUS LOOP</span>
+          <strong>Map skills <ChevronRight size={16} /> Choose a path <ChevronRight size={16} /> Build proof <ChevronRight size={16} /> Grow your twin</strong>
+        </div>
+
+        <section id="platform" className="lp-platform">
+          <div className="lp-section-heading">
+            <span className="lp-kicker">BUILT FOR REAL PROGRESS</span>
+            <h2>Less guessing. <span>More growing.</span></h2>
+            <p>Learning paths are useful. A clear picture of your abilities—and a practical way forward—is better.</p>
+          </div>
+          <div className="lp-feature-grid">
+            {pillars.map(({ number, icon: Icon, category, title, detail, highlight }) => (
+              <article className="lp-feature" key={number}>
+                <div className="lp-feature-top"><span>{number} / {category}</span><Icon size={21} strokeWidth={1.7} /></div>
+                <h3>{title}</h3>
+                <p>{detail}</p>
+                <div className="lp-feature-foot"><CheckCircle2 size={15} /> {highlight}</div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="how-it-works" className="lp-process">
+          <div className="lp-process-intro">
+            <span className="lp-kicker">HOW IT WORKS</span>
+            <h2>Your growth, <span>connected.</span></h2>
+            <p>Your roadmap changes when your skills change. Not when you tick an arbitrary checkbox.</p>
+            <Link className="lp-text-link" href="/onboarding">See it in action <ArrowUpRight size={16} /></Link>
+          </div>
+          <div className="lp-steps">
+            {steps.map((step) => (
+              <div className="lp-step" key={step.index}>
+                <span className="lp-step-index">{step.index}</span>
+                <div><strong>{step.heading}</strong><p>{step.description}</p></div>
+                <ArrowUpRight size={17} />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="lp-bottom-cta">
+          <div><span className="lp-kicker">START WITH WHAT YOU KNOW</span><h2>See the bigger picture of your potential.</h2></div>
+          <Link href="/onboarding" className="lp-button lp-button--primary">Create your skill twin <ArrowUpRight size={18} /></Link>
+        </section>
+
+        <footer className="lp-footer">
+          <Brand />
+          <p>Personalized growth, backed by evidence.</p>
+          <span>Early prototype · Readiness is an estimate, not a hiring prediction.</span>
+        </footer>
+      </div>
+    </main>
+  );
 }
