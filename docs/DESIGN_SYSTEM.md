@@ -41,3 +41,10 @@ Skillmetry is a focused career intelligence workspace, not a generic analytics d
 - `Hypothetical`: simulator-only result that never mutates actual progress.
 
 Empty, loading, and error states must state what is unavailable, preserve the student's data, and offer a safe next action where one exists.
+
+## Authentication and connectivity
+
+- Anonymous mode is a first-class path labeled **Demo data** or **Local profile**; never disguise it as a cloud account.
+- Authenticated state uses restrained **Loading**, **Saving**, **Cloud synced**, **Offline**, and **Sync issue** labels.
+- Offline and authentication failures must say that local data is preserved and offer a retry or demo path.
+- Auth forms use the same compact typography, focus rings, touch targets and navy/cyan surfaces as the workspace.

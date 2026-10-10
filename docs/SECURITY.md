@@ -1,15 +1,16 @@
 # Security, data minimization and trust
 
-## Present starter state
+## Present Phase 2A state
 - Demo stores name, selected role, self-ratings and assessment attempts **locally in the browser** via Zustand localStorage.
-- No real account login, Supabase sync, AI provider requests or external job parsing is active.
+- Configured deployments use real Supabase email/password Auth, SSR cookies, middleware token refresh, server-side claim validation and owner-scoped PostgreSQL rows.
+- Authenticated synchronization sends only display name, career, onboarding preferences and claimed proficiency. It never sends local demo assessment attempts as trusted results.
 - Demo assessment answers are included in client JavaScript. The tests therefore provide **no production-grade attestation**.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` is an intended public client configuration only; NEVER expose `SUPABASE_SERVICE_ROLE_KEY` or `GEMINI_API_KEY` to browser code.
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or a legacy anon key) is public project configuration only. NEVER expose a Supabase secret/service-role key or `GEMINI_API_KEY` to browser code.
 - The current local browser data is not encrypted by the application. Do not put sensitive information into the prototype.
 
 ## Production requirements before real users
-1. Sign-in/session and server-side ownership checks on every user API.
-2. Supabase RLS tested with two authenticated users (including edge cases for inserts, updates, joins and public passports).
+1. Sign-in/session and server-side ownership checks are implemented for the Phase 2A profile API. Future private APIs must follow the same pattern.
+2. Two-user RLS tests live in `supabase/tests`; they must pass against the local Supabase stack and target migration set before deployment.
 3. Move assessment questions/keys and scoring to the server; set attempt controls and audit logging.
 4. Implement event-sourced evidence and reviewer approvals, not client-adjustable verified proficiency.
 5. Rate-limit AI endpoints, validate JSON schemas, cap text lengths, reject unnecessary personal information, minimize provider retention.
@@ -29,3 +30,11 @@
 
 ## Required behavior
 If integration is unavailable or uncertain, show "not available" instead of manufacturing an answer, skill verification or placement percentage.
+
+## Phase 2A privilege model
+
+- Students may select, insert and update only their own profile and **claimed** skill rows. Deletion is reserved for a future server-managed account-deletion flow so a client cannot erase rows containing trusted signals.
+- Column grants prevent student INSERT/UPDATE access to demonstrated proficiency, evidence confidence and verified status.
+- Assessment attempts, mission review status, evidence review decisions, scenario records and job analyses are SELECT-only for their owner until trusted server writers are implemented.
+- The application derives every database owner ID from a validated JWT claim. Profile request schemas are strict and reject submitted IDs, assessment scores, demonstrated proficiency, verification and review fields.
+- No service-role or secret key is used by the web runtime.
