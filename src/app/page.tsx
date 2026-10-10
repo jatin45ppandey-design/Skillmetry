@@ -3,7 +3,6 @@ import {
   ArrowRight,
   ArrowUpRight,
   BadgeCheck,
-  BrainCircuit,
   CheckCircle2,
   ChevronRight,
   CircleDot,
