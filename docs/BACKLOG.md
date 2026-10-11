@@ -18,6 +18,8 @@ Priority: **P0** working hackathon product; **P1** intelligent integration; **P2
 - Test that Alice cannot read/write Bob's skill/assessment/evidence records.
 - **Done when:** profile persists on different devices after sign-in and RLS tests pass.
 
+**Phase 2A implementation:** Runtime, migrations, seed data, Zod validation, and a two-user pgTAP suite are implemented. Final deployment acceptance still requires applying the migrations and passing `npm run test:rls` against the configured Supabase project/local stack.
+
 ### P0-03: Trustworthy skill twin
 - Separate claimed, assessed, demonstrated and verified states.
 - Move scoring and quiz grading to trusted server-only rules (don't ship answer keys to clients).

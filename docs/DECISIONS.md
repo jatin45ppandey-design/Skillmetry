@@ -17,3 +17,9 @@ Job parsing, GitHub verification and public passport routes remain explicitly la
 
 ## ADR-006 — Brand as working name
 Skillmetry is an internal working name for the project. Domain and trademark checks are needed before external commercialization.
+
+## ADR-007 — Supabase SSR with local-first demo fallback
+Authenticated sessions use cookie-based `@supabase/ssr` clients and server-validated JWT claims. Anonymous students keep the dependency-free browser demo. Authenticated cloud data hydrates after the persisted Zustand cache to avoid server/client markup mismatch, and only student-editable claimed profile fields synchronize.
+
+## ADR-008 — Column grants plus RLS for trusted fields
+Owner RLS alone is insufficient when trusted and student-editable columns share a row. Phase 2A combines per-operation owner policies with column-level grants: students can write `claimed_proficiency`, while demonstrated proficiency, confidence, verified status, assessment scores and evidence-review decisions remain unavailable to their role.

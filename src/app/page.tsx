@@ -5,7 +5,7 @@ const bars = [{ label: "Python", score: 80 },{ label: "ML Foundations", score: 5
 export default function Home() {
   return <>
     <div className="hero"><div className="container">
-      <nav className="topnav"><Brand/><Link className="btn btn-outline" href="/dashboard">Open demo <ArrowRight size={16}/></Link></nav>
+      <nav className="topnav"><Brand/><div className="row"><Link className="btn btn-quiet" href="/auth/sign-in">Sign in</Link><Link className="btn btn-outline" href="/dashboard">Open demo <ArrowRight size={16}/></Link></div></nav>
       <div className="hero-grid"><div>
         <span className="tag"><Sparkles size={13}/> Beyond static career roadmaps</span>
         <h1>Don&apos;t just learn.<br/><span className="gradient-text">Know your trajectory.</span></h1>

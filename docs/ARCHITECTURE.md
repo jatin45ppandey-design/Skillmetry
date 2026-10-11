@@ -5,7 +5,7 @@ flowchart TD
   A[Next.js Frontend] --> B[API Route Handlers]
   A --> C[Local demo Zustand store]
   B --> D[Readiness and DAG pure logic]
-  B --> E[(Supabase PostgreSQL — planned)]
+  B --> E[(Supabase PostgreSQL)]
   B --> F[Gemini server adapter — planned]
   B --> G[GitHub evidence adapter — planned]
   E --> H[Student-owned twin + evidence]
@@ -17,8 +17,9 @@ flowchart TD
 ## Source of truth
 - `src/data/catalog.ts` contains 3 curated roles, skills, prerequisites, mission templates and **demo-only** quiz items.
 - `src/lib/readiness.ts` is pure, deterministic logic. Production will derive server-authoritative proficiency from trusted review events, not client-submitted scores.
-- `src/store/use-skillmetry.ts` is a browser-persisted **prototype** source, not an identity or evidence authority.
-- Database migration describes planned privacy-preserving cloud model; RLS is authored but not yet tested in Supabase.
+- `src/store/use-skillmetry.ts` remains the anonymous browser demo cache. For authenticated students, it hydrates after mount and synchronizes only claimed profile fields through `/api/profile`.
+- Supabase Auth sessions use cookies through `@supabase/ssr`. Middleware refreshes tokens; protected pages and private API routes authorize with validated claims, never the unverified client session object.
+- PostgreSQL is authoritative for authenticated profiles and claimed skill rows. RLS and column grants provide a second authorization boundary.
 
 ## Domain rules
 - Every career has positive weighted skills summing to 100.
@@ -38,9 +39,9 @@ flowchart TD
 - `POST /api/ai/missions`: 501 until structured generation implemented.
 
 ## Production migration plan
-1. Add Supabase Auth and SSR session integration.
-2. Seed curated catalog tables transactionally; version source and weight datasets.
-3. Add server-validated user skill and review-event tables (avoid arbitrary client writes to demonstrated proficiency).
+1. ~~Add Supabase Auth and SSR session integration.~~ Implemented in Phase 2A.
+2. ~~Seed curated catalog tables transactionally; version source and weight datasets.~~ Implemented in migration `0003`.
+3. Add trusted review-event writers. Student sessions are already prevented from writing demonstrated/verified fields.
 4. Move assessments and question keys to backend; enforce expiry, attempt limits and audits.
 5. Enable AI on server only with Zod/JSON-schema validation, prompt-injection resistance, usage quotas and safe logging.
 6. Implement evidence evaluation by transparent rules/ratings and human review for ambiguous work.

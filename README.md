@@ -4,7 +4,7 @@
 
 A **career digital twin** starter: a responsive Next.js workspace where a student selects a career, rates skills, explores an interactive prerequisite-aware roadmap, tries hypothetical missions and takes short local quizzes. Created as a **Git-ready foundation for Codex**, not a production career credentialing platform.
 
-> **Development status — MVP starter.** Homepage, dashboard, three career tracks, local skill twin, skill graph, deterministic readiness/scenario math, curated missions, local quizzes and a simulation API are implemented as a prototype. Authenticated cloud persistence, AI job parsing, real GitHub verification, shareable passport and all P1/P2 integrations are **not** implemented. Sample/readiness numbers are NOT hiring probabilities.
+> **Development status — Phase 2A.** The redesigned workspace, anonymous local demo, Supabase SSR authentication, private claimed-profile persistence, hardened RLS migrations, and deterministic simulation are implemented. Trusted server-side assessment grading/evidence approval, AI job parsing, GitHub verification, and shareable passports are **not** implemented. Sample/readiness numbers are NOT hiring probabilities.
 
 ## Getting started (VS Code / Codex)
 
@@ -27,7 +27,7 @@ npm test
 npm run build
 ```
 
-**Important:** This offline-generated starter does **not** contain `package-lock.json` because npm registry access was unavailable during preparation. Run `npm install` and **commit the generated lockfile** before pushing. The initial CI uses `npm install`; switch to `npm ci` once the lockfile is committed.
+`package-lock.json` is committed. Use `npm ci` in CI and clean environments for reproducible installs.
 
 ## Stack
 
@@ -36,7 +36,7 @@ npm run build
 - React Flow for roadmap graph
 - Zustand browser-persisted demo store
 - Zod validated simulation endpoint
-- Supabase migration scaffold (NOT wired into runtime)
+- Supabase SSR Auth and PostgreSQL persistence with least-privilege RLS
 - Vitest test coverage for scoring
 
 ## Repository map
@@ -65,9 +65,11 @@ src/
   components/                # reusable UI/graph components
   data/catalog.ts            # skill DAG, roles, weights, missions, quizzes
   lib/readiness.ts           # pure scoring/simulation logic
-  store/use-skillmetry.ts    # local demo state (NOT production identity)
+  lib/supabase/              # browser/server clients and SSR session refresh
+  store/use-skillmetry.ts    # local demo cache (NOT production identity)
   types/domain.ts            # domain model
-supabase/migrations/         # draft relational schema and RLS
+supabase/migrations/         # versioned schema, RLS hardening and catalog seeds
+supabase/tests/              # executable two-user pgTAP security tests
  docs/                      # product plan, architecture, backlog, scoring, security
  tests/                     # test suite
  AGENTS.md                  # instructions for Codex
@@ -82,13 +84,9 @@ supabase/migrations/         # draft relational schema and RLS
 5. **Keep student data private.** Demo uses browser storage; future cloud storage requires auth, RLS and consent.
 6. **No API secrets in the browser.** External providers are server-only.
 
-## Recommended first Codex prompt
-
-> Read `AGENTS.md`, `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md` and `docs/BACKLOG.md`. First run dependency install, create/commit `package-lock.json`, and run typecheck/lint/test/build. Fix scaffold problems without changing product behavior. Then implement Task P0-01 from the backlog with tests, keeping demonstrated proficiency separate from self-report.
-
 ## Deployment
 
-Connect the GitHub repository to Vercel only after checks pass. The starter currently works without Supabase or Gemini keys, but a local prototype is **not** a secure multiuser platform.
+See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) for project configuration, migrations, redirect URLs and RLS tests. The app continues to work without Supabase or Gemini keys, but live multiuser claims require the migrations and database tests to be applied to the target project.
 
 ## Licensing
 
