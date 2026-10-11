@@ -1,6 +1,8 @@
 import { careers, skills } from "@/data/catalog";
 import type { Career, CareerId, Mission, SkillMap } from "@/types/domain";
 
+export type SkillState = "strong" | "available" | "in-progress" | "blocked";
+
 export function clamp(n: number, low = 0, high = 100): number {
   return Math.min(high, Math.max(low, Number.isFinite(n) ? n : 0));
 }
@@ -24,6 +26,22 @@ export function getSkillGaps(career: Career, proficiency: SkillMap) {
     // Higher weighted and less-developed skills come first.
     priority: weight * (100 - clamp(proficiency[skillId] ?? 0)) / 100
   })).sort((a, b) => b.priority - a.priority);
+}
+
+export function getSkillState(skillId: string, proficiency: SkillMap): SkillState {
+  const skill = skills.find(item => item.id === skillId);
+  const score = clamp(proficiency[skillId] ?? 0);
+  if (score >= 70) return "strong";
+  const blocked = skill?.prerequisites.some(id => clamp(proficiency[id] ?? 0) < 50) ?? false;
+  if (blocked) return "blocked";
+  if (score > 0) return "in-progress";
+  return "available";
+}
+
+export function getNextSkills(career: Career, proficiency: SkillMap, max = 3) {
+  return getSkillGaps(career, proficiency)
+    .filter(gap => getSkillState(gap.skillId, proficiency) !== "blocked" && gap.proficiency < 70)
+    .slice(0, max);
 }
 export function catalogIsValid() {
   const ids = new Set(skills.map(s => s.id));

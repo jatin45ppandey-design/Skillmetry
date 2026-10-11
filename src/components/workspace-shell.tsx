@@ -1,26 +1,44 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, CircleHelp, Compass, Fingerprint, FlaskConical, GitBranch, Settings2, Target, UserRound, WandSparkles } from "lucide-react";
+import { useState } from "react";
+import { Activity, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, ChevronRight, Compass, Fingerprint, FlaskConical, GitBranch, Menu, Settings2, Target, UserRound, WandSparkles, X } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { StatusPill } from "@/components/workspace-ui";
 import { useSkillmetry } from "@/store/use-skillmetry";
+
 const links = [
-  { href:"/dashboard",label:"Dashboard",icon:Activity },
-  { href:"/careers",label:"Career Explorer",icon:Compass },
-  { href:"/roadmap",label:"Adaptive Roadmap",icon:GitBranch },
-  { href:"/twin",label:"My Skill Twin",icon:Fingerprint },
-  { href:"/simulator",label:"What-If Lab",icon:FlaskConical },
-  { href:"/missions",label:"Missions",icon:Target },
-  { href:"/assessments",label:"Assessments",icon:BookOpen },
-  { href:"/jobs",label:"Job Analyzer",icon:BriefcaseBusiness },
-  { href:"/passport",label:"Career Passport",icon:WandSparkles },
-  { href:"/settings",label:"Settings",icon:Settings2 }
-];
+  { href:"/dashboard",label:"Command Center",shortLabel:"Home",icon:Activity,group:"Plan" },
+  { href:"/roadmap",label:"Adaptive Roadmap",shortLabel:"Roadmap",icon:GitBranch,group:"Plan" },
+  { href:"/twin",label:"Digital Skill Twin",shortLabel:"Twin",icon:Fingerprint,group:"Plan" },
+  { href:"/simulator",label:"What-If Simulator",shortLabel:"Simulator",icon:FlaskConical,group:"Build" },
+  { href:"/missions",label:"Missions Workspace",shortLabel:"Missions",icon:Target,group:"Build" },
+  { href:"/assessments",label:"Skill Assessments",shortLabel:"Assess",icon:BookOpen,group:"Build" },
+  { href:"/careers",label:"Career Explorer",shortLabel:"Careers",icon:Compass,group:"Explore" },
+  { href:"/jobs",label:"Job Analyzer",shortLabel:"Jobs",icon:BriefcaseBusiness,group:"Explore" },
+  { href:"/passport",label:"Career Passport",shortLabel:"Passport",icon:WandSparkles,group:"Explore" },
+  { href:"/settings",label:"Settings",shortLabel:"Settings",icon:Settings2,group:"Account" }
+] as const;
+
+function Navigation({pathname,onNavigate}:{pathname:string;onNavigate?:()=>void}) {
+  return <nav aria-label="Workspace navigation">{["Plan","Build","Explore","Account"].map(group => <div className="nav-group" key={group}><div className="nav-caption">{group}</div><div className="nav-list">{links.filter(link => link.group === group).map(({href,label,icon:Icon}) => <Link key={href} href={href} onClick={onNavigate} aria-current={pathname === href ? "page" : undefined} className={`nav-link ${pathname === href ? "active" : ""}`}><Icon aria-hidden="true"/><span>{label}</span>{pathname === href ? <ChevronRight className="nav-chevron" aria-hidden="true"/> : null}</Link>)}</div></div>)}</nav>;
+}
+
 export function WorkspaceShell({children}:{children:React.ReactNode}) {
   const pathname = usePathname();
-  const {name,baselineSource}=useSkillmetry();
-  return <div className="workspace"><aside className="sidebar"><Brand/><div className="nav-list"><div className="nav-caption">Your workspace</div>
-    {links.map(({href,label,icon:Icon})=><Link key={href} href={href} className={`nav-link ${pathname===href?"active":""}`}><Icon/>{label}</Link>)}
-    </div><div style={{ marginTop:"auto",padding:"14px",border:"1px solid #294059",borderRadius:12 }}><div className="row"><UserRound size={17} style={{color:"#22D3EE"}}/><strong className="small">{name}</strong></div><p className="note" style={{ marginBottom:0 }}>{baselineSource === "demo" ? "Demo mode • sample data" : "Self-reported profile"}</p></div>
-  </aside><main className="main"><header className="main-top"><div className="row"><ChartNoAxesCombined size={18} style={{color:"#22D3EE"}}/><span style={{fontWeight:700}}>Career command center</span></div><Link href="/onboarding" className="btn btn-outline" style={{fontSize:".78rem",padding:"8px 12px",minHeight:36}}><CircleHelp size={15}/> Edit profile</Link></header><div className="mobile-links">{links.map(l=><Link key={l.href} href={l.href}>{l.label}</Link>)}</div><div className="main-content">{children}</div></main></div>;
+  const [menuOpen,setMenuOpen] = useState(false);
+  const {name,baselineSource} = useSkillmetry();
+  const current = links.find(link => link.href === pathname);
+  const mobileLinks = links.slice(0,6);
+
+  return <div className="workspace">
+    <aside className="sidebar"><Brand/><Navigation pathname={pathname}/><div className="profile-card"><div className="profile-avatar"><UserRound aria-hidden="true"/></div><div><strong>{name || "Student"}</strong><span>{baselineSource === "demo" ? "Guided demo profile" : "Self-reported profile"}</span></div></div></aside>
+    <main className="main">
+      <header className="main-top"><button className="icon-button mobile-menu-button" type="button" onClick={()=>setMenuOpen(true)} aria-label="Open navigation" aria-expanded={menuOpen}><Menu/></button><div className="workspace-context"><ChartNoAxesCombined aria-hidden="true"/><div><span>Student workspace</span><strong>{current?.label ?? "Skillmetry"}</strong></div></div><div className="top-actions"><StatusPill tone={baselineSource === "demo" ? "warning" : "accent"}>{baselineSource === "demo" ? "Demo data" : "Local profile"}</StatusPill><Link href="/onboarding" className="btn btn-quiet"><UserRound aria-hidden="true"/>Edit profile</Link></div></header>
+      <div className={`mobile-drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="drawer-backdrop" type="button" onClick={()=>setMenuOpen(false)} aria-label="Close navigation"/><aside><div className="drawer-head"><Brand/><button className="icon-button" type="button" onClick={()=>setMenuOpen(false)} aria-label="Close navigation"><X/></button></div><Navigation pathname={pathname} onNavigate={()=>setMenuOpen(false)}/></aside></div>
+      <div className="main-content">{children}</div>
+      <nav className="mobile-bottom-nav" aria-label="Primary mobile navigation">{mobileLinks.map(({href,shortLabel,icon:Icon}) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={pathname === href ? "active" : ""}><Icon aria-hidden="true"/><span>{shortLabel}</span></Link>)}</nav>
+    </main>
+  </div>;
 }

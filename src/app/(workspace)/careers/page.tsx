@@ -1,8 +1,18 @@
 "use client";
-import { useSkillmetry } from "@/store/use-skillmetry";
-import { careers } from "@/data/catalog";
-import { readiness } from "@/lib/readiness";
-import { SectionTitle } from "@/components/section-title";
+
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-export default function Careers(){const {careerId,setCareer,skills}=useSkillmetry();return <><SectionTitle eyebrow="Career explorer" title="Choose a direction" description="Compare three carefully curated starter career paths. More roles arrive in later releases."/><div className="grid-3">{careers.map(c=><button type="button" key={c.id} className={`career-card ${c.id===careerId?"selected":""}`} onClick={()=>setCareer(c.id)}><span className="tag">{c.id===careerId?"Current goal":"Explore"}</span><h2 style={{margin:"24px 0 8px",fontSize:"1.25rem"}}>{c.title}</h2><p className="muted small" style={{minHeight:45}}>{c.subtitle}</p><div className="row between"><span className="small muted">Readiness index</span><strong>{readiness(c,skills)}/100</strong></div><div className="progress-track" style={{marginTop:10}}><div className="progress-fill" style={{width:`${readiness(c,skills)}%`}}/></div></button>)}</div><div className="panel" style={{marginTop:20}}><div className="row between"><div><h3>Selected career: {careers.find(c=>c.id===careerId)?.title}</h3><p className="note">Changes the roadmap, scoring weights and recommended mission list.</p></div><Link href="/roadmap" className="btn btn-primary">View roadmap <ArrowRight size={16}/></Link></div></div></>}
+import { ArrowRight, BrainCircuit, Check, GitBranch, LayoutPanelTop, ServerCog } from "lucide-react";
+import { SectionTitle } from "@/components/section-title";
+import { StatusPill } from "@/components/workspace-ui";
+import { careers, skillById } from "@/data/catalog";
+import { readiness } from "@/lib/readiness";
+import { useSkillmetry } from "@/store/use-skillmetry";
+
+const careerIcons = {"ml-engineer":BrainCircuit,"frontend-developer":LayoutPanelTop,"backend-developer":ServerCog};
+
+export default function Careers() {
+  const {careerId,setCareer,skills} = useSkillmetry();
+  const currentCareer = careers.find(career => career.id === careerId)!;
+
+  return <><SectionTitle eyebrow="Career explorer" title="Compare paths using your baseline" description="Coverage values use the same profile across each curated role. They describe skill overlap—not fit, salary, or likelihood of being hired."/><div className="career-explorer-grid">{careers.map(career => { const Icon = careerIcons[career.id]; const current = career.id === careerId; const score = readiness(career,skills); const strongest = [...career.skills].sort((a,b)=>(skills[b.skillId] ?? 0)-(skills[a.skillId] ?? 0)).slice(0,2); return <article key={career.id} className={`career-explorer-card ${current ? "selected" : ""}`}><div className="career-card-head"><span className="career-icon"><Icon aria-hidden="true"/></span>{current ? <StatusPill tone="accent"><Check aria-hidden="true"/>Current goal</StatusPill> : <StatusPill tone="neutral">Compare</StatusPill>}</div><h2>{career.title}</h2><p>{career.subtitle}</p><div className="career-coverage"><div><span>Your current coverage</span><strong>{score}<small>/100</small></strong></div><div className="progress-track"><div className="progress-fill" style={{width:`${score}%`}}/></div></div><div className="career-skill-preview"><span>Strongest profile overlap</span>{strongest.map(item => <span key={item.skillId}><strong>{skillById[item.skillId].label}</strong><small>{skills[item.skillId] ?? 0}/100</small></span>)}</div><div className="career-card-actions">{current ? <Link href="/roadmap" className="btn btn-primary">View current roadmap <ArrowRight aria-hidden="true"/></Link> : <button className="btn btn-quiet" type="button" onClick={()=>setCareer(career.id)}>Set as target</button>}</div></article>; })}</div><section className="career-selection-summary"><GitBranch aria-hidden="true"/><div><span>Current pathway</span><h2>{currentCareer.title}</h2><p>Changing the target role updates roadmap dependencies, role weights, and curated missions. It does not change your skill estimates.</p></div><Link href="/roadmap" className="text-link">Open adaptive roadmap <ArrowRight aria-hidden="true"/></Link></section></>;
+}

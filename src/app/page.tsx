@@ -8,7 +8,7 @@ export default function Home() {
       <nav className="topnav"><Brand/><Link className="btn btn-outline" href="/dashboard">Open demo <ArrowRight size={16}/></Link></nav>
       <div className="hero-grid"><div>
         <span className="tag"><Sparkles size={13}/> Beyond static career roadmaps</span>
-        <h1>Don't just learn.<br/><span className="gradient-text">Know your trajectory.</span></h1>
+        <h1>Don&apos;t just learn.<br/><span className="gradient-text">Know your trajectory.</span></h1>
         <p>Meet your evolving career digital twin. Map your real skills, find your next best move, and explore what your future could look like—before you commit.</p>
         <div className="hero-actions"><Link className="btn btn-primary" href="/onboarding">Create your skill twin <ArrowRight size={17}/></Link><Link className="btn btn-outline" href="/roadmap">Explore roadmap</Link></div>
         <p className="note" style={{ marginTop:23 }}>Free local prototype • No account or CV required • Sample data clearly labeled</p>
