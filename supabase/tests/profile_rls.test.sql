@@ -77,12 +77,12 @@ set local role anon;
 -- Private tables intentionally have no SELECT grant for anonymous sessions.
 -- Denied access raises SQLSTATE 42501 rather than returning an empty result.
 select throws_ok(
-  $select id from public.profiles$,
+  'select id from public.profiles',
   '42501', null,
   'Anonymous visitors cannot read profiles'
 );
 select throws_ok(
-  $select user_id from public.user_skills$,
+  'select user_id from public.user_skills',
   '42501', null,
   'Anonymous visitors cannot read skill claims'
 );
