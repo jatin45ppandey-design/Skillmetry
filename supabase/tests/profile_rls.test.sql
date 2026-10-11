@@ -74,8 +74,18 @@ select throws_ok(
 );
 
 set local role anon;
-select is_empty($$select id from public.profiles$$, 'Anonymous visitors cannot read profiles');
-select is_empty($$select user_id from public.user_skills$$, 'Anonymous visitors cannot read skill claims');
+-- Private tables intentionally have no SELECT grant for anonymous sessions.
+-- Denied access raises SQLSTATE 42501 rather than returning an empty result.
+select throws_ok(
+  $select id from public.profiles$,
+  '42501', null,
+  'Anonymous visitors cannot read profiles'
+);
+select throws_ok(
+  $select user_id from public.user_skills$,
+  '42501', null,
+  'Anonymous visitors cannot read skill claims'
+);
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '22222222-2222-4222-8222-222222222222', true);
