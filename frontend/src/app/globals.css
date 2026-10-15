@@ -1555,3 +1555,19 @@ body, button, input, textarea, select { font-family:var(--font-ui),"Segoe UI",ui
   .auth-social-btn { transition:none; }
   .auth-social-btn:hover { transform:none; }
 }
+
+/* Mobile workspace navigation: five legible primary tasks.
+   Every other route remains available through the existing drawer. */
+@media (max-width: 820px) {
+  .main { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .mobile-bottom-nav {
+    height: calc(74px + env(safe-area-inset-bottom));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 8px 6px max(8px, env(safe-area-inset-bottom));
+  }
+  .mobile-bottom-nav a { min-height: 44px; gap: 5px; font-size: .69rem; font-weight: 650; }
+  .mobile-bottom-nav svg { width: 19px; height: 19px; }
+}
+@media (max-width: 390px) {
+  .mobile-bottom-nav a { font-size: .64rem; }
+}
