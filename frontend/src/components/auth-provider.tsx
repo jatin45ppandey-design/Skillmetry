@@ -41,6 +41,8 @@ export function AuthProvider({ initialState, children }:{ initialState: ServerAu
   });
   const [syncMessage, setSyncMessage] = useState<string | null>(initialState.error ? "Authentication is temporarily unavailable." : null);
   const [assessmentHistory, setAssessmentHistory] = useState<AssessmentAttempt[]>([]);
+  // Never expose one account's assessment history while a different account loads.
+  const [historyOwnerId, setHistoryOwnerId] = useState<string | null>(null);
   const [assessmentStatus, setAssessmentStatus] = useState<AssessmentLoadStatus>(initialState.user ? "loading" : "demo");
   const [assessmentMessage, setAssessmentMessage] = useState<string | null>(null);
   const [retryVersion, setRetryVersion] = useState(0);
@@ -60,6 +62,7 @@ export function AuthProvider({ initialState, children }:{ initialState: ServerAu
   const endAuthenticatedState = useCallback((message: string) => {
     setUser(null);
     setAssessmentHistory([]);
+    setHistoryOwnerId(null);
     setAssessmentStatus("demo");
     setAssessmentMessage(null);
     useSkillmetry.getState().resetDemo();
@@ -103,6 +106,7 @@ export function AuthProvider({ initialState, children }:{ initialState: ServerAu
   const refreshAssessments = useCallback(async () => {
     if (!userId) {
       setAssessmentHistory([]);
+      setHistoryOwnerId(null);
       setAssessmentStatus("demo");
       setAssessmentMessage(null);
       return;
@@ -124,6 +128,7 @@ export function AuthProvider({ initialState, children }:{ initialState: ServerAu
       if (!response.ok) throw new Error("history_failed");
       const body = await response.json() as { attempts?: AssessmentAttempt[] };
       setAssessmentHistory(Array.isArray(body.attempts) ? body.attempts : []);
+      setHistoryOwnerId(userId);
       setAssessmentStatus("ready");
       setAssessmentMessage(null);
     } catch {
@@ -259,9 +264,9 @@ export function AuthProvider({ initialState, children }:{ initialState: ServerAu
     user,
     syncStatus,
     syncMessage,
-    assessmentHistory,
-    assessmentStatus,
-    assessmentMessage,
+    assessmentHistory: historyOwnerId === userId ? assessmentHistory : [],
+    assessmentStatus: userId && historyOwnerId !== userId ? "loading" : assessmentStatus,
+    assessmentMessage: userId && historyOwnerId !== userId ? "Loading this account's assessment history." : assessmentMessage,
     retrySync,
     refreshAssessments
   }}>{children}</AuthContext.Provider>;
