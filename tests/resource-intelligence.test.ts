@@ -4,6 +4,7 @@ import { skills } from "@skillmetry/shared/data/catalog";
 import {
   filterLearningResources,
   getPersonalizedResources,
+  getResourceAvailability,
   getResourcesForPhaseARecommendation,
   getResourcesForSkill,
   getResourcesForTool,
@@ -24,6 +25,18 @@ describe("learning resource catalog", () => {
     for (const tool of ["git", "github", "postman"] as const) expect(getResourcesForTool(tool).length).toBeGreaterThanOrEqual(2);
     expect(getResourcesForTool("docker")).toEqual(getResourcesForSkill("docker"));
     expect(learningResources.every(resource => isSafeResourceUrl(resource.url))).toBe(true);
+    const skillIds = new Set(skills.map(skill => skill.id));
+    const careerIds = new Set(["ml-engineer", "frontend-developer", "backend-developer", "full-stack-developer"]);
+    for (const entry of learningResources) {
+      if (entry.target.kind === "skill") expect(skillIds.has(entry.target.skillId)).toBe(true);
+      expect(entry.relatedSkillIds?.every(id => skillIds.has(id)) ?? true).toBe(true);
+      expect(entry.careerIds?.every(id => careerIds.has(id)) ?? true).toBe(true);
+      expect(entry.verificationStatus).not.toBe("unavailable");
+      if (entry.discoverySource) {
+        expect(entry.discoverySource.url).toBe("https://github.com/liuchong/awesome-roadmaps");
+        expect(entry.provider.length).toBeGreaterThan(0);
+      }
+    }
   });
 
   it("filters by target, resource metadata, and rejects unapproved external URLs", () => {
@@ -73,6 +86,25 @@ describe("resource intelligence", () => {
     expect(git.every(result => result.relatedToolId === "git" && result.assessment.available === false && result.reason.includes("no score is inferred"))).toBe(true);
     const docker = getPersonalizedResources({ learning: { ...noGoals, selectedToolIds: ["docker"] }, trustedScores: {}, maxResults: 2 });
     expect(docker.every(result => result.relatedSkillId === "docker")).toBe(true);
+  });
+
+  it("separates curated learning paths by career and keeps a useful resource format mix", () => {
+    const backend = getPersonalizedResources({
+      learning: { ...noGoals, primaryCareerId: "backend-developer", selectedSkillIds: ["sql"] },
+      trustedScores: { sql: 40 }, maxResults: 12
+    });
+    expect(backend.every(item => !item.resource.careerIds || item.resource.careerIds.includes("backend-developer"))).toBe(true);
+    expect(backend.some(item => item.resource.id === "roadmap-data-analyst-mtahiraslan")).toBe(false);
+
+    const frontend = getPersonalizedResources({
+      learning: { ...noGoals, primaryCareerId: "frontend-developer" },
+      trustedScores: { javascript: 40 }, maxResults: 6
+    });
+    expect(frontend.some(item => item.resource.type === "roadmap")).toBe(true);
+    expect(frontend.filter(item => item.resource.type === "roadmap").length).toBeLessThanOrEqual(2);
+    expect(frontend.some(item => item.resource.type !== "roadmap")).toBe(true);
+    const unavailable = { ...learningResources[0], verificationStatus: "unavailable" as const };
+    expect(getResourceAvailability(unavailable).available).toBe(false);
   });
 
   it("deduplicates combined goals and respects Phase A priority deterministically", () => {

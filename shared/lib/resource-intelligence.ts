@@ -200,6 +200,13 @@ export function getResourcesForPhaseARecommendation(recommendation: LearningReco
   return recommendation.skillId ? getResourcesForSkill(recommendation.skillId) : [];
 }
 
+/** Career-level entry point for supporting paths; the personalized internal roadmap remains primary. */
+export function getCareerRoadmapBrowseHref(careerId: CareerId) {
+  return careers.some(career => career.id === careerId)
+    ? `/resources?career=${encodeURIComponent(careerId)}&format=roadmap`
+    : "/resources";
+}
+
 /** Creates an internal, validated resource-discovery route without exposing external URLs. */
 export function getResourceBrowseHref(target: { kind: "skill"; skillId: SkillId } | { kind: "tool"; toolId: ToolId }) {
   const params = new URLSearchParams();
@@ -218,30 +225,45 @@ export function getResourceBrowseHref(target: { kind: "skill"; skillId: SkillId 
  */
 export function getPersonalizedResources(input: PersonalizedResourceInput): ResourceRecommendation[] {
   const candidates = collectTargets(input);
-  const ranked = candidates.flatMap(candidate => getResourcesForTarget(candidate.target).map(resource => ({
+  // Explicit curator career tags must also apply to recommendations, not only browsing.
+  // Do not recommend an ML-only roadmap to a backend learner merely because both use SQL.
+  // Unavailable URLs are never featured when selecting personalized learning actions.
+  const ranked = candidates.flatMap(candidate => getResourcesForTarget(candidate.target)
+    .filter(resource =>
+      getResourceAvailability(resource).available
+      && (!input.learning.primaryCareerId || !resource.careerIds || resource.careerIds.includes(input.learning.primaryCareerId))
+    )
+    .map(resource => ({
     candidate,
     resource,
     score: candidate.priority
       + (3 - difficultyOrder[preferredDifficulty(input.trustedScores, candidate.target)].indexOf(resource.difficulty)) * 20
-      + (resource.verificationStatus === "verified" ? 5 : 0)
+      + (resource.verificationStatus === "verified" ? 5 : -12)
       + (input.learning.primaryCareerId && resource.careerIds?.includes(input.learning.primaryCareerId) ? 26 : 0)
       + (resource.type === "roadmap" ? 12 : 0)
   }))).sort((a, b) => b.score - a.score || a.resource.id.localeCompare(b.resource.id));
   const results: ResourceRecommendation[] = [];
   const usedTypes = new Set<string>();
   const limit = Math.max(1, Math.min(input.maxResults ?? 6, 12));
+  const preferredRoadmapLimit = Math.max(1, Math.ceil(limit / 3));
+  let selectedRoadmaps = 0;
   while (ranked.length && results.length < limit) {
     let index = 0;
     let bestScore = Number.NEGATIVE_INFINITY;
+    let foundWithinMix = false;
     for (let candidateIndex = 0; candidateIndex < ranked.length; candidateIndex += 1) {
       const candidate = ranked[candidateIndex];
+      if (candidate.resource.type === "roadmap" && selectedRoadmaps >= preferredRoadmapLimit) continue;
       const diverseScore = candidate.score + (usedTypes.has(candidate.resource.type) ? 0 : 6);
       if (diverseScore > bestScore) {
         bestScore = diverseScore;
         index = candidateIndex;
+        foundWithinMix = true;
       }
     }
-    const [item] = ranked.splice(index, 1);
+    // If a very narrow goal only has roadmaps, use them rather than return fewer
+    // recommendations. Otherwise keep learning material alongside broad roadmaps.
+    const [item] = ranked.splice(foundWithinMix ? index : 0, 1);
     if (results.some(result => result.resource.id === item.resource.id)) continue;
     const target = item.candidate.target;
     results.push({
@@ -251,6 +273,7 @@ export function getPersonalizedResources(input: PersonalizedResourceInput): Reso
       reason: reasonForTarget(target, input.trustedScores, item.candidate.reasons.find(reason => reason.startsWith("Prioritized by")))
     });
     usedTypes.add(item.resource.type);
+    if (item.resource.type === "roadmap") selectedRoadmaps += 1;
   }
   return results;
 }
