@@ -73,20 +73,26 @@ function ResourceExperience() {
   const selectedCareer = learning.primaryCareerId ? careers.find(career => career.id === learning.primaryCareerId) : null;
   const hasGoals = Boolean(learning.primaryCareerId || learning.selectedSkillIds.length || learning.selectedToolIds.length);
   const personalized = useMemo(() => getPersonalizedResources({ learning, trustedScores: scores, maxResults: 6 }), [learning, scores]);
-  const recommendations = useMemo(() => {
-    const allowed = new Set(filterLearningResources({ target: targetFromFilter(target), careerId: careerFilter === "all" ? undefined : careerFilter }).map(resource => resource.id));
-    return personalized.filter(item => allowed.has(item.resource.id));
-  }, [personalized, target, careerFilter]);
   const resources = useMemo(() => filterLearningResources({ target: targetFromFilter(target), careerId: careerFilter === "all" ? undefined : careerFilter, difficulties: difficulty === "all" ? undefined : [difficulty as ResourceDifficulty], types: type === "all" ? undefined : [type as ResourceType], costs: cost === "all" ? undefined : [cost as ResourceCost] }).filter(resource => language === "all" || resource.language === language).filter(resource => `${resource.title} ${resource.topic} ${resource.provider} ${resource.subtopics?.join(" ") ?? ""} ${resource.careerIds?.map(id => careers.find(career => career.id === id)?.title).join(" ") ?? ""}`.toLowerCase().includes(search.trim().toLowerCase())), [careerFilter, cost, difficulty, language, search, target, type]);
+  // Every visible section respects the same search, format, cost, language,
+  // skill and career filters, including featured and personalized cards.
+  const visibleResourceIds = useMemo(() => new Set(resources.map(resource => resource.id)), [resources]);
+  const recommendations = useMemo(
+    () => personalized.filter(item => visibleResourceIds.has(item.resource.id)),
+    [personalized, visibleResourceIds]
+  );
   const recommendedById = new Map(recommendations.map(item => [item.resource.id, item]));
   const roadmapPicks = useMemo(() => {
-    const careerId = careerFilter !== "all" ? careerFilter : learning.primaryCareerId ?? undefined;
-    const relevant = filterLearningResources({ target: targetFromFilter(target), careerId, types: ["roadmap"] });
+    const selectedCareerId = careerFilter !== "all" ? careerFilter : learning.primaryCareerId;
+    const relevant = resources.filter(resource => resource.type === "roadmap"
+      && (!selectedCareerId || (resource.careerIds
+        ? resource.careerIds.includes(selectedCareerId)
+        : careers.find(career => career.id === selectedCareerId)?.skills.some(skill => resource.target.kind === "skill" && resource.target.skillId === skill.skillId))));
     const matchedById = new Set(relevant.map(resource => resource.id));
     const prioritized = getPersonalizedResources({ learning, trustedScores: scores, maxResults: 12 })
       .map(item => item.resource).filter(resource => matchedById.has(resource.id));
     return [...new Map([...prioritized, ...relevant].map(resource => [resource.id, resource])).values()].slice(0, 4);
-  }, [careerFilter, learning, scores, target]);
+  }, [careerFilter, learning, resources, scores]);
   const roadmapCount = learningResources.filter(resource => resource.type === "roadmap").length;
   const context = target !== "all" ? targetLabel(targetFromFilter(target)!) : selectedCareer ? selectedCareer.title : hasGoals ? "Your selected learning goals" : "Curated learning catalog";
 
