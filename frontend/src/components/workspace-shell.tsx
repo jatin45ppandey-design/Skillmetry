@@ -34,7 +34,7 @@ export function WorkspaceShell({children}:{children:React.ReactNode}) {
   const {name,profileSource} = useSkillmetry();
   const {user,syncStatus} = useAuth();
   const current = links.find(link => link.href === pathname);
-  const mobileLinks = links.filter(link => ["/dashboard", "/roadmap", "/assessments", "/resources", "/twin", "/careers"].includes(link.href));
+  const mobileLinks = links.filter(link => ["/dashboard", "/roadmap", "/assessments", "/resources", "/twin"].includes(link.href));
   const cloudLabel = syncStatus === "offline" ? "Offline" : syncStatus === "error" ? "Sync issue" : syncStatus === "saving" ? "Saving" : syncStatus === "loading" ? "Loading" : "Cloud synced";
   const CloudIcon = syncStatus === "offline" || syncStatus === "error" ? CloudOff : Cloud;
 
