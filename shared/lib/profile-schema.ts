@@ -54,6 +54,18 @@ export const authCredentialsSchema = z.object({
   next: z.string().max(256).optional()
 }).strict();
 
+/** User-entered signup confirmation code; never accepts score/identity fields. */
+export const emailConfirmationOtpSchema = z.object({
+  email: z.string().trim().email().max(254),
+  token: z.string().regex(/^\d{6}$/, "Enter the six-digit email confirmation code."),
+  next: z.string().max(256).optional()
+}).strict();
+
+export const resendSignupConfirmationSchema = z.object({
+  email: z.string().trim().email().max(254),
+  next: z.string().max(256).optional()
+}).strict();
+
 export function safeInternalPath(value: string | undefined, fallback = "/account") {
   if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return fallback;
   try {

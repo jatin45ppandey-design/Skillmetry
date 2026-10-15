@@ -19,6 +19,12 @@ export async function POST(request: Request) {
     password: parsed.data.password
   });
 
+  if (error?.code === "email_not_confirmed") {
+    return NextResponse.json(
+      { error: "Email not confirmed. Open the verification email, then sign in again. You can request another confirmation email from Create account." },
+      { status: 403 }
+    );
+  }
   if (error || !data.user) {
     return NextResponse.json({ error: "Email or password is incorrect." }, { status: 401 });
   }

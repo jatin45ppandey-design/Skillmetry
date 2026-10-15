@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cloudProfileInputSchema, normalizeOnboardingPreferences, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
+import { cloudProfileInputSchema, emailConfirmationOtpSchema, normalizeOnboardingPreferences, resendSignupConfirmationSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 
 const validProfile = {
   displayName: "Jatin",
@@ -47,5 +47,21 @@ describe("cloud profile validation", () => {
     expect(safeInternalPath("https://attacker.example")).toBe("/account");
     expect(safeInternalPath("//attacker.example")).toBe("/account");
     expect(safeInternalPath("/\\attacker.example")).toBe("/account");
+  });
+});
+
+describe("email confirmation request validation", () => {
+  it("accepts only a six-digit confirmation token and valid email", () => {
+    expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: "012345", next: "/assessments" }).success).toBe(true);
+    for (const bad of ["12345", "1234567", "12abc4"]) {
+      expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: bad }).success).toBe(false);
+    }
+    expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: "123456", score: 100 }).success).toBe(false);
+  });
+  it("validates resend and rejects extra identity fields and off-site destinations", () => {
+    expect(resendSignupConfirmationSchema.safeParse({ email: "student@example.com", next: "/assessments" }).success).toBe(true);
+    expect(resendSignupConfirmationSchema.safeParse({ email: "not-an-email" }).success).toBe(false);
+    expect(resendSignupConfirmationSchema.safeParse({ email: "student@example.com", role: "admin" }).success).toBe(false);
+    expect(safeInternalPath("//malicious.example")).toBe("/account");
   });
 });

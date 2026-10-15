@@ -6,8 +6,10 @@ import { createClient } from "@skillmetry/backend/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const destination = safeInternalPath(request.nextUrl.searchParams.get("next") ?? undefined);
   const code = request.nextUrl.searchParams.get("code");
-
-  if (!isSupabaseConfigured() || !code) {
+  const tokenHash = request.nextUrl.searchParams.get("token_hash");
+  const type = request.nextUrl.searchParams.get("type");
+  const isConfirmationLink = Boolean(tokenHash && type === "email");
+  if (!isSupabaseConfigured() || (!code && !isConfirmationLink)) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
     failed.search = "";
@@ -16,7 +18,9 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { error } = code
+    ? await supabase.auth.exchangeCodeForSession(code)
+    : await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "email" });
   if (error) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
