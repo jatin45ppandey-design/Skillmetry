@@ -51,6 +51,13 @@ The authenticated path is:
 - This is a **database and assessment go-live** milestone, not a publicly deployed frontend. Production Auth email/redirect configuration, operational abuse controls, privacy controls, compatibility-aware dependency review, and manual browser QA remain release gates.
 - Keep both optional completion-window variables unset until cross-version completion-time cap enforcement is designed and tested.
 
+## Phase B3 Resource Library (2026-10-15)
+
+- The 50 original resources are preserved alongside 11 new curated external resources discovered through liuchong/awesome-roadmaps (10 roadmaps, one structured course).
+- Career/skill/tool mappings, discovery attribution, deterministic recommendation ranking, roadmap browsing and filtering are implemented without changing assessment scoring.
+- External sources remain externally hosted. The frontend roadmap PDF is marked unverified pending a direct accessibility check.
+- See [docs/RESOURCES.md](RESOURCES.md) for provenance, decisions and implementation boundaries.
+
 ## Known limitations and release gates
 
 - The question bank is source-controlled server code. Changes require review and a version bump; there is no authoring/review console.

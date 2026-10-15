@@ -29,7 +29,7 @@ describe("learning resource catalog", () => {
   it("filters by target, resource metadata, and rejects unapproved external URLs", () => {
     const pythonBeginners = filterLearningResources({ target: { kind: "skill", skillId: "python" }, difficulties: ["beginner"] });
     expect(pythonBeginners.length).toBeGreaterThanOrEqual(2);
-    expect(pythonBeginners.every(resource => resource.target.kind === "skill" && resource.target.skillId === "python")).toBe(true);
+    expect(pythonBeginners.every(resource => (resource.target.kind === "skill" && resource.target.skillId === "python") || resource.relatedSkillIds?.includes("python"))).toBe(true);
     expect(filterLearningResources({ types: ["practice"], costs: ["free"] }).every(resource => resource.type === "practice" && resource.cost === "free")).toBe(true);
     expect(isSafeResourceUrl("http://docs.python.org/3/tutorial/introduction.html")).toBe(false);
     expect(isSafeResourceUrl("https://example.com/learning")).toBe(false);
