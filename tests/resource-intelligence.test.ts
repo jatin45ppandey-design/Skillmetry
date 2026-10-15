@@ -35,6 +35,13 @@ describe("learning resource catalog", () => {
     expect(isSafeResourceUrl("https://example.com/learning")).toBe(false);
     expect(isSafeResourceUrl("https://github.com/unrelated/non-curated")).toBe(false);
     expect(filterLearningResources({ types: ["roadmap"], careerId: "frontend-developer" }).length).toBeGreaterThanOrEqual(2);
+    // Older documentation has no explicit careerIds; filtering must not hide it.
+    const frontendDocs = filterLearningResources({ careerId: "frontend-developer", types: ["documentation"] });
+    expect(frontendDocs.some(item => item.target.kind === "skill" && item.target.skillId === "html")).toBe(true);
+    const mlDocs = filterLearningResources({ careerId: "ml-engineer", types: ["documentation"] });
+    expect(mlDocs.some(item => item.target.kind === "skill" && item.target.skillId === "python")).toBe(true);
+    // Curator-provided career assignments remain authoritative for imported paths.
+    expect(filterLearningResources({ careerId: "frontend-developer", types: ["roadmap"] }).some(item => item.id === "roadmap-mathematics-talal")).toBe(false);
     expect(getResourcesForSkill("react").some(resource => resource.type === "roadmap")).toBe(true);
     expect(getResourcesForTool("git").some(resource => resource.type === "roadmap")).toBe(true);
     expect(filterLearningResources({ target: { kind: "skill", skillId: "react" }, types: ["roadmap"] }).length).toBeGreaterThanOrEqual(1);

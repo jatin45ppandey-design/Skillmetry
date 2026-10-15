@@ -30,6 +30,7 @@ Older candidate alternatives (including a 2019 React roadmap and a 2022 AI Exper
 - `relatedSkillIds`, `relatedToolIds` and `careerIds` enable a resource to match multiple learning targets without adding fictional skill scores.
 - `discoverySource` records the list where a resource was found; `provider` credits the original creator.
 - `roadmap` is a distinct resource type. The Microsoft curriculum remains a `course`.
+- Career filtering derives applicability for the original 50 skills-based resources while honoring explicit career tags on imported paths. Skill drill-downs filter the featured external roadmaps, not only the catalog.
 - Recommendations remain explainable and deterministic; career match, skill prerequisites and trusted overall assessment scores influence ordering.
 - External links never update the Digital Twin, record completion or substitute for Skillmetry's own roadmap.
 - The resource validator checks both the existing and new catalog files; network-based validation is environment-dependent.

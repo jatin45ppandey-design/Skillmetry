@@ -5,6 +5,7 @@ import { isCanonicalSkillId, isToolId, toolById } from "@skillmetry/shared/data/
 import { buildRecommendations } from "@skillmetry/shared/lib/recommendations";
 import type {
   AssessmentRoute,
+  CareerId,
   LearningPreferences,
   LearningRecommendationPlan,
   LearningResource,
@@ -150,6 +151,18 @@ export function getResourcesForTool(toolId: ToolId) {
   return tool.canonicalSkillId ? getResourcesForSkill(tool.canonicalSkillId) : learningResources.filter(resource => (resource.target.kind === "tool" && resource.target.toolId === toolId) || resource.relatedToolIds?.includes(toolId));
 }
 
+function resourceMatchesCareer(resource: LearningResource, careerId: CareerId): boolean {
+  // Explicit curator assignments are authoritative for external roadmaps.
+  if (resource.careerIds) return resource.careerIds.includes(careerId);
+  // The original 50 learning resources predate career tags; infer relevance
+  // from the canonical career skill map so filtering never hides core guides.
+  const career = careers.find(item => item.id === careerId);
+  return Boolean(career?.skills.some(({ skillId }) =>
+    (resource.target.kind === "skill" && resource.target.skillId === skillId)
+    || resource.relatedSkillIds?.includes(skillId)
+  ));
+}
+
 export function filterLearningResources(filter: ResourceFilter = {}) {
   return learningResources.filter(resource => {
     if (filter.target) {
@@ -158,7 +171,7 @@ export function filterLearningResources(filter: ResourceFilter = {}) {
         : (resource.target.kind === "tool" && resource.target.toolId === filter.target.toolId) || Boolean(resource.relatedToolIds?.includes(filter.target.toolId));
       if (!match) return false;
     }
-    if (filter.careerId && !resource.careerIds?.includes(filter.careerId)) return false;
+    if (filter.careerId && !resourceMatchesCareer(resource, filter.careerId)) return false;
     if (filter.difficulties && !filter.difficulties.includes(resource.difficulty)) return false;
     if (filter.types && !filter.types.includes(resource.type)) return false;
     return !(filter.costs && !filter.costs.includes(resource.cost));
