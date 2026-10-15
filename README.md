@@ -2,91 +2,84 @@
 
 **Measure Your Skills. Shape Your Future.**
 
-A **career digital twin** starter: a responsive Next.js workspace where a student selects a career, rates skills, explores an interactive prerequisite-aware roadmap, tries hypothetical missions and takes short local quizzes. Created as a **Git-ready foundation for Codex**, not a production career credentialing platform.
+Skillmetry is a responsive career digital twin for students. A student chooses a target career, completes secure foundational quizzes, and sees an assessment-derived skill profile, history, coverage, roadmap, and clearly labeled hypothetical scenarios.
 
-> **Development status — Phase 2A.** The redesigned workspace, anonymous local demo, Supabase SSR authentication, private claimed-profile persistence, hardened RLS migrations, and deterministic simulation are implemented. Trusted server-side assessment grading/evidence approval, AI job parsing, GitHub verification, and shareable passports are **not** implemented. Sample/readiness numbers are NOT hiring probabilities.
+> **Development status — quiz-driven MVP.** Supabase SSR authentication, private profile persistence, server-only assessment grading, immutable attempt history, owner-scoped RLS, and an anonymous illustrative demo are implemented. Unassessed skills remain unknown; they are never displayed as 0%. The product does not claim hiring probability, professional readiness, human verification, or project/GitHub-derived skill scores.
 
-## Getting started (VS Code / Codex)
+## Getting started
 
-Prerequisites: **Node.js 22**, npm, Git.
+Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.
 
-```bash
+```powershell
 npm install
-cp .env.example .env.local # optional; app runs without keys
+Copy-Item .env.example .env.local # optional; anonymous demo works without keys
 npm run dev
 ```
 
-Open http://localhost:3000. Windows PowerShell alternative: `Copy-Item .env.example .env.local`.
+Open `http://localhost:3000`.
 
-### Validation
+For authenticated assessments, configure the two public Supabase values plus the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Never prefix either elevated variable with `NEXT_PUBLIC_`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
 
-```bash
+## Validation
+
+```powershell
 npm run typecheck
 npm run lint
 npm test
 npm run build
 ```
 
-`package-lock.json` is committed. Use `npm ci` in CI and clean environments for reproducible installs.
+With the local Supabase stack running and migrations applied:
+
+```powershell
+npm run test:rls
+npm run verify:assessment
+```
+
+The end-to-end verification command expects a running app and local Supabase variables in the current shell. Setup instructions are in [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md). `package-lock.json` is committed; use `npm ci` in CI and clean environments.
 
 ## Stack
 
-- Next.js App Router + React + TypeScript
-- Tailwind CSS + hand-built minimal components (shadcn/ui integration is a P1 option)
-- React Flow for roadmap graph
-- Zustand browser-persisted demo store
-- Zod validated simulation endpoint
-- Supabase SSR Auth and PostgreSQL persistence with least-privilege RLS
-- Vitest test coverage for scoring
+- Next.js App Router, React, and TypeScript
+- Tailwind CSS and reusable project components
+- React Flow for the adaptive roadmap graph
+- Zustand for the isolated anonymous demo
+- Zod-validated API boundaries
+- Supabase SSR Auth and PostgreSQL with least-privilege RLS
+- Vitest and pgTAP security tests
 
-## Repository map
+## Important paths
 
 ```text
-src/
-  app/
-    page.tsx                 # marketing homepage
-    onboarding/              # career + self-assessed skills
-    (workspace)/             # sidebar workspace pages
-      dashboard/             # command center
-      careers/               # curated role picker
-      roadmap/               # React Flow graph
-      twin/                  # readiness/evidence overview
-      simulator/             # what-if scenario UI
-      missions/              # mission templates
-      assessments/           # client-only demo quizzes
-      jobs/                  # AI job analyzer placeholder
-      passport/              # private passport preview
-      settings/              # local profile controls
-    api/
-      health/                # GET status
-      simulate/              # POST deterministic simulation
-      jobs/analyze/          # 501 placeholder
-      ai/missions/           # 501 placeholder
-  components/                # reusable UI/graph components
-  data/catalog.ts            # skill DAG, roles, weights, missions, quizzes
-  lib/readiness.ts           # pure scoring/simulation logic
-  lib/supabase/              # browser/server clients and SSR session refresh
-  store/use-skillmetry.ts    # local demo cache (NOT production identity)
-  types/domain.ts            # domain model
-supabase/migrations/         # versioned schema, RLS hardening and catalog seeds
-supabase/tests/              # executable two-user pgTAP security tests
- docs/                      # product plan, architecture, backlog, scoring, security
- tests/                     # test suite
- AGENTS.md                  # instructions for Codex
+frontend/src/app/api/assessments/          authenticated start, submit, and history routes
+backend/lib/assessments/                   server-only question bank and trusted grading
+shared/data/assessment-catalog.ts          browser-safe assessment metadata
+shared/lib/assessments/                    browser-safe history and profile selectors
+shared/lib/readiness.ts                    pure profile and hypothetical scenario logic
+frontend/src/lib/supabase/                 browser-only public Supabase client/config
+backend/lib/supabase/                      SSR, request-auth, and server-only admin clients
+frontend/src/store/use-skillmetry.ts        anonymous demo preferences; not trusted scoring data
+shared/                                   shared domain, data, and reusable logic
+database/supabase/                        local Supabase project, migrations, and pgTAP security tests
+tests/                                    unit and trust-boundary tests
+docs/                                     product, architecture, scoring, security, and setup
 ```
 
-## Ground rules
+## Product and trust rules
 
-1. **No static roadmap clone.** Skill graph must respond to an individual's profile and a target role.
-2. **No fabricated readiness guarantee.** The index measures weighted estimated skill coverage, not employment likelihood.
-3. **Scenarios are hypothetical.** They MUST NOT directly write skill proficiency or verification state.
-4. **Assessment and evidence differ.** A short quiz pass is weak evidence; GitHub metadata cannot independently certify a skill.
-5. **Keep student data private.** Demo uses browser storage; future cloud storage requires auth, RLS and consent.
-6. **No API secrets in the browser.** External providers are server-only.
+1. Numerical skill scores come only from completed server-graded quizzes.
+2. The latest valid attempt is the current score; earlier attempts remain in history.
+3. Missing assessment data is `Not Assessed`, not 0%.
+4. Assessment coverage and measured performance are separate metrics.
+5. Anonymous sample results are explicitly illustrative and never sync into an account.
+6. Scenarios are hypothetical and never write assessment results or actual progress.
+7. The student owns only their profile and can read only their own graded results. Browser roles cannot create or edit grades.
+8. The service-role key and answer keys stay server-only.
+9. Immediate retakes are allowed, while PostgreSQL permits only one active session per assessment version and one result per session.
 
 ## Deployment
 
-See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) for project configuration, migrations, redirect URLs and RLS tests. The app continues to work without Supabase or Gemini keys, but live multiuser claims require the migrations and database tests to be applied to the target project.
+No hosted migration is applied automatically. Review the versioned SQL and [Supabase setup guide](docs/SUPABASE_SETUP.md), run the local RLS suite, then obtain explicit approval before pushing migrations to a hosted project.
 
 ## Licensing
 

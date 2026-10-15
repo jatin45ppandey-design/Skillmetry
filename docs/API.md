@@ -1,41 +1,84 @@
 # API contract
 
-## `GET /api/health`
-Returns:
+All JSON input schemas are strict. Private endpoints validate a Supabase Auth claim server-side and return private, non-cacheable data.
+
+## Assessment routes
+
+### `POST /api/assessments/start`
+
+Authentication and the server-only service credential are required.
+
 ```json
-{"status":"ok","name":"skillmetry","mode":"local-prototype","version":"0.1.0"}
+{"assessmentId":"javascript-foundations"}
 ```
 
-## `POST /api/simulate`
-Example request:
+Returns an opaque session ID, assessment/version metadata, expiry, and ten ordered public questions. A question contains `id`, `prompt`, and four `choices`; it never contains a correct index. PostgreSQL atomically expires stale sessions and creates or reuses exactly one active session for the same owner/assessment/version, including under concurrent requests. Immediate serial retakes are allowed by default. An optional server-only completion-window policy returns 429 when explicitly configured and reached.
+
+### `POST /api/assessments/submit`
+
 ```json
-{"careerId":"ml-engineer","skills":{"python":80,"docker":10,"deployment":10},"missionIds":["dockerize"]}
+{
+  "sessionId":"00000000-0000-0000-0000-000000000000",
+  "answers":{"javascript-01":1,"javascript-02":0}
+}
 ```
-Response fields: `baseline`, `projected`, `type` (`"hypothetical"`), `disclaimer`.
 
-- Validates shape with Zod.
-- Rejects unknown or wrong-career mission IDs.
-- Clamps computed proficiency to [0,100] using approved mission gain values.
-- Never persists anything.
-- Not authenticated because simulation uses self-contained, non-sensitive inputs. Add rate limiting and input cap in production.
+The real submission must answer every presented question exactly once. The server verifies owner, status, expiry, version, and question set; grades with server-only keys; and atomically stores the result. The client cannot provide user ID, score, pass status, counts, or version. Retrying a completed session returns the original immutable attempt with `replayed: true`; it never regrades or creates another row.
 
-## `POST /api/jobs/analyze`
-501 Not Implemented. Planned: server-only provider request, bounded description size, structured extracted skill IDs and uncertainty.
+Successful response:
 
-## `POST /api/ai/missions`
-501 Not Implemented. Planned: server-only LLM, known skill IDs, schema-constrained output, citations/clear AI label, no direct skill mutation.
+```json
+{
+  "attempt": {
+    "id":"uuid",
+    "assessmentId":"javascript-foundations",
+    "assessmentVersion":"2026.2",
+    "skillId":"javascript",
+    "score":80,
+    "passed":true,
+    "passThreshold":75,
+    "correctCount":8,
+    "totalQuestions":10,
+    "completedAt":"ISO-8601 timestamp"
+  }
+}
+```
+
+### `GET /api/assessments/history`
+
+Returns up to 100 of the authenticated student's `server_quiz` attempts, ordered by completion time and then immutable attempt ID. It never returns another owner's rows or legacy untrusted results.
+
+## Profile routes
+
+### `GET /api/profile`
+
+Returns the current user's display name, target career, onboarding completion, hours/week, roadmap view, and update timestamp. Numerical skill state is not part of this contract.
+
+### `PUT /api/profile`
+
+Accepts only:
+
+```json
+{
+  "displayName":"Student",
+  "careerId":"frontend-developer",
+  "onboardingCompleted":true,
+  "preferences":{"hoursPerWeek":6,"roadmapView":"graph"}
+}
+```
+
+The owner comes from the validated claim. Unknown fields—including user IDs, scores, claims, demonstrated/verified states, and review decisions—are rejected.
 
 ## Authentication routes
 
-- `POST /api/auth/sign-up`: strict email/password validation; creates a real Supabase Auth user and may require email confirmation.
-- `POST /api/auth/sign-in`: exchanges credentials for an SSR cookie session. Errors do not reveal whether an account exists.
-- `POST /api/auth/sign-out`: clears the current cookie session.
-- `GET /auth/callback`: exchanges a valid PKCE confirmation code and permits only same-origin redirect paths.
+- `POST /api/auth/sign-up`: validated email/password; may require confirmation.
+- `POST /api/auth/sign-in`: exchanges credentials for SSR cookie state without account-enumerating errors.
+- `POST /api/auth/sign-out`: clears the local cookie session.
+- `GET /auth/callback`: exchanges a valid PKCE code and allows only safe internal next paths.
 
-## `GET /api/profile`
+## Other routes
 
-Requires a server-validated Supabase claim. Returns only the current user's profile, claimed proficiency and read-only trusted signal fields. Responses are private and non-cacheable.
-
-## `PUT /api/profile`
-
-Requires a server-validated Supabase claim and a strict Zod body containing display name, canonical career ID, onboarding preferences and canonical claimed-skill values. The owner ID always comes from the validated claim. Unknown identity, assessment, demonstrated, verification or review fields are rejected.
+- `GET /api/health`: application health metadata.
+- `POST /api/simulate`: Zod-validated hypothetical scenario. It never persists or creates a score.
+- `POST /api/jobs/analyze`: 501 placeholder.
+- `POST /api/ai/missions`: 501 placeholder.

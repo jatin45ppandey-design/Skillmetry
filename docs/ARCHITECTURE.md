@@ -2,53 +2,70 @@
 
 ```mermaid
 flowchart TD
-  A[Next.js Frontend] --> B[API Route Handlers]
-  A --> C[Local demo Zustand store]
-  B --> D[Readiness and DAG pure logic]
-  B --> E[(Supabase PostgreSQL)]
-  B --> F[Gemini server adapter — planned]
-  B --> G[GitHub evidence adapter — planned]
-  E --> H[Student-owned twin + evidence]
-  F --> I[Validated structured output]
-  I --> D
-  H --> D
+  A[Next.js workspace] --> B[SSR Auth and route handlers]
+  A --> C[Isolated anonymous demo store]
+  B --> D[Server-only versioned question bank]
+  B --> E[Deterministic grading]
+  B --> F[(Supabase PostgreSQL)]
+  F --> G[Owner-scoped assessment history]
+  G --> H[Assessment-derived Digital Twin]
+  H --> I[Dashboard and adaptive roadmap]
 ```
 
-## Source of truth
-- `src/data/catalog.ts` contains 3 curated roles, skills, prerequisites, mission templates and **demo-only** quiz items.
-- `src/lib/readiness.ts` is pure, deterministic logic. Production will derive server-authoritative proficiency from trusted review events, not client-submitted scores.
-- `src/store/use-skillmetry.ts` remains the anonymous browser demo cache. For authenticated students, it hydrates after mount and synchronizes only claimed profile fields through `/api/profile`.
-- Supabase Auth sessions use cookies through `@supabase/ssr`. Middleware refreshes tokens; protected pages and private API routes authorize with validated claims, never the unverified client session object.
-- PostgreSQL is authoritative for authenticated profiles and claimed skill rows. RLS and column grants provide a second authorization boundary.
+## Sources of truth
+
+- `shared/data/catalog.ts` contains the four curated careers, canonical skill graph, weights, and hypothetical missions. It contains no answer keys.
+- `shared/data/assessment-catalog.ts` is browser-safe assessment metadata.
+- `backend/lib/assessments/question-bank.server.ts` is the server-only versioned question bank and answer-key boundary.
+- `backend/lib/assessments/grading.server.ts` performs trusted grading and defines the current pass threshold. Client-safe history/profile selectors remain in `shared/lib/assessments/grading.ts`.
+- PostgreSQL `assessment_attempts` rows with `grading_method = 'server_quiz'` are authoritative for authenticated scores.
+- `shared/lib/assessments/grading.ts` selects the latest trusted attempt per skill and computes coverage, measured performance, deltas, and descriptive categories.
+- `frontend/src/store/use-skillmetry.ts` stores only anonymous demo identity/career/preferences. It is not a trusted score source.
+- Supabase Auth cookies are managed with `@supabase/ssr`; private routes validate claims on the server.
+
+## Assessment write path
+
+1. An authenticated student starts one canonical assessment ID.
+2. A service-only PostgreSQL function takes a per-owner/assessment transaction lock, expires stale sessions, optionally enforces a configured completion window, and atomically creates or resumes one owner-bound 30-minute session.
+3. The client submits only the session UUID and option indexes keyed by question ID.
+4. The server reloads the session by authenticated owner, verifies active status, expiry, and question-bank version, then grades against server-only keys.
+5. A service-role client calls `complete_assessment_session`, which atomically consumes the active session, validates arithmetic, question count, pass threshold, and completion metadata, then inserts exactly one result.
+6. Students read their own results through RLS. They cannot invoke the completion function or write result rows directly.
+
+This path never trusts a client-supplied user ID, score, result count, pass flag, version, or review state.
+
+## Profile read path
+
+The history API returns only `server_quiz` attempts owned by the validated user, newest first. The client derives:
+
+- current skill score from the latest attempt using completion time plus immutable ID as a stable tie-breaker;
+- history from all completed attempts;
+- coverage from the presence of assessments;
+- measured performance from assessed target skills only.
+
+Legacy rows remain stored but are marked `legacy_untrusted` and excluded.
 
 ## Domain rules
+
 - Every career has positive weighted skills summing to 100.
-- Every prerequisite references an existing canonical skill; graph is acyclic.
-- A scenario selects approved missions from the requested career and adjusts a *copy* of the skill map.
-- A role-specific readiness index is weighted coverage, not a probability of employment.
-- Quizzes add weak proficiency signals; production needs reviewed question bank, backend grading and tamper protection.
-- Mission deliverables and linked repositories may inform review but never instantly award verification.
+- Every prerequisite references an existing canonical skill; the graph is acyclic.
+- `undefined` means not assessed; 0 is a valid measured result.
+- Passing a short quiz is not professional verification or certification.
+- A scenario adjusts a copy of assessed values only and never persists a result.
+- Anonymous demonstration attempts are labeled illustrative and never uploaded.
 
 ## Routes
+
 - `/`: marketing landing.
-- `/onboarding`: goal and baseline.
+- `/onboarding`: display name and target career.
 - `/dashboard`, `/careers`, `/roadmap`, `/twin`, `/simulator`, `/missions`, `/assessments`, `/jobs`, `/passport`, `/settings`: workspace screens.
-- `GET /api/health`: readiness endpoint.
-- `POST /api/simulate`: Zod-validated deterministic scenario.
-- `POST /api/jobs/analyze`: 501 until server AI service implemented.
-- `POST /api/ai/missions`: 501 until structured generation implemented.
+- `POST /api/assessments/start`: authenticated session creation/reuse.
+- `POST /api/assessments/submit`: authenticated server grading and atomic completion.
+- `GET /api/assessments/history`: current user's immutable trusted history.
+- `GET|PUT /api/profile`: authenticated profile persistence; no numerical skills.
+- `POST /api/simulate`: deterministic hypothetical computation; no writes.
+- AI and job-analysis endpoints remain explicit 501 placeholders.
 
-## Production migration plan
-1. ~~Add Supabase Auth and SSR session integration.~~ Implemented in Phase 2A.
-2. ~~Seed curated catalog tables transactionally; version source and weight datasets.~~ Implemented in migration `0003`.
-3. Add trusted review-event writers. Student sessions are already prevented from writing demonstrated/verified fields.
-4. Move assessments and question keys to backend; enforce expiry, attempt limits and audits.
-5. Enable AI on server only with Zod/JSON-schema validation, prompt-injection resistance, usage quotas and safe logging.
-6. Implement evidence evaluation by transparent rules/ratings and human review for ambiguous work.
-7. Publish passports using an explicit opt-in public view, not direct grants on private tables.
+## Database evolution
 
-## Data flow: what-if
-UI selection → copy skill map → apply capped gains → role-weighted calculation → display hypothetical delta. Do **not** write to `user_skills`.
-
-## Data flow: real achievement (target)
-Student submits evidence/quiz → backend evaluates rules/rubric → trusted assessment event or pending review → server recomputes demonstrated proficiency and confidence → user twin changes → roadmap recommendations refresh. No AI or client gets direct write access to verified status.
+Migrations are additive and ordered. `20261011143435_secure_assessment_engine.sql` adds assessment sessions and trusted attempt metadata, classifies old attempts without deleting them, narrows student grants, and installs the initial completion function. `20261011180657_assessment_concurrency_hardening.sql` preserves those rows while adding one-active-session uniqueness, atomic start/resume, explicit pass thresholds, deterministic history indexing, and stronger result constraints. Hosted application requires explicit approval and must not use a reset workflow.

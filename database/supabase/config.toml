@@ -1,0 +1,37 @@
+project_id = "skillmetry"
+
+[api]
+enabled = true
+port = 55421
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55422
+shadow_port = 55420
+major_version = 15
+
+[studio]
+enabled = true
+port = 55423
+
+[inbucket]
+enabled = true
+port = 55424
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+enable_signup = true
+
+[analytics]
+enabled = true
+port = 55427
+vector_port = 55428
+backend = "postgres"
+
+[db.pooler]
+enabled = false
+port = 55429

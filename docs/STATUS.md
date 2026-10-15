@@ -1,72 +1,74 @@
-# Skillmetry — Implementation Status & Roadmap
+# Skillmetry — Implementation Status
 
-> Working status: 2026-10-11. Keep this document aligned to the code and test evidence, not product aspirations.
+> Working status: 2026-10-11. Claims below reflect repository code and local verification. No migration from this milestone has been applied to Supabase Cloud.
 
-## North star
-Skillmetry is a **student-facing adaptive career digital twin**: students choose a role, record claimed skills, complete evaluated activities, submit work evidence, and see transparent skill gaps and recommended next steps. **Role-weighted readiness measures estimated skill coverage, NOT employability or placement probability.**
+## Milestone outcome
 
-## Implemented foundations
-- Next.js App Router / React / TypeScript responsive frontend, code quality checks and GitHub CI.
-- Premium landing page and student workspace: onboarding, dashboard, career explorer, adaptive prerequisite graph with a mobile list view, digital twin, scenario simulator, missions, demo assessment UI, and private passport preview.
-- Three curated career tracks: ML Engineer, Frontend Developer and Backend Developer; 18 skills, prerequisite map and curated missions.
-- Deterministic role-weighted readiness, gap ordering and hypothetical what-if logic; simulation does not update actual proficiency.
-- Supabase SSR email/password authentication with login, signup, session validation, callback and signout, protected account page, cloud profile synchronization API, strict input validation and anonymous demo fallback.
-- SQL migration set for catalog/user tables and narrower owner-scoped RLS privileges. Claimed skills are student-editable; assessment grades, demonstrated proficiency and verification/review statuses are not student-writeable.
-- Local Docker Supabase startup and migrations demonstrated, plus the 12-assertion `supabase/tests/profile_rls.test.sql` suite passed on the user's local environment. Login and a "Cloud synced" account page were observed against the user's cloud project.
+The quiz-driven Career Digital Twin milestone and its approved local concurrency/security remediation are implemented on `feature/quiz-digital-twin-mvp`.
 
-## Important qualifications
-- The user's recent screenshot confirms a signed-in account and a synced profile indicator, **not** the whole signout/signin/cross-device restoration sequence. Explicitly verify that before calling cloud persistence fully acceptance-tested.
-- Local RLS tests do not replace a production audit or testing against hosted database policies. A cloud migration apply should be verified separately from its dry-run output.
-- Demo quizzes currently include answer keys in client code. They **do not** provide trusted certification.
-- The MVP roadmap and scenarios are adaptive prototypes; the full evidence-backed feedback loop is still pending.
-- Real AI mission generation, AI copilot and job parser are not available yet.
-- Do not commit `.env.local`, Supabase secret keys, cloud database passwords, or machine-specific ports unnecessarily.
-- Public launch needs dependency vulnerability review, abuse controls, account deletion/export, privacy policy, and a reliable outbound email provider.
+The authenticated path is:
 
-## Next development sequence
+**Sign in → select career → take secure quiz → receive a server-graded score → save it to PostgreSQL → view the updated twin → retake immediately → see the latest score and preserved history.**
 
-### Release gate A — Foundation verification
-1. Confirm all changes on `main`, and CI passes after consolidation.
-2. Re-run typecheck/lint/tests/build and review landing + auth UI at desktop/tablet/mobile widths.
-3. Confirm Supabase hosted migrations, auth redirects, sign-up/email confirmation/sign-in/signout/profile restoration.
-4. Test **two real accounts** against hosted RLS: account A never accesses account B's profiles/skills.
-5. Clarify loading/failure states and auth provider rate limits.
+## Implemented
 
-### Phase 2B — Proof-of-Skill Engine (next feature milestone)
-- Server-only question bank and grading with assessment attempt controls, audit trails and bounded skills signals.
-- Mission states and practical project evidence submission with rubrics and pending/reviewed/rejected status.
-- Reviewer identity, authorization and decision logs; **student submissions must never approve themselves**.
-- Distinguish claimed, assessed, demonstrated and verified states in the twin.
-- Recalculate dependent roadmap recommendations only from policy-defined trusted inputs.
-- Automated multi-user security/integration tests.
+- Existing landing, workspace, dashboard, simulator, and React Flow roadmap behavior is preserved.
+- Onboarding collects display name and target career. Manual skill sliders do not contribute to trusted scores.
+- Authenticated cloud profile sync persists display name, career, onboarding completion, and presentation preferences only.
+- Browser-safe metadata covers Python, SQL, JavaScript, and HTML assessments.
+- A server-only, versioned question bank contains ten reviewed four-option questions per assessment. Client catalogs and API responses contain no correct-answer indexes.
+- Authenticated start, submit, and history routes validate requests with Zod and validate identity from Supabase SSR claims.
+- Assessment start/resume is atomic. PostgreSQL serializes starts and enforces one active session for each user, assessment, and version; expired sessions are retired safely.
+- Concurrent duplicate submissions are idempotent. One immutable result is inserted, and the losing request securely reloads that owner/session result.
+- Immediate serial retakes are allowed by default. An optional server-only completion-window policy can be enabled with both `ASSESSMENT_MAX_COMPLETIONS` and `ASSESSMENT_WINDOW_MINUTES`; PostgreSQL enforces it atomically.
+- PostgreSQL validates score arithmetic, question counts, pass-threshold consistency, pass flags, and session completion metadata.
+- Current assessment version `2026.2` uses a 75% pass threshold. Historical `2026.1` results retain their original 70% threshold in immutable result metadata.
+- Display categories are `Not Assessed`, `Needs Improvement` (0–49), `Developing` (50–74), and `Strong Quiz Performance` (75–100).
+- Retakes preserve history. Latest-attempt selection uses completion time and immutable attempt ID for deterministic ordering.
+- Dashboard, Digital Twin, and roadmap keep unassessed skills unknown. The roadmap labels them `Assessment Recommended` and assigns no numeric zero-derived gap.
+- The simulator keeps hypothetical gains separate from trusted progress and never projects an unassessed skill from 0%.
+- Anonymous demo mode remains available without Supabase credentials and labels all sample assessment data as illustrative.
+- Legacy claimed skill rows and legacy attempts remain preserved but excluded from trusted scoring.
+- The service-role credential and grading implementation are isolated in server-only modules. Assessment mutation functions are service-role-only and use an empty `search_path`.
 
-### Phase 3 — Career AI
-- Job description to canonical skill mapping and consented reverse roadmaps.
-- Context-aware career copilot, safe model adapter, usage limits and feedback.
-- Structured AI missions validated against curated skill IDs.
-- Optional GitHub repository evidence signals **pending review**, never automatic skill verification.
+## Verified locally
 
-### Phase 4 — Share, polish, launch
-- Consent-based revocable career passport and portfolio export.
-- Saved simulations, career switch comparisons, accessible onboarding refinement.
-- Operational controls, email/SMPP configuration, security audit, Vercel deployment and monitoring.
-- Optional future: campus placement prep, complementary team matching, mentor workspace and interviews.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- `npm test`: 38 tests across 6 files passed.
+- `npm run build`: passed with the assessment API routes in the production route manifest.
+- `npm run test:rls`: 31 pgTAP assertions passed across profile and assessment suites.
+- `npm run verify:assessment`: two simultaneous starts returned one session; two simultaneous submissions returned one result with one replay; cross-user submission was denied; a genuine 0% result remained distinct from missing history; six immediate retakes succeeded; history remained ordered; and profile/history survived sign-out and sign-in. Both disposable users were removed afterward.
+- Rendered local UI verification covered the dashboard, assessments, Digital Twin, simulator, desktop React Flow roadmap, and a true 390 × 844 mobile roadmap. The mobile document width remained 390 pixels after the status-label wrapping fix.
+- These authenticated tests used the disposable local Supabase Docker stack and local Next.js server at `127.0.0.1`. They do not constitute hosted-cloud verification.
+
+## Configuration still required
+
+- Review and explicitly approve both assessment migrations before applying them to a hosted staging project.
+- Set `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`) only in the trusted server environment. Authenticated quizzes return a safe unavailable state when it is absent.
+- Configure production Auth site/redirect URLs and email delivery.
+- Decide whether to leave immediate retakes unlimited or set both optional completion-window environment values.
+- Run the RLS and authenticated concurrency checks against a staging project before production rollout.
+
+## Known limitations and release gates
+
+- The question bank is source-controlled server code. Changes require review and a version bump; there is no authoring/review console.
+- One-active-session enforcement, bounded validated payloads, authentication, expiry, and duplicate-result protection provide basic abuse safeguards. There is no distributed IP/device rate limiter yet.
+- The server runtime holds a broad Supabase service-role credential; routes minimize its use, but production secret management and an independent security review remain required.
+- Local pgTAP and end-to-end checks do not prove hosted policies or grants were applied correctly.
+- Dependency installation currently reports npm audit findings that need a separate compatibility-aware review; they were not auto-fixed in this milestone.
+- Final manual checks across the supported production browser/device matrix remain a release gate.
+- No human verification, project/GitHub scoring, AI grading, placement prediction, or professional certification is implemented.
 
 ## Verification commands
+
 ```powershell
-npm install
 npm run typecheck
 npm run lint
 npm test
 npm run build
-# Requires local Docker Supabase already running:
 npm run test:rls
+npm run verify:assessment
 ```
 
-## Architecture & trust boundary
-- Frontend: Next.js/React/TypeScript, Tailwind + project CSS, React Flow, Zustand.
-- API/auth/db: Next.js route handlers, Zod, Supabase SSR Auth, PostgreSQL + RLS.
-- Dev/test: Supabase CLI, Docker, pgTAP, Vitest, ESLint, GitHub Actions.
-- Target hosting: Vercel + Supabase Cloud.
-
-See `docs/PRD.md`, `docs/BACKLOG.md`, `docs/SECURITY.md` and `docs/SUPABASE_SETUP.md` for details.
+See `docs/SUPABASE_SETUP.md` for the local environment required by the final two commands.

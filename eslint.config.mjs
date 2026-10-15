@@ -1,12 +1,21 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { FlatCompat } from "@eslint/eslintrc";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const compat = new FlatCompat({ baseDirectory: __dirname });
-const config = [
-  { ignores: [".next/**", "node_modules/**", "next-env.d.ts"] },
-  ...compat.extends("next/core-web-vitals", "next/typescript")
-];
 
-export default config;
+const currentDirectory = dirname(fileURLToPath(import.meta.url));
+const compat = new FlatCompat({ baseDirectory: currentDirectory });
+const frontendDirectory = fileURLToPath(new URL("./frontend", import.meta.url));
+
+export default [
+  {
+    ignores: [
+      "**/.next/**",
+      "**/node_modules/**",
+      "**/next-env.d.ts",
+      "database/supabase/.temp/**",
+      "database/supabase/.branches/**"
+    ]
+  },
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  { settings: { next: { rootDir: frontendDirectory } } }
+];
