@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { AlertCircle, ArrowRight, CheckCircle2, CloudOff, LoaderCircle, LockKeyhole } from "lucide-react";
+import { AlertCircle, ArrowRight, CloudOff, LoaderCircle, LockKeyhole } from "lucide-react";
+import { EmailConfirmationPanel } from "@/components/email-confirmation-panel";
 
 type AuthMode = "sign-in" | "sign-up";
 
 export function AuthForm({ mode, configured, nextPath, initialError }:{ mode: AuthMode; configured: boolean; nextPath: string; initialError?: string }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
-  const [confirmationRequired, setConfirmationRequired] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
   const isSignUp = mode === "sign-up";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -34,7 +35,7 @@ export function AuthForm({ mode, configured, nextPath, initialError }:{ mode: Au
         return;
       }
       if (result.confirmationRequired) {
-        setConfirmationRequired(true);
+        setVerificationEmail(String(form.get("email") ?? "").trim());
         return;
       }
       window.location.assign(result.next ?? "/account");
@@ -46,11 +47,11 @@ export function AuthForm({ mode, configured, nextPath, initialError }:{ mode: Au
   }
 
   if (!configured) {
-    return <div className="auth-state" role="status"><CloudOff aria-hidden="true"/><h2>Cloud accounts are not configured</h2><p>Add the public Supabase project settings to enable real authentication. The anonymous local demo remains fully usable.</p><Link className="btn btn-primary" href="/onboarding">Continue in demo mode <ArrowRight aria-hidden="true"/></Link></div>;
+    return <div className="auth-state" role="status"><CloudOff aria-hidden="true"/><h2>Cloud accounts are not configured</h2><p>Add the public Supabase project settings to enable real authentication. The local demo cannot unlock secure assessments.</p><Link className="btn btn-primary" href="/onboarding">Preview local demo <ArrowRight aria-hidden="true"/></Link></div>;
   }
 
-  if (confirmationRequired) {
-    return <div className="auth-state" role="status"><CheckCircle2 aria-hidden="true"/><h2>Check your email</h2><p>Use the confirmation link from Supabase to finish creating your account. No cloud profile is created until your identity is confirmed.</p><Link className="btn btn-outline" href="/dashboard">Use local demo meanwhile</Link></div>;
+  if (verificationEmail) {
+    return <EmailConfirmationPanel email={verificationEmail} nextPath={nextPath}/>;
   }
 
   return <form className="auth-form" onSubmit={submit}>

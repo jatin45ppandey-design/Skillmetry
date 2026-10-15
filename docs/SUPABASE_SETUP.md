@@ -8,7 +8,8 @@ Skillmetry runs in an anonymous illustrative demo without Supabase. Real account
 2. In Authentication → URL Configuration, set the Site URL to the application origin.
 3. Add `http://localhost:3000/auth/callback` and the deployed `/auth/callback` URL.
 4. Enable email/password Auth and choose the email-confirmation policy for the environment.
-5. Copy `.env.example` to `frontend/.env.local` and supply:
+5. In Authentication → Email Templates → **Confirm signup**, send a visible `{{ .Token }}` six-digit code, or configure an SSR-safe confirmation link. The signup API passes `emailRedirectTo` as `/auth/callback?next=...`. To preserve that return path, use `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Confirm email</a>` in the template. Allow `http://localhost:3000/auth/callback**` and the corresponding production callback under Authentication → URL Configuration → Redirect URLs. A code cannot be entered unless the email actually supplies `{{ .Token }}`; for link-only emails, click the link.
+6. Copy `.env.example` to `frontend/.env.local` and supply:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -21,6 +22,14 @@ ASSESSMENT_WINDOW_MINUTES=
 ```
 
 Legacy projects may use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable key and `SUPABASE_SERVICE_ROLE_KEY` instead of the secret key. Never put an elevated key in a `NEXT_PUBLIC_*` variable. It belongs only in the trusted Next.js server environment.
+
+### Email confirmation and returning to assessments
+
+From signed-out `/assessments`, **Create account** preserves `next=/assessments` through signup, OTP entry, resend, and successful email callbacks. The six-digit code is verified by Supabase Auth on the server, which establishes an SSR cookie session. Link callbacks accept either a PKCE `code` or a `token_hash&type=email`; arbitrary type parameters are not accepted.
+
+Default Supabase confirmation emails may contain only a link, not a visible code. The user should click that link, while the UI offers code entry only for mail templates containing the code. A standard PKCE link opened in a different browser can lack the original verifier; a token-hash link avoids that client-state requirement.
+
+**Acceptance test:** Create a disposable account from the assessment page, complete the actual confirmation email, confirm the session and return to `/assessments`, and start a server-graded quiz. Also test expired OTP, resend cooldown, existing verified accounts, and mobile. Never modify hosted auth settings or apply database migrations without owner approval.
 
 ## 2. Review and apply migrations
 
