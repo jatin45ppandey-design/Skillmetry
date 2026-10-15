@@ -46,3 +46,14 @@ The actual URLs, skill tags, optional tool tags, cost and verification metadata 
 ## Maintenance
 
 Review changed source links before adding new entries. Use `node scripts/validate-resource-links.mjs` (network-required; `INACCESSIBLE` or `UNVERIFIED` need manual follow-up), plus the catalog/unit tests. Record broken links as `verificationStatus: "unavailable"` rather than silently removing historical source references. Keep duplicated destination URLs and unknown skill/career IDs out of the catalog.
+
+## B3.3 acceptance walkthrough
+
+1. Open a selected career's internal Skillmetry Roadmap. Follow **Explore career roadmaps**; confirm the Resources page loads the matching career and Roadmaps filters (not a new skill score).
+2. Switch between `/resources?career=frontend-developer&format=roadmap` and `/resources?career=ml-engineer&format=roadmap` without a full reload. No ML-only roadmap should show under frontend.
+3. Filter to an unmatched search, then choose **Reset filters**. All categories and URLs should reset; results must reappear.
+4. Confirm both the personalized and featured rows honor search/type/career filters, and a roadmap is not duplicated in those two rows.
+5. A broad external roadmap must show its original provider and `awesome-roadmaps` discovery attribution, but not an irrelevant "Take assessment" action inferred from its catalog anchor tag.
+6. On phone widths and keyboard navigation, verify filter labels, button focus, and safe HTTPS external links. Desktop/mobile visual QA remains a release gate, not a claim of completed browser testing.
+
+No learning resource click changes any Digital Twin numeric score. Only server-graded assessments can produce trusted skill measurements.

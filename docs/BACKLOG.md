@@ -44,6 +44,16 @@ Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve 
 - [ ] Complete a compatibility-aware dependency vulnerability review.
 - [ ] Document retention, account export/deletion, privacy notice, and incident response before real student data.
 
+## Phase B3 — external learning resources enhancement (implemented 2026-10-15)
+
+- [x] Preserve the initial 50 catalog resources and curate eleven `awesome-roadmaps` discoveries.
+- [x] Distinguish roadmaps from tutorials, documentation, practice, and structured courses.
+- [x] Respect career/skill/tool relevance, trustworthy score evidence, and NOW/NEXT/LATER priorities.
+- [x] Prevent mismatched-career and unavailable resource recommendations; balance broad paths with actionable learning material.
+- [x] Provide career roadmap deep links, URL-driven filters, attribution, and filter reset.
+- [x] Add catalog/navigation/selection regression coverage and document curation decisions.
+- [ ] Manual browser/device walkthrough and live external-link revalidation before public launch.
+
 ## Next product candidates — not part of this milestone
 
 - More assessment domains and a controlled question authoring/review workflow.

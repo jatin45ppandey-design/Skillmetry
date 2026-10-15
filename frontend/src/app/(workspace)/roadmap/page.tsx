@@ -12,7 +12,7 @@ import { careers, missions, skillById } from "@skillmetry/shared/data/catalog";
 import { toolById } from "@skillmetry/shared/data/learning-catalog";
 import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
 import { performanceLabel } from "@skillmetry/shared/lib/assessments/grading";
-import { getResourceBrowseHref } from "@skillmetry/shared/lib/resource-intelligence";
+import { getCareerRoadmapBrowseHref, getResourceBrowseHref } from "@skillmetry/shared/lib/resource-intelligence";
 import { buildRecommendations } from "@skillmetry/shared/lib/recommendations";
 import { clamp, getSkillState, type SkillState } from "@skillmetry/shared/lib/readiness";
 import { useSkillmetry } from "@/store/use-skillmetry";
@@ -96,7 +96,7 @@ export default function Roadmap() {
     : "Choose skills and tools independently, then follow a prerequisite map built from canonical relationships only.";
 
   return <>
-    <SectionTitle eyebrow="Adaptive roadmap" title={title} description={description} action={<Link href="/settings" className="btn btn-quiet">Edit learning goals</Link>}/>
+    <SectionTitle eyebrow="Adaptive roadmap" title={title} description={description} action={<div className="resource-overview-actions">{selectedCareer ? <Link href={getCareerRoadmapBrowseHref(selectedCareer.id)} className="btn btn-outline">Explore career roadmaps <ArrowRight aria-hidden="true"/></Link> : null}<Link href="/settings" className="btn btn-quiet">Edit learning goals</Link></div>}/>
     {status === "loading" ? <p className="roadmap-notice" role="status">Loading trusted assessment history. Existing selections remain available.</p> : null}
     {status === "error" || status === "offline" ? <p className="roadmap-notice warning" role="alert">{message ?? "Trusted assessment history is unavailable. Scores are not estimated."}</p> : null}
     <div className="roadmap-layout">
