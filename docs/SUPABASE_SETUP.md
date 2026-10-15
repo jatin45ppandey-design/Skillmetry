@@ -21,7 +21,7 @@ ASSESSMENT_MAX_COMPLETIONS=
 ASSESSMENT_WINDOW_MINUTES=
 ```
 
-Legacy projects may use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable key and `SUPABASE_SERVICE_ROLE_KEY` instead of the secret key. Never put an elevated key in a `NEXT_PUBLIC_*` variable. It belongs only in the trusted Next.js server environment.
+Google and GitHub sign-in is optional and configured separately. See [Social login setup](SOCIAL_LOGIN_SETUP.md) for OAuth provider Client IDs/Secrets, redirect allowlists and the two non-secret enable flags.\n\nLegacy projects may use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable key and `SUPABASE_SERVICE_ROLE_KEY` instead of the secret key. Never put an elevated key in a `NEXT_PUBLIC_*` variable. It belongs only in the trusted Next.js server environment.
 
 ### Email confirmation and returning to assessments
 

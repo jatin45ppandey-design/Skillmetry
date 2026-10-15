@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { AlertCircle, ArrowRight, CloudOff, LoaderCircle, LockKeyhole } from "lucide-react";
+import { AlertCircle, ArrowRight, CloudOff, Github, LoaderCircle, LockKeyhole } from "lucide-react";
+import { getOAuthStartHref, type OAuthProvider } from "@skillmetry/shared/lib/social-oauth";
 import { EmailConfirmationPanel } from "@/components/email-confirmation-panel";
 
 type AuthMode = "sign-in" | "sign-up";
 
-export function AuthForm({ mode, configured, nextPath, initialError }:{ mode: AuthMode; configured: boolean; nextPath: string; initialError?: string }) {
+export function AuthForm({ mode, configured, nextPath, initialError, oauthProviders }:{ mode: AuthMode; configured: boolean; nextPath: string; initialError?: string; oauthProviders: readonly OAuthProvider[] }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
@@ -57,6 +58,23 @@ export function AuthForm({ mode, configured, nextPath, initialError }:{ mode: Au
   return <form className="auth-form" onSubmit={submit}>
     <div className="auth-form-heading"><span className="auth-lock"><LockKeyhole aria-hidden="true"/></span><div><span className="eyebrow">Private cloud workspace</span><h1>{isSignUp ? "Create your Skillmetry account" : "Welcome back"}</h1><p>{isSignUp ? "Save your career goal and create trusted assessment history." : "Load your career profile and server-graded results."}</p></div></div>
     {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span></div> : null}
+    {oauthProviders.length ? <>
+      <div className="auth-social-options" role="group" aria-label="Other sign-in methods">
+        {oauthProviders.includes("google") ? <a className="auth-social-btn" href={getOAuthStartHref("google", nextPath)} aria-label="Continue with Google">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <path fill="#4285F4" d="M21.35 12.22c0-.72-.06-1.24-.21-1.79H12v3.48h5.35a4.57 4.57 0 0 1-1.98 3l3.06 2.37c1.78-1.65 2.92-4.08 2.92-7.06Z"/>
+            <path fill="#34A853" d="M12 21.6c2.63 0 4.83-.87 6.43-2.32l-3.06-2.37c-.85.57-1.94.91-3.37.91-2.59 0-4.78-1.75-5.56-4.1l-3.16 2.45A9.71 9.71 0 0 0 12 21.6Z"/>
+            <path fill="#FBBC05" d="M6.44 13.72a5.82 5.82 0 0 1 0-3.72L3.28 7.55a9.6 9.6 0 0 0 0 8.62l3.16-2.45Z"/>
+            <path fill="#EA4335" d="M12 6.19c1.44 0 2.72.49 3.74 1.47l2.8-2.8A9.47 9.47 0 0 0 12 2.4a9.72 9.72 0 0 0-8.72 5.15L6.44 10C7.22 7.64 9.41 6.19 12 6.19Z"/>
+          </svg>
+          Continue with Google
+        </a> : null}
+        {oauthProviders.includes("github") ? <a className="auth-social-btn" href={getOAuthStartHref("github", nextPath)} aria-label="Continue with GitHub">
+          <Github aria-hidden="true" size={20}/> Continue with GitHub
+        </a> : null}
+      </div>
+      <div className="auth-social-divider"><span>or continue with email</span></div>
+    </> : null}
     <label className="field">Email address<input className="input" name="email" type="email" autoComplete="email" maxLength={254} required disabled={pending}/></label>
     <label className="field">Password<input className="input" name="password" type="password" autoComplete={isSignUp ? "new-password" : "current-password"} minLength={8} maxLength={128} required disabled={pending}/></label>
     <button className="btn btn-primary auth-submit" type="submit" disabled={pending}>{pending ? <LoaderCircle className="spin" aria-hidden="true"/> : null}{pending ? "Checking securely…" : isSignUp ? "Create account" : "Sign in"}</button>

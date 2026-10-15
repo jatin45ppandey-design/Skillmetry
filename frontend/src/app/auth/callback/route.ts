@@ -8,12 +8,14 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
   const type = request.nextUrl.searchParams.get("type");
+  const providerError = request.nextUrl.searchParams.get("error");
   const isConfirmationLink = Boolean(tokenHash && type === "email");
   if (!isSupabaseConfigured() || (!code && !isConfirmationLink)) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
     failed.search = "";
-    failed.searchParams.set("error", isSupabaseConfigured() ? "invalid_callback" : "not_configured");
+    failed.searchParams.set("error", !isSupabaseConfigured() ? "not_configured" : providerError ? "oauth_cancelled" : "invalid_callback");
+    failed.searchParams.set("next", destination);
     return NextResponse.redirect(failed);
   }
 
@@ -25,7 +27,8 @@ export async function GET(request: NextRequest) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
     failed.search = "";
-    failed.searchParams.set("error", "invalid_callback");
+    failed.searchParams.set("error", "oauth_callback_failed");
+    failed.searchParams.set("next", destination);
     return NextResponse.redirect(failed);
   }
 

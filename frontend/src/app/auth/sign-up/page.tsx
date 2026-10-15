@@ -4,11 +4,12 @@ import { AuthForm } from "@/components/auth-form";
 import { Brand } from "@/components/brand";
 import { safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { enabledOAuthProviders } from "@/lib/supabase/oauth-config.server";
 
 export const metadata: Metadata = { title: "Create account" };
 
 export default async function SignUpPage({ searchParams }:{ searchParams: Promise<{ next?: string }> }) {
   const query = await searchParams;
   const nextPath = safeInternalPath(query.next);
-  return <main className="auth-shell"><nav className="auth-nav"><Brand/><Link className="btn btn-quiet" href="/dashboard">Preview demo (no quizzes)</Link></nav><section className="auth-card"><AuthForm mode="sign-up" configured={isSupabaseConfigured()} nextPath={nextPath}/></section></main>;
+  return <main className="auth-shell"><nav className="auth-nav"><Brand/><Link className="btn btn-quiet" href="/dashboard">Preview demo (no quizzes)</Link></nav><section className="auth-card"><AuthForm mode="sign-up" configured={isSupabaseConfigured()} oauthProviders={enabledOAuthProviders()} nextPath={nextPath}/></section></main>;
 }
