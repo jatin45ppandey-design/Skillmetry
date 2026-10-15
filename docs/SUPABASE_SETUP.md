@@ -31,8 +31,12 @@ Migrations run in order:
 - `0003_seed_career_catalog.sql`: three supported careers and canonical catalog.
 - `20261011143435_secure_assessment_engine.sql`: additive sessions, trusted attempt metadata, legacy classification, narrower grants, and atomic completion.
 - `20261011180657_assessment_concurrency_hardening.sql`: atomic start/resume, one-active-session uniqueness, explicit versioned pass thresholds, deterministic history ordering, and stronger database invariants.
+- `20261012000000_add_full_stack_career.sql`: adds the fourth career and its canonical skill relationships.
+- `20261012000001_enforce_trusted_attempt_metadata.sql`: closes nullable metadata gaps for trusted quiz results.
 
-The latest migration preserves profiles, claimed skill rows, and old attempts. It does not convert any legacy value into a trusted score.
+The assessment migration chain preserves profiles, claimed skill rows, and old attempts. It does not convert any legacy value into a trusted score.
+
+> Hosted status (2026-10-15): all seven migrations were applied to the linked Skillmetry project after a restore-tested backup and approved dry-run. The commands below are for a NEW local database or a different project; do not reapply migrations blindly to the existing hosted project.
 
 For local development:
 

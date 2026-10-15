@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { AlertCircle, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
@@ -17,7 +18,8 @@ function scoreTone(score: number): "success" | "warning" {
   return score >= 75 ? "success" : "warning";
 }
 
-export default function Assessments() {
+function AssessmentExperience() {
+  const requestedAssessment = useSearchParams().get("assessment");
   const { user } = useAuth();
   const { attempts, illustrative, status, message, refresh } = useAssessmentProfile();
   const [chosen, setChosen] = useState<AssessmentId>(assessmentCatalog[0].id);
@@ -33,10 +35,14 @@ export default function Assessments() {
   const progressPercent = session ? Math.round((answered / session.questions.length) * 100) : 0;
 
   useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("assessment");
-    const known = assessmentCatalog.find(item => item.id === requested);
-    if (known) setChosen(known.id);
-  }, []);
+    const known = assessmentCatalog.find(item => item.id === requestedAssessment);
+    if (!known) return;
+    setChosen(known.id);
+    setSession(null);
+    setAnswers({});
+    setResult(null);
+    setError(null);
+  }, [requestedAssessment]);
 
   function selectAssessment(id: AssessmentId) {
     setChosen(id);
@@ -97,7 +103,7 @@ export default function Assessments() {
     <section className="assessment-warning"><ShieldCheck aria-hidden="true"/><div><strong>{illustrative ? "Illustrative demo history" : "Server-authoritative scoring"}</strong><p>{illustrative ? "These sample results demonstrate the experience and are not connected to you. Sign in to create trusted results." : "Answer keys never reach the browser. Students can read results but cannot create or edit grades directly."}</p></div>{!user ? <Link className="btn btn-primary" href="/auth/sign-in?next=/assessments"><LockKeyhole aria-hidden="true"/>Sign in to assess</Link> : null}</section>
 
     <div className="assessment-layout">
-      <aside className="assessment-picker"><span className="eyebrow">Available assessments</span><h2>Choose a skill</h2><div>{assessmentCatalog.map(item => { const selected = item.id === chosen; const itemLatest = attempts.find(attempt => attempt.assessmentId === item.id); return <button type="button" key={item.id} className={selected ? "selected" : ""} onClick={() => selectAssessment(item.id)}><span className="assessment-picker-icon"><BookOpenCheck aria-hidden="true"/></span><span><strong>{item.title}</strong><small>{item.questionCount} questions · {item.estimatedMinutes} min</small></span>{itemLatest ? <StatusPill tone={scoreTone(itemLatest.score)}>{itemLatest.score}%</StatusPill> : <StatusPill tone="neutral">Not assessed</StatusPill>}</button>; })}</div></aside>
+      <aside className="assessment-picker"><span className="eyebrow">Available assessments</span><h2>Choose a skill</h2><div>{assessmentCatalog.map(item => { const selected = item.id === chosen; const itemLatest = attempts.find(attempt => attempt.assessmentId === item.id); return <button type="button" key={item.id} className={selected ? "selected" : ""} disabled={pending !== null} onClick={() => selectAssessment(item.id)}><span className="assessment-picker-icon"><BookOpenCheck aria-hidden="true"/></span><span><strong>{item.title}</strong><small>{item.questionCount} questions · {item.estimatedMinutes} min</small></span>{itemLatest ? <StatusPill tone={scoreTone(itemLatest.score)}>{itemLatest.score}%</StatusPill> : <StatusPill tone="neutral">Not assessed</StatusPill>}</button>; })}</div></aside>
 
       <section className="assessment-paper">
         <div className="assessment-paper-head"><div><StatusPill tone="accent">{assessment.skillId}</StatusPill><h2>{assessment.title}</h2><p>{assessment.description}</p></div>{session ? <div className="assessment-progress"><div><strong>{answered}/{session.questions.length}</strong><span>answered</span></div><div className="assessment-progress-track" role="progressbar" aria-label="Assessment questions answered" aria-valuemin={0} aria-valuemax={session.questions.length} aria-valuenow={answered}><span style={{ width: `${progressPercent}%` }}/></div></div> : <StatusPill tone={latest ? "success" : "neutral"}>{latest ? `Latest ${latest.score}%` : "Not assessed"}</StatusPill>}</div>
@@ -114,4 +120,8 @@ export default function Assessments() {
 
     <section className="attempt-history"><div className="panel-header"><div><span className="eyebrow">Immutable history</span><h2>Completed attempts</h2></div><StatusPill tone={status === "error" || status === "offline" ? "warning" : "neutral"}>{attempts.length} total</StatusPill></div>{message ? <p className="note">{message}</p> : null}{attempts.length ? <div className="attempt-table">{attempts.map((attempt, index) => { const previous = attempts.slice(index + 1).find(item => item.skillId === attempt.skillId); const delta = previous ? attempt.score - previous.score : null; return <div key={attempt.id}><span>{attempt.passed ? <CheckCircle2 aria-hidden="true"/> : <X aria-hidden="true"/>}</span><div><strong>{assessmentById[attempt.assessmentId]?.title ?? attempt.assessmentId}</strong><small>{new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(attempt.completedAt))} · v{attempt.assessmentVersion} · {attempt.passed ? "Passed" : "Below pass"} at {attempt.passThreshold}%</small></div>{delta !== null ? <span className="attempt-delta">{delta > 0 ? <TrendingUp aria-hidden="true"/> : delta < 0 ? <TrendingDown aria-hidden="true"/> : null}{delta > 0 ? "+" : ""}{delta}</span> : null}<StatusPill tone={scoreTone(attempt.score)}>{attempt.score}%</StatusPill></div>; })}</div> : <EmptyState title="No completed assessments" description="Unassessed means unknown, not 0%. Start a quiz to create your first trusted score."/>}</section>
   </>;
+}
+
+export default function Assessments() {
+  return <Suspense fallback={<p className="assessment-warning" role="status">Loading assessments.</p>}><AssessmentExperience/></Suspense>;
 }

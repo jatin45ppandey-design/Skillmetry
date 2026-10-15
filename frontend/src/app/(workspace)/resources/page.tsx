@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { ArrowUpRight, BookOpenCheck, ExternalLink, GraduationCap, RotateCcw, Search, ShieldCheck } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
@@ -62,6 +62,11 @@ function ResourceExperience() {
   const [cost, setCost] = useState<SelectValue>("all");
   const [language, setLanguage] = useState("all");
   const [search, setSearch] = useState("");
+  // React Router can preserve this client component across same-page deep links.
+  // Keep the selected target in sync when a roadmap action changes the query.
+  useEffect(() => {
+    setTarget(queryTarget);
+  }, [queryTarget]);
   const learning = preferences.learning;
   const selectedCareer = learning.primaryCareerId ? careers.find(career => career.id === learning.primaryCareerId) : null;
   const hasGoals = Boolean(learning.primaryCareerId || learning.selectedSkillIds.length || learning.selectedToolIds.length);

@@ -12,11 +12,11 @@ Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.
 
 ```powershell
 npm install
-Copy-Item .env.example .env.local # optional; anonymous demo works without keys
+Copy-Item .env.example frontend/.env.local # optional; anonymous demo works without keys
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3000`. Next.js reads local Supabase settings from `frontend/.env.local` (not a root `.env.local`); restart the dev server after changing it.
 
 For authenticated assessments, configure the two public Supabase values plus the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Never prefix either elevated variable with `NEXT_PUBLIC_`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
 

@@ -36,8 +36,8 @@ Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve 
 
 ## Release gates — pending environment or manual confirmation
 
-- [ ] Review and explicitly approve the assessment migration for hosted Supabase.
-- [ ] Apply migrations to staging, then rerun cross-account and authenticated flow checks.
+- [x] Review and explicitly approve the assessment migration chain for hosted Supabase (completed 2026-10-15).
+- [x] Rehearse all migrations and security tests in disposable staging and verify hosted authenticated assessment flows (completed 2026-10-15).
 - [ ] Confirm production Auth redirects, email confirmation, recovery, and rate limits.
 - [ ] Perform desktop, tablet, and mobile visual QA in the supported browser matrix.
 - [ ] Add distributed request/IP/account burst controls and monitoring around assessment routes before public release.
@@ -59,4 +59,4 @@ Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve 
 - Placement or hiring probability
 - External roadmap resources
 
-Do not expand these areas until the hosted assessment loop is reviewed and operated safely.
+The hosted assessment loop was verified on 2026-10-15. Future resource and advanced-assessment phases may proceed independently of the remaining public-launch security and privacy gates.

@@ -1,6 +1,6 @@
 # Skillmetry — Implementation Status
 
-> Working status: 2026-10-11. Claims below reflect repository code and local verification. No migration from this milestone has been applied to Supabase Cloud.
+> Hosted update (2026-10-15): all seven versioned migrations have been applied to the linked hosted Supabase project. The four pending assessment/catalog migrations passed a disposable staging rehearsal (42/42 pgTAP assertions) before approval and hosted application. Controlled hosted authenticated assessment, retake, concurrency, RLS, Roadmap and Digital Twin verification passed; temporary test data was removed. The local test counts below are a historical 2026-10-11 snapshot, not the latest totals.
 
 ## Milestone outcome
 
@@ -42,20 +42,21 @@ The authenticated path is:
 - Rendered local UI verification covered the dashboard, assessments, Digital Twin, simulator, desktop React Flow roadmap, and a true 390 × 844 mobile roadmap. The mobile document width remained 390 pixels after the status-label wrapping fix.
 - These authenticated tests used the disposable local Supabase Docker stack and local Next.js server at `127.0.0.1`. They do not constitute hosted-cloud verification.
 
-## Configuration still required
+## Hosted database status (verified 2026-10-15)
 
-- Review and explicitly approve both assessment migrations before applying them to a hosted staging project.
-- Set `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`) only in the trusted server environment. Authenticated quizzes return a safe unavailable state when it is absent.
-- Configure production Auth site/redirect URLs and email delivery.
-- Decide whether to leave immediate retakes unlimited or set both optional completion-window environment values.
-- Run the RLS and authenticated concurrency checks against a staging project before production rollout.
+- All seven versioned migrations are recorded remotely: core, auth/security, three-career seed, secure assessment engine, concurrency hardening, Full Stack career, and trusted-metadata constraint.
+- Hosted schema: four careers, eighteen skills, and thirty-seven career-skill relationships; secure assessment RPCs and forced RLS are present.
+- Controlled hosted API integration passed: authenticated ten-question start, atomic concurrent submission, idempotent replay, genuine 0%, history restoration, and immediate retakes.
+- A private logical backup of application-owned data and schema was restore-tested before deployment; it does not cover Supabase-managed platform configuration, Auth/Storage objects, or Vault.
+- This is a **database and assessment go-live** milestone, not a publicly deployed frontend. Production Auth email/redirect configuration, operational abuse controls, privacy controls, compatibility-aware dependency review, and manual browser QA remain release gates.
+- Keep both optional completion-window variables unset until cross-version completion-time cap enforcement is designed and tested.
 
 ## Known limitations and release gates
 
 - The question bank is source-controlled server code. Changes require review and a version bump; there is no authoring/review console.
 - One-active-session enforcement, bounded validated payloads, authentication, expiry, and duplicate-result protection provide basic abuse safeguards. There is no distributed IP/device rate limiter yet.
 - The server runtime holds a broad Supabase service-role credential; routes minimize its use, but production secret management and an independent security review remain required.
-- Local pgTAP and end-to-end checks do not prove hosted policies or grants were applied correctly.
+- Hosted policies, grants, and authenticated flows were checked in the controlled go-live verification; ongoing production monitoring and independent security review are still required.
 - Dependency installation currently reports npm audit findings that need a separate compatibility-aware review; they were not auto-fixed in this milestone.
 - Final manual checks across the supported production browser/device matrix remain a release gate.
 - No human verification, project/GitHub scoring, AI grading, placement prediction, or professional certification is implemented.
