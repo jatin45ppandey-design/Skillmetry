@@ -1,41 +1,46 @@
 # Skillmetry — Codex/agent instructions
 
-You are implementing **Skillmetry**, an evidence-aware career digital twin. Follow these instructions for all code in this repo.
+You are implementing Skillmetry, a quiz-driven career digital twin. Follow these instructions for all code in this repository.
 
 ## First actions
-1. Read `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/SCORING.md`, `docs/BACKLOG.md`, `docs/SECURITY.md`.
-2. Run `npm install` (generate `package-lock.json`), `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`. Record and fix issues first.
-3. Work in small vertical slices; provide a summary of files changed, user-facing behavior, test results, and incomplete tasks.
-4. Do not rewrite the visual identity or rename product unless explicitly asked.
 
-## Product invariants (do not violate)
-- Distinguish **claimed**, **assessed**, **demonstrated** and **verified** skill status. Never mark a checkbox or GitHub link as definitive skill mastery.
-- A what-if operation is read-only. Never persist projected scores as actual proficiency.
-- Readiness index is a role-weighted estimate (0–100), never hiring chance or validated employment prediction.
-- AI cannot invent/alter canonical skill IDs, prerequisites or assessment results. Validate AI output through a schema.
-- No secrets in `NEXT_PUBLIC_*` except explicitly safe public config. Service role tokens/API keys only on server.
-- All cloud user records must have working auth + owner-based RLS; test with separate users.
-- Prioritize accessible interactions: labels, focus visibility, keyboard use, responsive layouts, and reduced-motion support.
+1. Read `README.md`, `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/SCORING.md`, `docs/BACKLOG.md`, and `docs/SECURITY.md`.
+2. Inspect the current branch, dirty worktree, existing migrations, and environment-variable names before editing. Preserve unrelated changes and never print secrets.
+3. Run typecheck, lint, tests, and build; record the evidence and fix relevant failures.
+4. Work in small vertical slices and report changed files, behavior, verification, configuration, and limitations.
+5. Preserve the established visual identity unless explicitly asked to redesign it.
+
+## Product invariants
+
+- Numerical skill scores come only from valid server-graded quizzes.
+- Claimed, project, GitHub, demonstrated, and human-verified scoring are outside the current product.
+- Never treat an unassessed skill as 0%. Preserve a genuine server-graded 0% as a measured result.
+- The latest valid completed quiz is current; all earlier valid attempts remain immutable history.
+- Assessment coverage and measured performance are separate, non-employment metrics.
+- A what-if operation is read-only and never persists projected values as actual progress.
+- AI cannot invent or alter canonical skill IDs, prerequisites, or assessment results.
+- No secret belongs in a `NEXT_PUBLIC_*` variable. Service-role and provider credentials are server-only.
+- Cloud user records require validated auth, owner-scoped RLS, explicit grants, and multi-user tests.
+- Anonymous demonstration data must be labeled illustrative and never promoted into an account.
+- Prioritize labels, visible focus, keyboard use, touch targets, responsive layout, and reduced motion.
 
 ## Engineering rules
-- TypeScript strict mode. Avoid `any` and client-side exposure of API credentials.
-- Keep core scoring and graph logic pure and independently tested. Use source-of-truth catalog IDs.
-- Validate every API request with Zod; add rate limits, size limits, and error handling for AI endpoints.
+
+- Use TypeScript strict mode. Avoid `any` and client-side credentials.
+- Validate every API request with a strict Zod schema.
+- Keep answer keys in `backend/lib/assessments/question-bank.server.ts`; never import it into client code or expose keys in an API.
+- Students may read only their own trusted attempts. Only authenticated, authorized server processes may create grades.
+- Keep scoring and graph logic pure and independently tested. Use canonical catalog IDs.
 - Do not fetch unknown external URLs or execute student repository code on the server.
-- Keep generated AI content clearly distinguished from verified outcomes.
-- The current assessments are demo-only with answer keys in client code; move evaluation server-side before production.
-- No npm dependencies just for one simple UI feature unless justified.
-- Preserve full feature scope in backlog, but **ship P0 before P1/P2**.
+- Do not add dependencies for a single simple UI feature without justification.
+- Do not reset a hosted database, delete existing user data, expose credentials, force-push, or deploy a migration without explicit approval.
 
-## Immediate prioritized tasks
-1. **P0-01** Stable install and baseline CI. Generate lockfile, fix types/tests/build.
-2. **P0-02** Real persistence: Supabase Auth, SSR client/server helpers, private user rows, migrations and RLS tests. Local demo mode stays available.
-3. **P0-03** Split self-reported vs assessed proficiency, and server-validate all assessment attempts.
-4. **P0-04** Skill graph interactions: details panel, filters, prerequisite validation, meaningful node states.
-5. **P0-05** Mission workflow: submission status, rubric, evidence, review and recalculation.
-6. **P1-01** AI job description normalizer (server-only Gemini key, JSON schema and human review).
-7. **P1-02** Twin-aware Copilot; never allow it to mutate verified state.
-8. **P1-03** Optional GitHub evidence; metadata is not proof.
-9. **P1-04** Opt-in shareable career passport with link revocation.
+## Immediate priorities
 
-Follow `docs/BACKLOG.md` for detailed acceptance criteria.
+1. Review and explicitly approve the additive assessment migration before any hosted apply.
+2. Verify the full auth/profile/assessment/retake flow in staging and rerun multi-user RLS tests.
+3. Add platform rate limiting, monitoring, secret rotation procedures, privacy controls, and independent security review before public use.
+4. Expand assessment coverage only with versioned, reviewed question sets and matching tests.
+5. Keep human review, GitHub/project scoring, AI features, placement prediction, and external roadmap resources out of scope unless the owner explicitly reprioritizes them.
+
+Follow `docs/BACKLOG.md` for current acceptance criteria.

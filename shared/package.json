@@ -1,0 +1,13 @@
+{
+  "name": "@skillmetry/shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./data/*": "./data/*.ts",
+    "./lib/*": "./lib/*.ts",
+    "./types/*": "./types/*.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
+}

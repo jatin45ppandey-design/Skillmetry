@@ -1,57 +1,83 @@
-# Supabase setup for Phase 2A
+# Supabase setup for the quiz-driven MVP
 
-Skillmetry runs without Supabase in anonymous demo mode. Configure Supabase only when you want real accounts and cross-device persistence.
+Skillmetry runs in an anonymous illustrative demo without Supabase. Real accounts, trusted quizzes, and cross-session history require Supabase Auth, PostgreSQL migrations, and one server-only credential.
 
-## 1. Create and configure the project
+## 1. Configure a project
 
-1. Create a Supabase project.
-2. In **Authentication → URL Configuration**, set the Site URL to your application origin.
-3. Add redirect URLs for `http://localhost:3000/auth/callback` and the deployed `/auth/callback` URL.
-4. Keep email/password authentication enabled. Decide whether email confirmation is required for your environment.
-5. Copy `.env.example` to `.env.local` and fill in only the public project values:
-
-```powershell
-Copy-Item .env.example .env.local
-```
+1. Create or select a Supabase project.
+2. In Authentication → URL Configuration, set the Site URL to the application origin.
+3. Add `http://localhost:3000/auth/callback` and the deployed `/auth/callback` URL.
+4. Enable email/password Auth and choose the email-confirmation policy for the environment.
+5. In Authentication → Email Templates → **Confirm signup**, send a visible `{{ .Token }}` six-digit code, or configure an SSR-safe confirmation link. The signup API passes `emailRedirectTo` as `/auth/callback?next=...`. To preserve that return path, use `<a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email">Confirm email</a>` in the template. Allow `http://localhost:3000/auth/callback**` and the corresponding production callback under Authentication → URL Configuration → Redirect URLs. A code cannot be entered unless the email actually supplies `{{ .Token }}`; for link-only emails, click the link.
+6. Copy `.env.example` to `frontend/.env.local` and supply:
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
+
+# Optional. Leave both unset for immediate serial retakes.
+ASSESSMENT_MAX_COMPLETIONS=
+ASSESSMENT_WINDOW_MINUTES=
 ```
 
-Legacy projects may use an anon key in `NEXT_PUBLIC_SUPABASE_ANON_KEY`; the runtime accepts it as a fallback. Never put a secret key or legacy service-role key in a `NEXT_PUBLIC_*` variable. This web application does not require an elevated key.
+Google and GitHub sign-in is optional and configured separately. See [Social login setup](SOCIAL_LOGIN_SETUP.md) for OAuth provider Client IDs/Secrets, redirect allowlists and the two non-secret enable flags.\n\nLegacy projects may use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable key and `SUPABASE_SERVICE_ROLE_KEY` instead of the secret key. Never put an elevated key in a `NEXT_PUBLIC_*` variable. It belongs only in the trusted Next.js server environment.
 
-## 2. Apply versioned migrations
+### Email confirmation and returning to assessments
 
-Install the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started), then run:
+From signed-out `/assessments`, **Create account** preserves `next=/assessments` through signup, OTP entry, resend, and successful email callbacks. The six-digit code is verified by Supabase Auth on the server, which establishes an SSR cookie session. Link callbacks accept either a PKCE `code` or a `token_hash&type=email`; arbitrary type parameters are not accepted.
 
-```powershell
-supabase login
-supabase link --project-ref YOUR_PROJECT_REF
-supabase db push
-```
+Default Supabase confirmation emails may contain only a link, not a visible code. The user should click that link, while the UI offers code entry only for mail templates containing the code. A standard PKCE link opened in a different browser can lack the original verifier; a token-hash link avoids that client-state requirement.
 
-Migrations apply in order:
+**Acceptance test:** Create a disposable account from the assessment page, complete the actual confirmation email, confirm the session and return to `/assessments`, and start a server-graded quiz. Also test expired OTP, resend cooldown, existing verified accounts, and mobile. Never modify hosted auth settings or apply database migrations without owner approval.
+
+## 2. Review and apply migrations
+
+Migrations run in order:
 
 - `0001_skillmetry_core.sql`: original relational scaffold.
-- `0002_auth_profile_security.sql`: least-privilege grants, owner RLS, trusted-field write locks, and profile preferences.
-- `0003_seed_career_catalog.sql`: three supported careers, canonical skills, prerequisites, weights, and curated missions.
+- `0002_auth_profile_security.sql`: least-privilege owner policies and trusted-field locks.
+- `0003_seed_career_catalog.sql`: three supported careers and canonical catalog.
+- `20261011143435_secure_assessment_engine.sql`: additive sessions, trusted attempt metadata, legacy classification, narrower grants, and atomic completion.
+- `20261011180657_assessment_concurrency_hardening.sql`: atomic start/resume, one-active-session uniqueness, explicit versioned pass thresholds, deterministic history ordering, and stronger database invariants.
+- `20261012000000_add_full_stack_career.sql`: adds the fourth career and its canonical skill relationships.
+- `20261012000001_enforce_trusted_attempt_metadata.sql`: closes nullable metadata gaps for trusted quiz results.
 
-Do not deploy `0001` alone. Its original broad `FOR ALL` policies are intentionally removed by `0002` because they permit students to write trusted results.
+The assessment migration chain preserves profiles, claimed skill rows, and old attempts. It does not convert any legacy value into a trusted score.
 
-## 3. Run database security tests
+> Hosted status (2026-10-15): all seven migrations were applied to the linked Skillmetry project after a restore-tested backup and approved dry-run. The commands below are for a NEW local database or a different project; do not reapply migrations blindly to the existing hosted project.
 
-Docker must be running for the local Supabase stack.
+For local development:
 
 ```powershell
-supabase start
-supabase db reset
+npx supabase start --workdir database
+npx supabase migration up --local --workdir database
+```
+
+Do not use a reset command on a database whose data must be preserved. Do not run `supabase db push` against a hosted project until the SQL diff and security tests are reviewed and the owner explicitly approves the apply.
+
+## 3. Run local database tests
+
+With Docker and local Supabase running:
+
+```powershell
 npm run test:rls
 ```
 
-`supabase/tests/profile_rls.test.sql` proves that separate Alice and Bob sessions cannot read or mutate each other's rows and that a student cannot write demonstrated proficiency, verified status, assessment grades, or evidence approval.
+The profile and assessment pgTAP suites cover cross-account privacy, trusted-column restrictions, session uniqueness, optional atomic completion limits, result invariants, replay prevention, direct result forgery, session privacy, RPC denial, and legacy compatibility.
 
-## 4. Run application checks
+## 4. Run the authenticated route flow locally
+
+Start the app in one PowerShell window with the local Supabase values and service-role key available to the process. Then set the same variables in a second window, set the app URL, and run:
+
+```powershell
+$env:SKILLMETRY_APP_URL = "http://127.0.0.1:3000"
+npm run verify:assessment
+```
+
+The script creates two unique confirmed users in local Supabase, verifies the real application routes, and deletes only those disposable users in `finally`. It checks anonymous rejection, profile persistence, simultaneous start reuse, ten key-free public questions, cross-user isolation, simultaneous idempotent submission, six immediate serial retakes, ordered history, sign-out protection, and sign-in restoration.
+
+## 5. Application checks
 
 ```powershell
 npm run typecheck
@@ -60,14 +86,11 @@ npm test
 npm run build
 ```
 
-Then test this flow with email confirmation configured as it will be in production:
+## Hosted rollout checklist
 
-1. Complete onboarding anonymously and create an account.
-2. Confirm the email if required, then sign in.
-3. Wait for **Cloud synced** in `/account`.
-4. Sign out. The browser returns to labeled demo data.
-5. Sign in again. The claimed profile is restored from PostgreSQL.
-
-## Trusted assessment and review processes
-
-Phase 2A deliberately does not implement elevated grading or evidence approval. Student sessions receive SELECT-only access to trusted result tables. A future worker must authenticate and authorize its caller independently, use a server-only secret managed by the deployment platform, and write auditable grading/review events. Never reuse the browser Supabase client for that process.
+1. Review the complete migration chain and run it on staging first.
+2. Run both pgTAP files against the intended schema state.
+3. Verify sign-up confirmation, callback allowlist, sign-in, sign-out, recovery, profile restoration, and two-account isolation.
+4. Verify start, submit, replay rejection, retake, and history in the deployed app.
+5. Confirm the service-role value is server-only and absent from browser assets/logs.
+6. Add platform rate limiting/monitoring and complete a security review before public use.

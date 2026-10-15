@@ -1,16 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { cloudProfileInputSchema, safeInternalPath } from "@/lib/profile-schema";
+import { cloudProfileInputSchema, emailConfirmationOtpSchema, normalizeOnboardingPreferences, resendSignupConfirmationSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 
 const validProfile = {
   displayName: "Jatin",
   careerId: "backend-developer",
   onboardingCompleted: true,
-  preferences: { hoursPerWeek: 8, roadmapView: "graph" },
-  claimedSkills: { javascript: 60, node: 40 }
+  preferences: { hoursPerWeek: 8, roadmapView: "graph", learning: { primaryCareerId: null, selectedSkillIds: ["react"], selectedToolIds: ["git", "github"] } }
 };
 
 describe("cloud profile validation", () => {
-  it("accepts only canonical claimed profile data", () => {
+  it("accepts only name, career, onboarding state, and preferences", () => {
     expect(cloudProfileInputSchema.safeParse(validProfile).success).toBe(true);
   });
 
@@ -24,9 +23,23 @@ describe("cloud profile validation", () => {
     expect(cloudProfileInputSchema.safeParse({ ...validProfile, ...forbidden }).success).toBe(false);
   });
 
-  it("rejects unknown skill IDs and out-of-range claims", () => {
-    expect(cloudProfileInputSchema.safeParse({ ...validProfile, claimedSkills: { "invented-skill": 100 } }).success).toBe(false);
-    expect(cloudProfileInputSchema.safeParse({ ...validProfile, claimedSkills: { node: 101 } }).success).toBe(false);
+  it("rejects legacy or fabricated skill ratings", () => {
+    expect(cloudProfileInputSchema.safeParse({ ...validProfile, claimedSkills: { javascript: 60 } }).success).toBe(false);
+    expect(cloudProfileInputSchema.safeParse({ ...validProfile, skills: { node: 100 } }).success).toBe(false);
+  });
+
+  it("accepts combined learning preferences without accepting unknown catalog values", () => {
+    expect(cloudProfileInputSchema.safeParse({ ...validProfile, preferences: { ...validProfile.preferences, learning: { primaryCareerId: "full-stack-developer", selectedSkillIds: ["react", "node"], selectedToolIds: ["docker", "postman"] } } }).success).toBe(true);
+    expect(cloudProfileInputSchema.safeParse({ ...validProfile, preferences: { ...validProfile.preferences, learning: { primaryCareerId: null, selectedSkillIds: ["invented-skill"], selectedToolIds: [] } } }).success).toBe(false);
+    expect(cloudProfileInputSchema.safeParse({ ...validProfile, preferences: { ...validProfile.preferences, learning: { primaryCareerId: null, selectedSkillIds: ["react", "react"], selectedToolIds: [] } } }).success).toBe(false);
+  });
+
+  it("restores a pre-A1 profile with its existing career as the compatible learning goal", () => {
+    expect(normalizeOnboardingPreferences({ hoursPerWeek: 8, roadmapView: "list" }, "backend-developer")).toEqual({
+      hoursPerWeek: 8,
+      roadmapView: "list",
+      learning: { primaryCareerId: "backend-developer", selectedSkillIds: [], selectedToolIds: [] }
+    });
   });
 
   it("permits only same-origin redirect paths", () => {
@@ -34,5 +47,21 @@ describe("cloud profile validation", () => {
     expect(safeInternalPath("https://attacker.example")).toBe("/account");
     expect(safeInternalPath("//attacker.example")).toBe("/account");
     expect(safeInternalPath("/\\attacker.example")).toBe("/account");
+  });
+});
+
+describe("email confirmation request validation", () => {
+  it("accepts only a six-digit confirmation token and valid email", () => {
+    expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: "012345", next: "/assessments" }).success).toBe(true);
+    for (const bad of ["12345", "1234567", "12abc4"]) {
+      expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: bad }).success).toBe(false);
+    }
+    expect(emailConfirmationOtpSchema.safeParse({ email: "student@example.com", token: "123456", score: 100 }).success).toBe(false);
+  });
+  it("validates resend and rejects extra identity fields and off-site destinations", () => {
+    expect(resendSignupConfirmationSchema.safeParse({ email: "student@example.com", next: "/assessments" }).success).toBe(true);
+    expect(resendSignupConfirmationSchema.safeParse({ email: "not-an-email" }).success).toBe(false);
+    expect(resendSignupConfirmationSchema.safeParse({ email: "student@example.com", role: "admin" }).success).toBe(false);
+    expect(safeInternalPath("//malicious.example")).toBe("/account");
   });
 });

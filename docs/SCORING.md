@@ -1,45 +1,58 @@
-# Readiness scoring: transparent and non-predictive
+# Assessment scoring and profile semantics
 
-## Formula
-Given a target role with skill weights `w_i` that sum to 100 (points), and the user's estimated proficiency `p_i` in the range 0–100:
+## Trusted score source
 
-```
-readiness = round(sum(w_i * clamp(p_i, 0, 100) / 100))
-```
+A numerical skill score exists only after a valid authenticated quiz session is graded on the server.
 
-Example: 20 weight on ML Fundamentals and 50 proficiency means **10 points** of contribution.
-
-**Interpretation:** role-specific weighted *skill coverage index*. It is NOT (1) probability of employment, (2) probability of interview success, (3) a verified skill certificate, or (4) an official labor-market benchmark.
-
-## Prototype limitations
-Current local code stores a single `skills` map. New Codex work must separately track:
-- `claimed_proficiency` from onboarding;
-- `assessment_signals` with passed/failed timestamps;
-- `demonstrated_proficiency` estimated by reviewed objective evidence;
-- `evidence_confidence` with clear explanation;
-- `verified_status` only after trusted rubric/assessment review.
-
-**Never silently turn a self-rating into verified proficiency.** The current `recordAssessment` +10 demo adjustment is a temporary illustrative shortcut and should be replaced in P0-03.
-
-## Scenarios
-`projected = readiness(role, applyScenario(current, selectedApprovedMissions))`
-
-The `applyScenario` function clones the map and caps each skill to 100; actual stored map is unchanged. Gains in fixture missions are illustrative development assumptions. A mature product should model hours and prerequisite effects, show ranges/uncertainty and avoid overstating forecast precision.
-
-## Ordering next-best actions
-For a simple MVP gap priority:
-
-```
-priority(skill) = role_weight(skill) * (100 - current_proficiency(skill)) / 100
+```text
+score = round(correct_answers / total_questions × 100)
 ```
 
-Then enforce prerequisites, time budget and mission availability. A blocked prerequisite may need to be recommended before a higher-priority downstream topic.
+The current score for a skill is the latest completed attempt using the active server grading path. Earlier attempts remain available for history and change calculations.
+
+The browser never submits a score, pass status, owner ID, correct count, review state, or assessment version. It submits only the opaque session ID and one selected option index per presented question. The server reloads the owner-bound session and versioned answer key before grading.
+
+## Missing is not zero
+
+- `Not Assessed` means there is no trusted completed quiz for that skill.
+- `0%` means a trusted completed quiz had no correct answers.
+- Coverage is `assessed target skills / total target skills`.
+- Measured performance is the weighted average over assessed target skills only.
+
+These values are displayed separately. Skillmetry does not impute unknown skills as 0% and does not interpret the result as employment probability or full professional readiness.
+
+## Performance categories
+
+The interface uses descriptive bands for communication, not credentials:
+
+- Strong Quiz Performance: 75–100
+- Developing: 50–74
+- Needs Improvement: 0–49
+- Not Assessed: no trusted result
+
+Assessment version `2026.2` uses 75% as its pass threshold. The immutable attempt stores that threshold, and PostgreSQL enforces that `passed` equals `score >= pass_threshold`. Historical `2026.1` attempts retain their original 70% threshold instead of being silently reinterpreted. Passing is a quiz outcome, not human verification or certification.
+
+## Reassessment and history
+
+- A session expires after 30 minutes.
+- One active session per user, assessment, and version is enforced by PostgreSQL and reused until submitted or expired.
+- A completed session is consumed atomically with its result. Concurrent and sequential API retries return the original row and cannot create or alter a grade.
+- Immediate serial retakes are allowed by default. Optional server-only window values may enable a longer-window cap, which PostgreSQL enforces atomically.
+- Improvement or decline is the difference between the two newest valid attempts for that skill.
+
+## Hypothetical scenarios
+
+Scenario gains are illustrative planning assumptions. They apply only to an in-memory copy and only where a trusted baseline score exists. They never write an assessment attempt or change the actual Digital Twin.
+
+## Legacy compatibility
+
+Historical `user_skills.claimed_proficiency` data is retained but cannot produce a trusted score. Pre-milestone assessment rows are labeled `legacy_untrusted` and excluded from the current assessment profile. No legacy value is silently converted.
 
 ## Integrity tests
-- All role weights sum exactly to 100.
-- Every skill/prerequisite exists.
-- Graph has no cycles.
-- Score always lies within [0,100].
-- Same inputs produce same result.
-- Scenario has no side effects on real proficiency.
-- Clamps multiple improvements at 100.
+
+- Scores remain integers in [0, 100].
+- Exact answer coverage is required; missing or extra answers fail validation.
+- Answer keys exist only in a server-only module and are absent from browser-safe catalogs.
+- Latest-attempt selection preserves a genuine 0% and distinguishes it from missing data.
+- Duplicate submission, forged insert/update/delete, cross-owner reads, and direct student RPC execution fail.
+- Scenario calculations do not mutate trusted results.

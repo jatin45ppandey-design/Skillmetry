@@ -2,15 +2,21 @@
   "name": "skillmetry",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
+    "lint": "eslint frontend/src backend shared tests scripts vitest.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm --prefix frontend run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:rls": "supabase test db"
+    "test:rls": "npx supabase test db --workdir database",
+    "verify:assessment": "node --env-file-if-exists=frontend/.env.local scripts/verify-assessment-flow.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
@@ -26,6 +32,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
@@ -33,9 +40,9 @@
     "eslint": "^9.31.0",
     "eslint-config-next": "^15.5.0",
     "postcss": "^8.5.6",
+    "supabase": "^2.120.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
-    "@eslint/eslintrc": "^3.3.1"
+    "vitest": "^3.2.4"
   }
 }

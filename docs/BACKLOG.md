@@ -1,90 +1,72 @@
-# Skillmetry — build backlog for Codex
+# Skillmetry — Build Backlog
 
-Priority: **P0** working hackathon product; **P1** intelligent integration; **P2** post-hackathon expansion.
+Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve the rule that only server-graded quizzes produce numerical skill scores.
 
-## P0 — strong vertical slice
+## P0 — completed in the current milestone
 
-### P0-01: Install, build and CI
-- Run `npm install` and commit `package-lock.json`.
-- `npm run typecheck`, `npm run lint`, `npm test`, `npm run build` pass.
-- Correct any hydration mismatch, accessibility problem or React Flow typing issue.
-- Confirm routes and demo on laptop and mobile.
-- **Done when:** main branch CI passes and local quick start works from clean clone.
+### P0-01: Secure assessment engine
 
-### P0-02: Authenticated profiles + database
-- Add Supabase browser/server client utilities and auth session integration.
-- Apply/review `supabase/migrations/0001_skillmetry_core.sql`; add catalog seed script.
-- Persist onboarding and progress; retain anonymous demo mode.
-- Test that Alice cannot read/write Bob's skill/assessment/evidence records.
-- **Done when:** profile persists on different devices after sign-in and RLS tests pass.
+- [x] Remove onboarding skill ratings and locally editable score state.
+- [x] Add browser-safe assessment metadata and a server-only versioned question bank.
+- [x] Implement authenticated start, submit, and history endpoints with strict Zod schemas.
+- [x] Bind sessions to owner, version, ordered question IDs, expiry, and one-time consumption.
+- [x] Allow immediate serial retakes while atomically maintaining one active session per owner/assessment/version.
+- [x] Support an optional server-only completion-window cap that is disabled by default and enforced atomically when configured.
+- [x] Store immutable server-graded attempts through an atomic trusted database function.
+- [x] Keep owner ID, score, result counts, pass state, and version out of client-submitted fields.
 
-**Phase 2A implementation:** Runtime, migrations, seed data, Zod validation, and a two-user pgTAP suite are implemented. Final deployment acceptance still requires applying the migrations and passing `npm run test:rls` against the configured Supabase project/local stack.
+### P0-02: Assessment-derived Digital Twin
 
-### P0-03: Trustworthy skill twin
-- Separate claimed, assessed, demonstrated and verified states.
-- Move scoring and quiz grading to trusted server-only rules (don't ship answer keys to clients).
-- Prevent repeated same-question pass farming; define caps and audit.
-- Show confidence/evidence strength on UI.
-- **Done when:** self-reports alone never create verified badges, and audits show why scores changed.
+- [x] Use the latest valid completed quiz as each skill's current score.
+- [x] Preserve full retake history and show improvement or decline.
+- [x] Distinguish `Not Assessed` from a genuine 0% result.
+- [x] Show assessment coverage separately from measured performance.
+- [x] Update dashboard, twin, roadmap, career explorer, simulator, and supporting workspace copy.
+- [x] Keep hypothetical scenario values separate from trusted progress.
+- [x] Preserve an explicitly illustrative, isolated anonymous demo.
 
-### P0-04: Rich adaptive roadmap
-- Add detail sidebar for selected node: prerequisites, estimated time, resource links, relevant missions.
-- Filter to gaps/next actions/completed, keyboard navigation, responsive graph fallback.
-- Add dependency-aware next skill queue; don't recommend blocked tasks as executable.
-- **Done when:** nodes respond to profiles and show consistent prerequisite logic.
+### P0-03: Security and verification
 
-### P0-05: Missions and proof workflow
-- Save mission status and student submissions; support project URL and selected skill tags.
-- Add simple acceptance rubric, evidence pending/reviewed/rejected states.
-- Mission completion alone never marks skill verified.
-- **Done when:** student can submit evidence and see a trustworthy review state.
+- [x] Add an additive migration; preserve legacy user data without trusting it.
+- [x] Restrict students to read-only access to their own graded results.
+- [x] Block direct student session access, score writes, result updates/deletes, and trusted RPC execution.
+- [x] Add grading, answer-boundary, missing-vs-zero, latest-result, replay, ownership, and RLS tests.
+- [x] Add a disposable-user authenticated end-to-end verification script.
+- [x] Pass typecheck, lint, unit tests, local pgTAP tests, and production build.
 
-### P0-06: What-if simulator hardening
-- Add saved scenario names; estimated effort; comparison between career tracks.
-- Include uncertainty text and never update persisted actual proficiency.
-- **Done when:** simulated results remain distinct from actual before/after reload.
+## Release gates — pending environment or manual confirmation
 
-### P0-07: UX, reliability, demo
-- Polished product layout with restrained navy/cyan visual language.
-- Error handling, loading states, accessible keyboard controls, responsive screens.
-- Seed a realistic profile, record a complete judged demo storyline.
-- **Done when:** user completes the end-to-end journey without external API keys.
+- [x] Review and explicitly approve the assessment migration chain for hosted Supabase (completed 2026-10-15).
+- [x] Rehearse all migrations and security tests in disposable staging and verify hosted authenticated assessment flows (completed 2026-10-15).
+- [ ] Confirm production Auth redirects, email confirmation, recovery, and rate limits.
+- [ ] Perform desktop, tablet, and mobile visual QA in the supported browser matrix.
+- [ ] Add distributed request/IP/account burst controls and monitoring around assessment routes before public release.
+- [ ] Complete a compatibility-aware dependency vulnerability review.
+- [ ] Document retention, account export/deletion, privacy notice, and incident response before real student data.
 
-## P1 — intelligence and evidence
+## Phase B3 — external learning resources enhancement (implemented 2026-10-15)
 
-### P1-01: Job description → reverse roadmap
-- Limit input length, reject dangerous formats, classify target role.
-- Extract skills with server-side LLM, validate JSON schema, map to canonical catalog.
-- Let user review extracted skills before adding to their plan.
-- **Done when:** arbitrary role descriptions map to explicit known skills or an "unknown" bucket; never invent verified proficiency.
+- [x] Preserve the initial 50 catalog resources and curate eleven `awesome-roadmaps` discoveries.
+- [x] Distinguish roadmaps from tutorials, documentation, practice, and structured courses.
+- [x] Respect career/skill/tool relevance, trustworthy score evidence, and NOW/NEXT/LATER priorities.
+- [x] Prevent mismatched-career and unavailable resource recommendations; balance broad paths with actionable learning material.
+- [x] Provide career roadmap deep links, URL-driven filters, attribution, and filter reset.
+- [x] Add catalog/navigation/selection regression coverage and document curation decisions.
+- [ ] Manual browser/device walkthrough and live external-link revalidation before public launch.
 
-### P1-02: AI Career Copilot
-- Restrict context to explicitly permitted fields, target role, skill gap and missions.
-- Use a server-side LLM adapter with fallbacks and provider usage controls.
-- Responses cite evidence/status context; copilot cannot mutate verification fields.
+## Next product candidates — not part of this milestone
 
-### P1-03: Optional GitHub evidence
-- Connect user-owned repository using authorized credentials or specific public URLs.
-- Read minimal metadata, README, language indicators and test presence.
-- Present evidence as signals pending review, not automatic mastery.
+- More assessment domains and a controlled question authoring/review workflow.
+- Accessible longitudinal score charts and downloadable private history.
+- Saved planning scenarios that remain explicitly hypothetical.
+- Consent-based, revocable career passport sharing.
 
-### P1-04: Shareable Career Passport
-- User chooses exactly which records/projects to make public.
-- Revocable links, no sensitive details by default, explicit visibility warnings.
-- Public endpoint uses safe projection/view and rate limits.
+## Explicitly deferred
 
-### P1-05: Structured AI missions
-- Generate acceptance criteria and effort estimates aligned with known skill IDs.
-- Review generated deliverables with deterministic validation; moderation and retries.
+- Human reviewer portal or evidence approval
+- Project, GitHub, resume, or repository scoring
+- AI chatbot, AI grading, generated missions, or job parsing
+- Placement or hiring probability
+- External roadmap resources
 
-## P2 — expansion
-- P2-01 Career switch path comparison and transition planning.
-- P2-02 College placement preparation view (consent and aggregation).
-- P2-03 Skill-based team formation and collaborator matching.
-- P2-04 Portfolio generator from consented evidence and timeline.
-- P2-05 Mentor review dashboard and comment workflow.
-- P2-06 Skill refresh missions and provenance-aware role taxonomy refresh.
-- P2-07 Interview simulator and language options.
-
-## Scope decision
-Avoid claiming all tasks are built. Demonstrate one high-quality, accurate feedback loop before adding new breadth.
+The hosted assessment loop was verified on 2026-10-15. Future resource and advanced-assessment phases may proceed independently of the remaining public-launch security and privacy gates.

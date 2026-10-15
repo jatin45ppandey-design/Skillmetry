@@ -1,5 +1,5 @@
 node_modules/
-.next/
+**/.next/
 out/
 coverage/
 .env
@@ -9,3 +9,6 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 .vercel/
+database/supabase/.temp/
+database/supabase/.branches/
+/supabase/.temp/
