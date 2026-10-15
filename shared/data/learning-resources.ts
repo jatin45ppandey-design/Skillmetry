@@ -1,3 +1,4 @@
+import { curatedRoadmaps } from "@skillmetry/shared/data/curated-roadmaps";
 import type { LearningResource } from "@skillmetry/shared/types/domain";
 
 const verifiedOn = "2026-10-12";
@@ -10,7 +11,7 @@ function resource(entry: Omit<LearningResource, "lastVerified" | "verificationSt
  * Curated, static discovery data. URLs are never fetched during a learner's
  * session; the developer validator checks this catalog before release.
  */
-export const learningResources: readonly LearningResource[] = [
+const originalLearningResources: readonly LearningResource[] = [
   resource({ id: "python-tutorial-intro", target: { kind: "skill", skillId: "python" }, topic: "Python basics", subtopics: ["variables", "data types", "operators"], title: "The Python Tutorial: An Informal Introduction", description: "Official introduction to Python expressions, values, and first programs.", provider: "Python Documentation", url: "https://docs.python.org/3/tutorial/introduction.html", type: "documentation", difficulty: "beginner", cost: "free", language: "English" }),
   resource({ id: "python-control-flow", target: { kind: "skill", skillId: "python" }, topic: "Control flow", subtopics: ["conditions", "loops", "functions"], title: "The Python Tutorial: More Control Flow Tools", description: "Official guidance on conditionals, loops, functions, and parameters.", provider: "Python Documentation", url: "https://docs.python.org/3/tutorial/controlflow.html", type: "tutorial", difficulty: "beginner", cost: "free", language: "English" }),
   resource({ id: "python-data-structures", target: { kind: "skill", skillId: "python" }, topic: "Collections", subtopics: ["lists", "tuples", "dictionaries"], title: "The Python Tutorial: Data Structures", description: "Practical reference for Python collections and common operations.", provider: "Python Documentation", url: "https://docs.python.org/3/tutorial/datastructures.html", type: "documentation", difficulty: "intermediate", cost: "free", language: "English" }),
@@ -67,3 +68,6 @@ export const learningResources: readonly LearningResource[] = [
   resource({ id: "postman-overview", target: { kind: "tool", toolId: "postman" }, topic: "API testing", subtopics: ["requests", "collections", "environments"], title: "Postman Learning Center: Overview", description: "Official introduction to Postman workspaces, requests, and collections.", provider: "Postman Learning Center", url: "https://learning.postman.com/docs/getting-started/overview/", type: "tutorial", difficulty: "beginner", cost: "free", language: "English" }),
   resource({ id: "postman-collections", target: { kind: "tool", toolId: "postman" }, topic: "API testing", subtopics: ["collections", "collection runs"], title: "Run Collections Using the Collection Runner", description: "Official Postman guide to running and inspecting grouped API requests.", provider: "Postman Learning Center", url: "https://learning.postman.com/docs/collections/running-collections/intro-to-collection-runs/", type: "practice", difficulty: "intermediate", cost: "free", language: "English" })
 ] as const;
+
+/** Keep the original 50 resources intact, extending rather than replacing them. */
+export const learningResources: readonly LearningResource[] = [...originalLearningResources, ...curatedRoadmaps];

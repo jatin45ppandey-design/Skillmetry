@@ -1,8 +1,10 @@
 import { readFile } from "node:fs/promises";
 
-const sourcePath = new URL("../shared/data/learning-resources.ts", import.meta.url);
-const source = await readFile(sourcePath, "utf8");
-const urls = [...source.matchAll(/url: "([^"]+)"/g)].map(match => match[1]);
+const sources = await Promise.all([
+  "../shared/data/learning-resources.ts",
+  "../shared/data/curated-roadmaps.ts"
+].map(path => readFile(new URL(path, import.meta.url), "utf8")));
+const urls = sources.flatMap(source => [...source.matchAll(/url: "([^"]+)"/g)].map(match => match[1]));
 const duplicateUrls = urls.filter((url, index) => urls.indexOf(url) !== index);
 let invalid = 0;
 

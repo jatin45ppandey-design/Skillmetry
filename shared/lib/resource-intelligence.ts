@@ -18,7 +18,7 @@ import type {
   ToolId
 } from "@skillmetry/shared/types/domain";
 
-const approvedHosts = new Set(learningResources.map(resource => new URL(resource.url).hostname));
+const approvedUrls = new Set(learningResources.map(resource => new URL(resource.url).href));
 const assessmentBySkill = new Map<SkillId, (typeof assessmentCatalog)[number]>(assessmentCatalog.map(assessment => [assessment.skillId, assessment]));
 const difficultyOrder: Record<ResourceDifficulty, readonly ResourceDifficulty[]> = {
   beginner: ["beginner", "intermediate", "advanced"],
@@ -141,18 +141,24 @@ function collectTargets(input: PersonalizedResourceInput) {
 }
 
 export function getResourcesForSkill(skillId: SkillId) {
-  return learningResources.filter(resource => resource.target.kind === "skill" && resource.target.skillId === skillId);
+  return learningResources.filter(resource => (resource.target.kind === "skill" && resource.target.skillId === skillId) || resource.relatedSkillIds?.includes(skillId));
 }
 
 /** Docker intentionally returns the canonical Docker skill resources. */
 export function getResourcesForTool(toolId: ToolId) {
   const tool = toolById[toolId];
-  return tool.canonicalSkillId ? getResourcesForSkill(tool.canonicalSkillId) : learningResources.filter(resource => resource.target.kind === "tool" && resource.target.toolId === toolId);
+  return tool.canonicalSkillId ? getResourcesForSkill(tool.canonicalSkillId) : learningResources.filter(resource => (resource.target.kind === "tool" && resource.target.toolId === toolId) || resource.relatedToolIds?.includes(toolId));
 }
 
 export function filterLearningResources(filter: ResourceFilter = {}) {
   return learningResources.filter(resource => {
-    if (filter.target && targetKey(resource.target) !== targetKey(normalizeTarget(filter.target))) return false;
+    if (filter.target) {
+      const match = filter.target.kind === "skill"
+        ? (resource.target.kind === "skill" && resource.target.skillId === filter.target.skillId) || Boolean(resource.relatedSkillIds?.includes(filter.target.skillId))
+        : (resource.target.kind === "tool" && resource.target.toolId === filter.target.toolId) || Boolean(resource.relatedToolIds?.includes(filter.target.toolId));
+      if (!match) return false;
+    }
+    if (filter.careerId && !resource.careerIds?.includes(filter.careerId)) return false;
     if (filter.difficulties && !filter.difficulties.includes(resource.difficulty)) return false;
     if (filter.types && !filter.types.includes(resource.type)) return false;
     return !(filter.costs && !filter.costs.includes(resource.cost));
@@ -163,7 +169,7 @@ export function filterLearningResources(filter: ResourceFilter = {}) {
 export function isSafeResourceUrl(value: string) {
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && !url.username && !url.password && !url.port && approvedHosts.has(url.hostname);
+    return url.protocol === "https:" && !url.username && !url.password && !url.port && approvedUrls.has(url.href);
   } catch {
     return false;
   }
@@ -202,7 +208,11 @@ export function getPersonalizedResources(input: PersonalizedResourceInput): Reso
   const ranked = candidates.flatMap(candidate => getResourcesForTarget(candidate.target).map(resource => ({
     candidate,
     resource,
-    score: candidate.priority + (3 - difficultyOrder[preferredDifficulty(input.trustedScores, candidate.target)].indexOf(resource.difficulty)) * 20 + (resource.verificationStatus === "verified" ? 5 : 0)
+    score: candidate.priority
+      + (3 - difficultyOrder[preferredDifficulty(input.trustedScores, candidate.target)].indexOf(resource.difficulty)) * 20
+      + (resource.verificationStatus === "verified" ? 5 : 0)
+      + (input.learning.primaryCareerId && resource.careerIds?.includes(input.learning.primaryCareerId) ? 26 : 0)
+      + (resource.type === "roadmap" ? 12 : 0)
   }))).sort((a, b) => b.score - a.score || a.resource.id.localeCompare(b.resource.id));
   const results: ResourceRecommendation[] = [];
   const usedTypes = new Set<string>();

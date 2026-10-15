@@ -93,7 +93,7 @@ export type LearningRecommendationPlan = {
   recommendations: LearningRecommendation[];
 };
 
-export type ResourceType = "documentation" | "tutorial" | "video" | "course" | "practice";
+export type ResourceType = "documentation" | "tutorial" | "video" | "course" | "practice" | "roadmap";
 export type ResourceDifficulty = "beginner" | "intermediate" | "advanced";
 export type ResourceCost = "free" | "freemium" | "paid";
 export type ResourceVerificationStatus = "verified" | "unverified" | "unavailable";
@@ -109,6 +109,12 @@ export type LearningResource = {
   description: string;
   provider: string;
   url: string;
+  /** Additional relevance tags: the original primary target remains stable. */
+  relatedSkillIds?: readonly SkillId[];
+  relatedToolIds?: readonly ToolId[];
+  careerIds?: readonly CareerId[];
+  /** Original creator is provider; discovery attribution is not ownership. */
+  discoverySource?: { label: string; url: string };
   type: ResourceType;
   difficulty: ResourceDifficulty;
   cost: ResourceCost;
@@ -119,6 +125,7 @@ export type LearningResource = {
 };
 export type ResourceFilter = {
   target?: LearningResourceTarget;
+  careerId?: CareerId;
   difficulties?: readonly ResourceDifficulty[];
   types?: readonly ResourceType[];
   costs?: readonly ResourceCost[];

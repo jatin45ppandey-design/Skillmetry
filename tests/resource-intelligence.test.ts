@@ -15,7 +15,9 @@ const noGoals: LearningPreferences = { primaryCareerId: null, selectedSkillIds: 
 
 describe("learning resource catalog", () => {
   it("covers all canonical skills plus Git, GitHub, and Postman with stable unique HTTPS resources", () => {
-    expect(learningResources).toHaveLength(50);
+    expect(learningResources).toHaveLength(61);
+    expect(learningResources.filter(resource => resource.type === "roadmap")).toHaveLength(10);
+    expect(learningResources.filter(resource => resource.discoverySource?.label === "awesome-roadmaps")).toHaveLength(11);
     expect(new Set(learningResources.map(resource => resource.id)).size).toBe(learningResources.length);
     expect(new Set(learningResources.map(resource => resource.url)).size).toBe(learningResources.length);
     for (const skill of skills) expect(getResourcesForSkill(skill.id).length).toBeGreaterThanOrEqual(2);
@@ -26,11 +28,16 @@ describe("learning resource catalog", () => {
 
   it("filters by target, resource metadata, and rejects unapproved external URLs", () => {
     const pythonBeginners = filterLearningResources({ target: { kind: "skill", skillId: "python" }, difficulties: ["beginner"] });
-    expect(pythonBeginners).toHaveLength(2);
+    expect(pythonBeginners.length).toBeGreaterThanOrEqual(2);
     expect(pythonBeginners.every(resource => resource.target.kind === "skill" && resource.target.skillId === "python")).toBe(true);
     expect(filterLearningResources({ types: ["practice"], costs: ["free"] }).every(resource => resource.type === "practice" && resource.cost === "free")).toBe(true);
     expect(isSafeResourceUrl("http://docs.python.org/3/tutorial/introduction.html")).toBe(false);
     expect(isSafeResourceUrl("https://example.com/learning")).toBe(false);
+    expect(isSafeResourceUrl("https://github.com/unrelated/non-curated")).toBe(false);
+    expect(filterLearningResources({ types: ["roadmap"], careerId: "frontend-developer" }).length).toBeGreaterThanOrEqual(2);
+    expect(getResourcesForSkill("react").some(resource => resource.type === "roadmap")).toBe(true);
+    expect(getResourcesForTool("git").some(resource => resource.type === "roadmap")).toBe(true);
+    expect(filterLearningResources({ target: { kind: "skill", skillId: "react" }, types: ["roadmap"] }).length).toBeGreaterThanOrEqual(1);
   });
 });
 
@@ -69,5 +76,7 @@ describe("resource intelligence", () => {
     expect(new Set(first.map(result => result.resource.id)).size).toBe(first.length);
     expect(first.some(result => result.relatedSkillId === "javascript")).toBe(true);
     expect(getResourcesForPhaseARecommendation({ id: "skill:python", kind: "skill", skillId: "python", slot: "now", action: "take-assessment", priority: 1, explanation: "", evidence: [], assessment: { available: true, assessmentId: "python-foundations", href: "/assessments" } })).toEqual(getResourcesForSkill("python"));
+    const frontend = getPersonalizedResources({ learning: { ...noGoals, primaryCareerId: "frontend-developer" }, trustedScores: { javascript: 40 }, maxResults: 12 });
+    expect(frontend.some(result => result.resource.type === "roadmap" && result.resource.careerIds?.includes("frontend-developer"))).toBe(true);
   });
 });

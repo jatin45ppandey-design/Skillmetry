@@ -19,7 +19,7 @@ describe("restructured module boundaries", () => {
   it("preserves the complete curated product catalogs", () => {
     expect(careers).toHaveLength(4);
     expect(skills).toHaveLength(18);
-    expect(learningResources).toHaveLength(50);
+    expect(learningResources).toHaveLength(61);
   });
 
   it("keeps one canonical protected assessment implementation", () => {
