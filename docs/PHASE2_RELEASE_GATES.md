@@ -33,3 +33,6 @@ The new `phase2-disposable-rls.yml` workflow uses GitHub Actions runner Docker a
 - User pilot: recruit consented students, test real workflows and record outcomes/bugs. An intake form is not evidence of a completed user pilot.
 
 No production deployment, secret rotation, hosted migration or real-account deletion was performed in this branch.
+
+## GitHub owner-identity connection (C04 addition)
+Students can optionally use Supabase Auth identity linking to connect GitHub through an explicit redirect/consent flow in Settings, and can disconnect when at least one alternate sign-in identity exists. Public repository inspection compares GitHub's numeric repository owner ID to the **authenticated linked GitHub provider ID**. This supports individual-owned public repositories only and never claims commits/authorship/skill mastery. OAuth provider enablement and callback QA still require an authorized isolated staging Auth project; no provider credentials, private-repo scopes or tokens are stored by this source change.

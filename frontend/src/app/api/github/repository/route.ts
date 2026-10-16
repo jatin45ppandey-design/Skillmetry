@@ -23,11 +23,17 @@ export async function GET(request: NextRequest) {
     if(!response.ok) return NextResponse.json({error:"GitHub metadata is temporarily unavailable."},{status:502});
     const result=await response.json() as {
       full_name?:string;html_url?:string;private?:boolean;description?:string|null;archived?:boolean;
-      stargazers_count?:number;pushed_at?:string|null;default_branch?:string
+      stargazers_count?:number;pushed_at?:string|null;default_branch?:string;owner?:{id?:number;login?:string}
     };
     if(result.private || result.full_name?.toLowerCase()!==`${repo.owner}/${repo.repo}`.toLowerCase()) {
       return NextResponse.json({error:"Repository metadata could not be validated."},{status:502});
     }
+    const session=await auth.supabase.auth.getUser();
+    const identity=session.data.user?.id===auth.userId
+      ? session.data.user.identities?.find(i=>i.provider==="github") : null;
+    const linkedId=identity?.provider_id;
+    const ownershipMatched=Boolean(linkedId && result.owner?.id &&
+      String(linkedId)===String(result.owner.id));
     return NextResponse.json({repository:{
       name:result.full_name,
       url:`https://github.com/${repo.owner}/${repo.repo}`,
@@ -35,8 +41,9 @@ export async function GET(request: NextRequest) {
       archived:Boolean(result.archived),
       stars:Number.isFinite(result.stargazers_count)?result.stargazers_count:0,
       lastPush:result.pushed_at??null,
-      defaultBranch:result.default_branch??null
-    },disclaimer:"Public GitHub metadata only. This does not prove the student owns the repository, authored code, or mastered the skill."},
+      defaultBranch:result.default_branch??null,
+      linkedGitHubOwner:ownershipMatched
+    },disclaimer:"Matching a linked GitHub identity proves the public repository owner account ID, not who wrote the code, reviewed the project, or mastered the skill."},
     {headers:{"Cache-Control":"private, no-store"}});
   }catch {
     return NextResponse.json({error:"Public GitHub metadata could not be fetched."},{status:502});

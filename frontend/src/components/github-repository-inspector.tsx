@@ -2,7 +2,7 @@
 import {useState} from "react";
 import {parsePublicRepositoryUrl} from "@skillmetry/shared/lib/github-evidence";
 
-type Repo={name:string;url:string;description:string|null;archived:boolean;stars:number;lastPush:string|null;defaultBranch:string|null};
+type Repo={name:string;url:string;description:string|null;archived:boolean;stars:number;lastPush:string|null;defaultBranch:string|null;linkedGitHubOwner:boolean};
 export function GitHubRepositoryInspector({url}:{url:string|null}) {
   const [repo,setRepo]=useState<Repo|null>(null);
   const [pending,setPending]=useState(false);
@@ -32,7 +32,10 @@ export function GitHubRepositoryInspector({url}:{url:string|null}) {
       <p>Public stars: {repo.stars} · {repo.archived?"Archived":"Not archived"} · {repo.defaultBranch??"Unknown"} branch</p>
       {repo.lastPush?<p>Last repository push: {new Date(repo.lastPush).toLocaleDateString()}</p>:null}
       <a href={repo.url} target="_blank" rel="noopener noreferrer">Open GitHub repository ↗</a>
-      <small>Repository visibility and activity do not prove learner identity, authorship, or proficiency.</small>
+      <p>{repo.linkedGitHubOwner
+        ? "Public owner ID matches your linked GitHub account. Authorship and proficiency remain unverified."
+        : "Repository ownership is not verified by your linked GitHub identity."}</p>
+      <small>Repository stars, visibility and public owner identity are NOT proof of code authorship, project review or skill proficiency.</small>
     </div>:null}
   </div>;
 }
