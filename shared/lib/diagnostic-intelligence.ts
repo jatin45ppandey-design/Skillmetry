@@ -44,6 +44,16 @@ export function getTopicResources(assessmentId:AssessmentId,topicId:string,limit
     relevance:relevance?"topic-match" as const:"skill-fallback" as const
   }));
 }
+/** A directional comparison, never a mastery claim from three questions. */
+export function compareTopicDiagnoses(current:readonly TopicDiagnosis[],previous:readonly TopicDiagnosis[]){
+  return current.map(topic=>{
+    const older=previous.find(item=>item.id===topic.id);
+    const valid=Boolean(older&&topic.questions>=3&&older.questions>=3&&topic.percent!==null&&older.percent!==null);
+    return {id:topic.id,label:topic.label,currentPercent:topic.percent,
+      previousPercent:valid?older!.percent:null,delta:valid?topic.percent!-older!.percent!:null,
+      interpretation:valid?"directional" as const:"insufficient-comparison" as const};
+  });
+}
 export function recommendedWeakTopics(items:readonly TopicDiagnosis[]){
   return items.filter(x=>x.status==="needs-practice").sort((a,b)=>a.percent!-b.percent!).slice(0,3);
 }

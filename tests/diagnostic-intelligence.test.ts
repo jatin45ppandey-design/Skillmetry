@@ -1,5 +1,5 @@
 import { describe,expect,it } from "vitest";
-import { buildTopicDiagnosis,getTopicResources,recommendedWeakTopics } from "@skillmetry/shared/lib/diagnostic-intelligence";
+import { buildTopicDiagnosis,compareTopicDiagnoses,getTopicResources,recommendedWeakTopics } from "@skillmetry/shared/lib/diagnostic-intelligence";
 import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
 
 describe("D2 evidence-aware diagnosis",()=>{
@@ -13,6 +13,14 @@ describe("D2 evidence-aware diagnosis",()=>{
     expect(recommendedWeakTopics(weak)).toHaveLength(1);
     const limited=buildTopicDiagnosis("javascript-foundations",[row(1,false)]);
     expect(limited[0].status).toBe("insufficient-evidence");
+  });
+  it("compares two topic samples without inventing missing history",()=>{
+    const previous=buildTopicDiagnosis("javascript-foundations",[row(1,false),row(2,false),row(3,false)]);
+    const current=buildTopicDiagnosis("javascript-foundations",[row(4,true),row(5,true),row(6,false)]);
+    const changes=compareTopicDiagnoses(current,previous);
+    expect(changes[0]).toMatchObject({previousPercent:0,currentPercent:67,delta:67,interpretation:"directional"});
+    expect(changes[1].delta).toBeNull();
+    expect(compareTopicDiagnoses(current,[])[0].delta).toBeNull();
   });
   it("maps weaknesses to the curated and allowlisted skill library",()=>{
     const resources=getTopicResources("javascript-foundations",topic);

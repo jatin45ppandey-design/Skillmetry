@@ -39,4 +39,4 @@ Last reviewed: 2026-10-16. Code is committed directly to the `main` branch. **Do
 
 ### Remaining content and UX work
 
-Continue educator-led editorial review of the diagnostic questions and detailed solution explanations, add cross-attempt topic change visualization, and complete human QA. These are tracked openly rather than claimed completed.
+Continue educator-led editorial review of the diagnostic questions and detailed solution explanations, validate longitudinal topic changes with real user sessions, and complete human QA. These are tracked openly rather than claimed completed.

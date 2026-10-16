@@ -80,7 +80,7 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [x] D3: one-question assessment navigation, flag/review palette, optional local answer draft restoration and timer.
 - [x] D3: topic breakdown, post-submission answer review, practice/assessment navigation and Digital Twin diagnostic insight surface.
 - [x] D2: expand practice to five independently authored exercises per topic; add question-specific explanation coverage.
-- [ ] D2: compare topic trajectories across multiple diagnostic versions/attempts.
+- [x] D2: directional topic-level comparison between current and previous version-2026.3 diagnostic attempts; missing comparison remains unknown.
 - [ ] Hosted/staging: owner-approved migration; run pgTAP and authenticated end-to-end review test.
 - [ ] D3: manual desktop/mobile/accessibility/browser QA and logged-in multi-user isolation walkthrough.
 
