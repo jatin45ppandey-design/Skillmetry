@@ -14,7 +14,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
   }
 
-  const redirect = new URL("/auth/callback", request.url);
+  // Do not construct recovery links from a client-controlled Host header.
+  const origin = process.env.SKILLMETRY_APP_ORIGIN?.trim();
+  if (!origin) return NextResponse.json({ error: "Password recovery URL is not configured." }, { status: 503 });
+  let redirect: URL;
+  try {
+    const trusted = new URL(origin);
+    if ((trusted.protocol !== "https:" && trusted.hostname !== "localhost") || trusted.username || trusted.password) throw new Error("unsafe");
+    redirect = new URL("/auth/callback", trusted.origin);
+  } catch { return NextResponse.json({ error: "Password recovery URL is invalid." }, { status: 503 }); }
   redirect.searchParams.set("next", "/auth/reset-password");
   try {
     const supabase = await createClient();

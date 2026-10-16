@@ -25,7 +25,7 @@ function responseForSession(
   session: { id: string; assessment_id: string; assessment_version: string; question_ids: string[]; expires_at: string },
   assessmentId: AssessmentId
 ) {
-  const definition = getAssessmentDefinition(assessmentId);
+  const definition = getAssessmentDefinition(assessmentId, session.assessment_version);
   const payload: AssessmentSession = {
     sessionId: session.id,
     assessmentId,
