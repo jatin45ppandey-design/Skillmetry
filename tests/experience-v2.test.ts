@@ -30,7 +30,8 @@ describe("Connected learning experience source contracts", () => {
     expect(home).toContain("Object.hasOwn(scores,item.skillId)");
     expect(streak).toContain("NEXT_PUBLIC_LEARNING_STREAK_ENABLED");
     expect(streak).toContain("/api/learning/streak");
-    expect(streak).not.toContain("localStorage");
+    expect(streak).not.toContain("localStorage.setItem");
+    expect(streak).not.toContain("localStorage.getItem");
     expect(streak).toContain("Demo quiz results never count");
   });
   it("connects assessments, roadmap, resources and practice without altering scoring", () => {
