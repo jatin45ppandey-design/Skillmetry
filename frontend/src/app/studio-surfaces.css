@@ -239,3 +239,30 @@
   .studio-app .flow-node, .studio-app .career-explorer-card,
   .studio-app .twin-skill-card, .studio-app .question-list label { transition: none; }
 }
+
+/* Native focus-trapped quiz confirmation, no extra dependency or backend change. */
+.studio-submit-dialog {
+  width: min(530px, calc(100vw - 30px)); max-height: calc(100dvh - 30px);
+  border: 1px solid #b6cbb0; border-radius: 24px 75px 24px 24px;
+  padding: 0; margin: auto; background: #fffdf7; color: #284231;
+  box-shadow: 0 28px 90px #14291b4f; overflow: auto;
+}
+.studio-submit-dialog::backdrop { background: #14261bc2; backdrop-filter: blur(5px); }
+.studio-submit-dialog-inner { padding: clamp(24px, 4vw, 40px); }
+.studio-submit-dialog h2 { font: 700 clamp(1.8rem, 3vw, 2.6rem)/1.12 var(--font-display),sans-serif; letter-spacing: -.045em; margin: 20px 0 12px; color: #283c30; }
+.studio-submit-dialog p { color: #59705f; line-height: 1.65; font-size: .92rem; }
+.studio-submit-dialog .studio-dialog-flagged { background: #faefdf; color: #875d32; padding: 12px; border-radius: 13px; }
+.studio-dialog-actions { display: flex; align-items: center; justify-content: end; gap: 10px; flex-wrap: wrap; border-top: 1px solid #d8e3d4; padding-top: 22px; margin-top: 24px; }
+.studio-dialog-actions .btn { min-height: 45px; font-size: .82rem; }
+.onboarding-preview { margin: 22px 0 24px; padding: 22px 24px; background: #e8efdc; border: 1px solid #c4d8ba; color: #2c4835; border-radius: 18px 57px 18px 18px; }
+.onboarding-preview-head { display: flex; align-items: center; gap: 10px; color: #547058; font: 650 .69rem var(--font-technical),monospace; letter-spacing: .09em; }
+.onboarding-preview h3 { margin: 14px 0 6px; font: 700 1.55rem var(--font-display),sans-serif; letter-spacing: -.045em; }
+.onboarding-preview p { margin: 0; color: #5b755f; font-size: .84rem; line-height: 1.6; }
+.onboarding-preview-chips { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.onboarding-preview-chips span { padding: 8px 12px; background: #fffaf2; border-radius: 100px; color: #3a6243; font-size: .73rem; font-weight: 700; }
+.onboarding-preview-note { display: block; border-top: 1px solid #c5d8bf; margin-top: 15px; padding-top: 12px; color: #6b806a; font-size: .75rem; line-height: 1.6; }
+@media (max-width: 620px) {
+  .studio-dialog-actions { flex-direction: column; align-items: stretch; }
+  .studio-dialog-actions .btn { width: 100%; }
+  .onboarding-preview { padding: 19px; }
+}
