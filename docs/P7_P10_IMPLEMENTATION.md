@@ -47,3 +47,7 @@
 6. Confirm public privacy/terms/contact support and licensing decisions before collecting real student data.
 
 **No hosted Supabase changes, external deployment, provider key creation or enablement action has been carried out by these source commits.**
+
+## RLS deployment verification
+
+Run the **RLS** isolation suite `database/supabase/tests/passport_sharing_rls.test.sql` after staging migration 005. Confirm browser roles can read only their own records, cannot create share links by direct insert or mutate snapshot data, and cannot restore a revoked link. The public route uses a narrowly scoped, token-validated server lookup only.
