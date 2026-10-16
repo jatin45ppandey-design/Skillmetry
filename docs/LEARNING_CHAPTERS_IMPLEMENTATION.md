@@ -2,11 +2,15 @@
 
 ## Scope and safety
 
-- Target base: `main`; implementation: `design/learning-chapters-studio-v1`.
-- Integration PR: #7, draft until visual acceptance.
+- Target: `main`. The preferred Learning Chapters V1 landing is restored; the subsequent Landing V2 experiment has been reverted.
+- Original integration: PR #7. Follow-up restoration reverts only Landing V2 additions while retaining V1 workspace improvements.
 - Existing auth, Supabase persistence, assessment scoring, graded attempts, canonical catalogs, APIs, RLS policies and database migrations have not been edited.
 - No hosted migrations or production deployment triggered by this work.
 - User-facing data must remain factual; mock data is labeled illustrative.
+
+## Design preference
+
+The screenshot-reviewed Learning Chapters V1 split-hero and career-island design is the requested baseline. The later full-width Career Atlas and interactive study-book landing experiments were removed. This is an intentional restoration rather than a new redesign.
 
 ## Completed in this first vertical slice
 
@@ -14,7 +18,7 @@
 | --- | --- | --- |
 | 01 Visual grammar | Implemented foundation | Warm paper/forest palette, Bricolage/Instrument/IBM Plex roles, chapter silhouettes, skill colors, scoped stylesheet |
 | 02 Desktop navigation | Implemented | Top primary navigation, More, responsive drawer, mobile main tabs, keyboard focus wrap, Escape dismissal and focus restoration |
-| 03 Landing & brand story | Implemented V2 | Full-width typography, interactive canonical skill atlas, actual quiz availability links, evidence statement and interactive study book; decorative split hero removed |
+| 03 Landing & brand story | Implemented V1 | Editorial hero, CSS-drawn overlapping learning notes, unique shapes, meaningful CTAs, honest learning loop |
 | 04 Onboarding/career | Implemented partial | Actual career catalog previews, live study-kit goal preview, updated selector styling |
 | 05 My Studio | Implemented V1 | Real recommendations, next-action focus, learning trail, evidence journal, grounded learning resource |
 | 06 Assessment Focus | Implemented partial | Paper-like assessment styling, improved option sizes/focus, question palette, native final submission confirmation |
@@ -22,22 +26,10 @@
 | 08 Digital Twin | Visual first pass | Existing verified record/history preserved and visually harmonized; deeper journal layout remains pending |
 | 09 Remaining screens | Visual first pass | Resources, simulator, missions, auth and supporting states styled; component-level refinements remain pending |
 
-## V2 — correction after visual review
-
-- User screenshot review rejected the original split hero as conventional AI/SaaS composition. Rebuilt the landing content structure instead of patching its colors or shapes.
-- `frontend/src/lib/career-atlas.ts` derives a layout of actual career skills and their prerequisite closure; no invented relationships or scores.
-- `frontend/src/components/career-chapter-gallery.tsx` now switches career and selected skill with contextual explanation and truthful assessment availability.
-- `frontend/src/components/learning-chapter-sampler.tsx` adds interactive Assess / Navigate / Reflect product previews with actual quiz metadata and skill prerequisites.
-- `frontend/src/app/page.tsx` and `frontend/src/app/chapter-landing.css` replace the split hero and repeated card sections with editorial typographic composition.
-- `tests/career-atlas.test.ts` guards the real prerequisite and quiz metadata contract.
-- Full in-browser screenshot testing remains separate from CI; passing source checks alone does not establish visual acceptance.
-
 ## Files of interest
 
 - `frontend/src/app/page.tsx`: landing narrative
 - `frontend/src/components/career-chapter-gallery.tsx`: interactive, real catalog
-- `frontend/src/lib/career-atlas.ts`: canonical graph geometry
-- `frontend/src/components/learning-chapter-sampler.tsx`: interactive learning workflow previews
 - `frontend/src/app/chapter-landing.css`: public layout and art
 - `frontend/src/components/workspace-shell.tsx`: top navigation and drawer
 - `frontend/src/app/(workspace)/dashboard/page.tsx`: chapter-centered home with real evidence
