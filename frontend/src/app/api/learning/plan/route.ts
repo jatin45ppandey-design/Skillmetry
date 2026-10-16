@@ -7,7 +7,8 @@ import { careerIdSchema, normalizeOnboardingPreferences } from "@skillmetry/shar
 export const runtime="nodejs";
 const patchSchema=z.object({
   taskKey:z.string().min(4).max(128),
-  status:z.enum(["todo","in_progress","completed","skipped"])
+  status:z.enum(["todo","in_progress","completed","skipped"]),
+  plannedDate:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
 }).strict();
 
 const enabled=()=>process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
@@ -70,8 +71,19 @@ export async function PATCH(request:Request) {
   if(!enabled())return notReady();
   const parsed=patchSchema.safeParse(await request.json().catch(()=>null));
   if(!parsed.success)return NextResponse.json({error:"Invalid task update."},{status:400});
+  if(parsed.data.plannedDate){
+    const date=new Date(parsed.data.plannedDate+"T00:00:00Z");
+    const week=parsed.data.taskKey.slice(0,10);
+    const sunday=new Date(week+"T00:00:00Z");
+    sunday.setUTCDate(sunday.getUTCDate()+6);
+    if(!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==parsed.data.plannedDate||
+       parsed.data.plannedDate<week||parsed.data.plannedDate>sunday.toISOString().slice(0,10))
+      return NextResponse.json({error:"Choose a date within the task's original week."},{status:400});
+  }
+  const patch={status:parsed.data.status,updated_at:new Date().toISOString(),
+    ...(parsed.data.plannedDate?{planned_date:parsed.data.plannedDate}:{})};
   const {data,error:writeError}=await auth.supabase.from("learning_plan_tasks")
-    .update({status:parsed.data.status,updated_at:new Date().toISOString()})
+    .update(patch)
     .eq("user_id",auth.userId).eq("task_key",parsed.data.taskKey)
     .select("task_key,skill_id,title,kind,status,estimated_minutes,planned_date,position").maybeSingle();
   if(writeError)return NextResponse.json({error:"Unable to update task."},{status:503});

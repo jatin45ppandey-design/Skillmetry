@@ -13,7 +13,7 @@ Date: 2026-10-16. All code changes committed directly to `main`. **Workflow clou
 ### P4 — Weekly study planner
 - Deterministic, bounded weekly task drafts using learning goals, study hours, prerequisites and existing server-graded attempts.
 - Authenticated owner-scoped `GET/POST/PATCH /api/learning/plan` for task creation and status updates; idempotent stable keys preserve existing progress.
-- Supports todo/in-progress/completed/skipped, planner view, resource/practice/assessment links.
+- Supports todo/in-progress/completed/skipped, in-week rescheduling, planner view, resource/practice/assessment links.
 - Without hosted migration, the UI displays a clearly labeled nonpersistent plan preview. It must not imply a cloud save.
 
 ### P5 — Guided coding practice

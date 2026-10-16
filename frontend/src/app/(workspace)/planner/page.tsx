@@ -32,12 +32,12 @@ export default function Planner() {
     finally{setLoading(false);}
   },[persisted]);
   useEffect(()=>{void refresh();},[refresh]);
-  async function request(method:"POST"|"PATCH",task?:StudyTask,status?:StudyTaskStatus){
+  async function request(method:"POST"|"PATCH",task?:StudyTask,status?:StudyTaskStatus,plannedDate?:string){
     setPending(task?.taskKey??"generate");setError(null);
     try{
       const response=await fetch("/api/learning/plan",{
         method,headers:{"Content-Type":"application/json"},
-        body:method==="POST"?"{}":JSON.stringify({taskKey:task?.taskKey,status})
+        body:method==="POST"?"{}":JSON.stringify({taskKey:task?.taskKey,status,plannedDate})
       });
       const body=await response.json() as {tasks?:StudyTask[];task?:StudyTask;error?:string};
       if(!response.ok)throw new Error(body.error??"Task could not be saved");
@@ -69,11 +69,15 @@ export default function Planner() {
       {visible.map(task=><li key={task.taskKey}>
         <div><strong>{task.title}</strong><small>{task.plannedDate} · {task.estimatedMinutes} min · {task.kind}</small>
         <Link href={task.kind==="reassess"?"/assessments":task.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(task.skillId)}>Open {task.kind==="learn"?"resources":task.kind==="practice"?"practice lab":"assessments"}</Link></div>
-        {persisted?<label className="workflow-task-status">Progress<select value={task.status}
+        {persisted?<div className="workflow-inline-actions"><label className="workflow-task-status">Study date
+          <input className="workflow-input" type="date" value={task.plannedDate} min={week}
+            max={new Date(new Date(week+"T00:00:00Z").getTime()+6*86400000).toISOString().slice(0,10)}
+            disabled={pending!==null} onChange={e=>void request("PATCH",task,task.status,e.target.value)}/>
+        </label><label className="workflow-task-status">Progress<select value={task.status}
           disabled={pending!==null} onChange={event=>void request("PATCH",task,event.target.value as StudyTaskStatus)}>
           <option value="todo">To do</option><option value="in_progress">Learning</option>
           <option value="completed">Completed</option><option value="skipped">Skipped</option>
-        </select></label>:<span className="tag">Suggested</span>}
+        </select></label></div>:<span className="tag">Suggested</span>}
       </li>)}
       </ol>
     </section>
