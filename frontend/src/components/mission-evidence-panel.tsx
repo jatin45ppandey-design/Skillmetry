@@ -26,7 +26,7 @@ export function MissionEvidencePanel({ mission, record, status, onSaved }: {
     setReflection(record?.reflection ?? "");
     setNotice(null);
     setError(null);
-  }, [record?.updatedAt, record?.missionId, mission.id]);
+  }, [record, mission.id]);
 
   async function save(action: "save-draft" | "submit") {
     setPending(action);

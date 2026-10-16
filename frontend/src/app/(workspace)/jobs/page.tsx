@@ -41,9 +41,9 @@ export default function Jobs() {
         <div className="studio-job-output-head"><BriefcaseBusiness aria-hidden="true" />
           <div><span className="eyebrow">Grounded comparison</span><h2>{analyzedText === null ? "Explore the role" : matches.length + " catalog skills mentioned"}</h2></div>
         </div>
-        {analyzedText === null ? <p>Paste a description and choose Match named skills. The analysis looks for explicit terms among Skillmetry's 18 canonical skills.</p> : null}
+        {analyzedText === null ? <p>Paste a description and choose Match named skills. The analysis looks for explicit terms among Skillmetry&apos;s 18 canonical skills.</p> : null}
         {analyzedText !== null && !matches.length ? <p role="status">No supported skill terms were explicitly recognized. This does not mean the role has no requirements—review the description yourself.</p> : null}
-        {analyzedText !== null && illustrative ? <p className="note">Your current quiz signals are illustrative demo data, not an authenticated student's scores.</p> : null}
+        {analyzedText !== null && illustrative ? <p className="note">Your current quiz signals are illustrative demo data, not an authenticated student&apos;s scores.</p> : null}
         {analyzedText !== null && matches.length ? <div className="studio-job-matches">
           {matches.map(match => {
             const assessment = assessmentCatalog.find(item => item.skillId === match.skillId);
