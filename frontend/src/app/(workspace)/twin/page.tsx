@@ -1,5 +1,6 @@
 import { DigitalTwinWorkspace } from "@/components/digital-twin-workspace";
 import { DiagnosticTwinInsights } from "@/components/diagnostic-twin-insights";
+import { LearningActivitySummary } from "@/components/learning-activity-summary";
 import { SectionTitle } from "@/components/section-title";
 
 export default function Twin() {
@@ -23,5 +24,6 @@ export default function Twin() {
     </section>
     <DigitalTwinWorkspace />
     <DiagnosticTwinInsights />
+    <LearningActivitySummary />
   </>;
 }
