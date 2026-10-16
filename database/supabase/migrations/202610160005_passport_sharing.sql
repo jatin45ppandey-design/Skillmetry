@@ -14,8 +14,33 @@ create index if not exists passport_share_owner_idx on public.passport_share_lin
 alter table public.passport_share_links enable row level security;
 alter table public.passport_share_links force row level security;
 revoke all on public.passport_share_links from public,anon,authenticated;
-grant select,insert,update on public.passport_share_links to authenticated;
+-- Browsers may inspect metadata and revoke a link; they MUST NOT edit
+-- the server-issued snapshot, token hash, owner, expiry or creation time.
+grant select on public.passport_share_links to authenticated;
+grant update (revoked_at) on public.passport_share_links to authenticated;
 grant select,insert,update on public.passport_share_links to service_role;
+-- Prevent previously revoked links from becoming active again.
+-- Block all edits to score snapshots/identity even for service-level updates.
+create or replace function public.prevent_passport_share_mutation()
+returns trigger language plpgsql set search_path='' as $
+begin
+ if new.user_id is distinct from old.user_id or
+    new.token_hash is distinct from old.token_hash or
+    new.snapshot is distinct from old.snapshot or
+    new.expires_at is distinct from old.expires_at or
+    new.created_at is distinct from old.created_at then
+  raise exception 'passport share link metadata is immutable';
+ end if;
+ if old.revoked_at is not null and new.revoked_at is distinct from old.revoked_at then
+  raise exception 'revoked share links cannot be restored';
+ end if;
+ return new;
+end;
+$;
+drop trigger if exists passport_share_immutable on public.passport_share_links;
+create trigger passport_share_immutable before update on public.passport_share_links
+ for each row execute function public.prevent_passport_share_mutation();
+
 create policy "Passport owners inspect private link metadata"
  on public.passport_share_links for select to authenticated
  using(user_id=(select auth.uid()));

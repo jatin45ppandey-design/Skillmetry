@@ -18,6 +18,10 @@ describe("P9 private, revocable sharing",()=>{
   expect(api).toContain('grading_method","server_quiz"');
   expect(api).toContain('SKILLMETRY_PASSPORT_SHARING_ENABLED');
   expect(sql).toContain("force row level security");
+  expect(sql).toContain("grant update (revoked_at)");
+  expect(sql).not.toContain("grant select,insert,update on public.passport_share_links to authenticated");
+  expect(sql).toContain("revoked share links cannot be restored");
+  expect(sql).toContain("passport share link metadata is immutable");
   expect(sql).toContain("from public,anon,authenticated");
   expect(publicRoute).toContain("notFound()");
   expect(publicRoute).toContain("data.revoked_at");
