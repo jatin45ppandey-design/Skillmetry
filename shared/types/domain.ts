@@ -21,7 +21,8 @@ export type Mission = {
   simulatedGain: number;
   deliverables: string[];
 };
-export type AssessmentId = "python-foundations" | "sql-foundations" | "javascript-foundations" | "html-foundations";
+export type DiagnosticAssessmentId = "python-foundations" | "sql-foundations" | "javascript-foundations" | "html-foundations";
+export type AssessmentId = DiagnosticAssessmentId | "css-foundations" | "typescript-foundations" | "react-foundations" | "node-foundations" | "rest-api-foundations";
 export type PublicQuizQuestion = { id: string; prompt: string; choices: readonly string[] };
 export type AssessmentSummary = {
   id: AssessmentId;

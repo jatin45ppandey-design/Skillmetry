@@ -1,8 +1,8 @@
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 export type DiagnosticDifficulty = "beginner" | "intermediate" | "advanced";
 export const DIAGNOSTIC_VERSION = "2026.3";
 export const DIAGNOSTIC_QUESTIONS_PER_ATTEMPT = 15;
-export const diagnosticTopics: Record<AssessmentId, readonly {id:string;label:string}[]> = {
+export const diagnosticTopics: Record<DiagnosticAssessmentId, readonly {id:string;label:string}[]> = {
   "python-foundations": [
     {
       "id": "types",
@@ -92,3 +92,8 @@ export const diagnosticTopics: Record<AssessmentId, readonly {id:string;label:st
     }
   ]
 };
+
+/** The original four assessments are the only tracks with 2026.3 diagnostics. */
+export function isDiagnosticAssessmentId(id: AssessmentId): id is DiagnosticAssessmentId {
+  return Object.prototype.hasOwnProperty.call(diagnosticTopics, id);
+}

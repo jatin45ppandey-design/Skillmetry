@@ -1,6 +1,6 @@
 import "server-only";
 import { randomInt } from "node:crypto";
-import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
+import { isDiagnosticAssessmentId, diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
 import type { DiagnosticQuestion } from "@skillmetry/backend/lib/assessments/diagnostic-bank.server";
 
@@ -10,6 +10,7 @@ export function selectDiagnosticQuestionIds(
   questions: readonly DiagnosticQuestion[],
   index: (max: number) => number = randomInt
 ) {
+  if (!isDiagnosticAssessmentId(assessmentId)) throw new Error("Diagnostic selection not supported for this assessment");
   const chosen: string[] = [];
   for (const topic of diagnosticTopics[assessmentId]) {
     for (const difficulty of ["beginner", "intermediate", "advanced"] as const) {

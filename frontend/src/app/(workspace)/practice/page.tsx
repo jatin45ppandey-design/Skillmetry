@@ -5,7 +5,7 @@ import { Suspense,useEffect,useMemo,useState } from "react";
 import { BookOpenCheck,CheckCircle2,RotateCcw } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
-import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
+import { diagnosticTopics, isDiagnosticAssessmentId } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
 
 type PracticeQuestion = {id:string;prompt:string;choices:string[]};
@@ -18,7 +18,7 @@ function PracticeContent() {
   const id=params.get("assessment") as AssessmentId|null;
   const topicId=params.get("topic")??"";
   const assessment=assessmentCatalog.find(a=>a.id===id);
-  const topic=useMemo(()=>id?diagnosticTopics[id]?.find(t=>t.id===topicId):null,[id,topicId]);
+  const topic=useMemo(()=>id && isDiagnosticAssessmentId(id)?diagnosticTopics[id].find(t=>t.id===topicId):null,[id,topicId]);
   const [questions,setQuestions]=useState<PracticeQuestion[]>([]);
   const [answers,setAnswers]=useState<Record<string,number>>({});
   const [result,setResult]=useState<PracticeResult|null>(null);

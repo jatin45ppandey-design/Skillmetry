@@ -13,7 +13,7 @@ describe("answer-key boundary", () => {
   it("marks the production question bank server-only", () => {
     const bank = read("../backend/lib/assessments/question-bank.server.ts");
     expect(bank).toContain('import "server-only"');
-    expect(bank.match(/correctIndex:/g)).toHaveLength(40);
+    expect(bank.match(/correctIndex:/g)).toHaveLength(90);
   });
 
   it("keeps trusted grading out of the client-safe scoring module", () => {

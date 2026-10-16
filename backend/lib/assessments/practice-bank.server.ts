@@ -1,9 +1,9 @@
 import "server-only";
-import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { isDiagnosticAssessmentId, diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
+import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 import { practiceExtensions } from "@skillmetry/backend/lib/assessments/practice-extensions.server";
 type PracticeQuestion = {id:string;assessmentId:AssessmentId;topicId:string;prompt:string;choices:readonly string[];correctIndex:number;explanation:string};
-const cases:Record<AssessmentId,readonly string[][]> = {
+const cases:Record<DiagnosticAssessmentId,readonly string[][]> = {
   "python-foundations": [
     [
       "Trace: what is type(5).__name__?|int|str|float|bool|0",
@@ -95,6 +95,7 @@ const cases:Record<AssessmentId,readonly string[][]> = {
 };
 /** Independently authored practice exercises. Never reuse scored diagnostic questions. */
 export function getPracticeQuestions(assessmentId:AssessmentId,topicId:string):PracticeQuestion[] {
+  if (!isDiagnosticAssessmentId(assessmentId)) return [];
   const index=diagnosticTopics[assessmentId].findIndex(t=>t.id===topicId);
   if(index<0)return [];
   return [...cases[assessmentId][index], ...practiceExtensions[assessmentId][index]].map((line,n)=>{

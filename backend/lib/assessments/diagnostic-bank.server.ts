@@ -1,9 +1,9 @@
 import "server-only";
-import { diagnosticTopics,DIAGNOSTIC_VERSION,type DiagnosticDifficulty } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { isDiagnosticAssessmentId, diagnosticTopics,DIAGNOSTIC_VERSION,type DiagnosticDifficulty } from "@skillmetry/shared/data/diagnostic-taxonomy";
+import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 import type { GradedQuestion } from "@skillmetry/backend/lib/assessments/grading.server";
 export type DiagnosticQuestion = GradedQuestion & {topicId:string;difficulty:DiagnosticDifficulty;explanation:string};
-const authored: Record<AssessmentId,{map:number[];qs:string[][]}> = {
+const authored: Record<DiagnosticAssessmentId,{map:number[];qs:string[][]}> = {
   "python-foundations": {
     "map": [
       0,
@@ -191,6 +191,7 @@ const authored: Record<AssessmentId,{map:number[];qs:string[][]}> = {
 };
 /** 10 immutable foundation items + 20 reviewed additions per track. */
 export function buildDiagnosticQuestions(id:AssessmentId,originals:readonly GradedQuestion[]):DiagnosticQuestion[]{
+  if (!isDiagnosticAssessmentId(id)) throw new Error("Diagnostic bank not available for this assessment");
   const d=authored[id];
   if(originals.length!==10)throw new Error("Expected 10 foundational questions");
   const base=originals.map((q,i)=>{
@@ -207,6 +208,7 @@ export function buildDiagnosticQuestions(id:AssessmentId,originals:readonly Grad
   const out=[...base,...extra];validateDiagnosticBank(id,out);return out;
 }
 export function validateDiagnosticBank(id:AssessmentId,qs:readonly DiagnosticQuestion[]){
+  if (!isDiagnosticAssessmentId(id)) throw new Error("Diagnostic bank not available for this assessment");
   if(qs.length!==30||new Set(qs.map(q=>q.id)).size!==30)throw new Error("Bad question bank "+id);
   for(const topic of diagnosticTopics[id]){
     const subset=qs.filter(q=>q.topicId===topic.id);

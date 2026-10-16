@@ -49,5 +49,5 @@ export function previousAttemptForSkill(attempts: readonly AssessmentAttempt[], 
 }
 
 export function isAssessmentId(value: string): value is AssessmentId {
-  return ["python-foundations", "sql-foundations", "javascript-foundations", "html-foundations"].includes(value);
+  return ["python-foundations", "sql-foundations", "javascript-foundations", "html-foundations", "css-foundations", "typescript-foundations", "react-foundations", "node-foundations", "rest-api-foundations"].includes(value);
 }

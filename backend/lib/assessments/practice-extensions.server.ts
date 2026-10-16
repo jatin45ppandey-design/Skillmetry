@@ -1,7 +1,7 @@
 import "server-only";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 /** Three additional independent practice exercises per topic, with authored feedback. */
-export const practiceExtensions:Record<AssessmentId,readonly string[][]> = {
+export const practiceExtensions:Record<DiagnosticAssessmentId,readonly string[][]> = {
   "python-foundations": [
     [
       "What does float('3.5') return?|3.5|'3.5'|3|Error|0|float parses numeric strings into floating point numbers.",

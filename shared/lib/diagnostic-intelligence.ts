@@ -1,7 +1,7 @@
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
-import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
+import { isDiagnosticAssessmentId, diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import { getResourcesForSkill, getResourceAvailability } from "@skillmetry/shared/lib/resource-intelligence";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 
 export type DiagnosticReview = {
   questionId:string; topicId:string; difficulty:"beginner"|"intermediate"|"advanced";
@@ -12,6 +12,7 @@ export type TopicDiagnosis = {
   status:"insufficient-evidence"|"needs-practice"|"developing"|"strong";
 };
 export function buildTopicDiagnosis(assessmentId:AssessmentId,reviews:readonly DiagnosticReview[]):TopicDiagnosis[]{
+  if (!isDiagnosticAssessmentId(assessmentId)) return [];
   return diagnosticTopics[assessmentId].map(topic=>{
     const covered=reviews.filter(r=>r.topicId===topic.id);
     const count=covered.length;
@@ -23,13 +24,14 @@ export function buildTopicDiagnosis(assessmentId:AssessmentId,reviews:readonly D
     return {id:topic.id,label:topic.label,correct,questions:count,percent,status};
   });
 }
-const keywords:Record<AssessmentId,Record<string,readonly string[]>>={
+const keywords:Record<DiagnosticAssessmentId,Record<string,readonly string[]>>={
   "python-foundations":{types:["basics","variables"],collections:["collections","data structures"],functions:["functions","control flow"],exceptions:["errors","exceptions"],operators:["basics","operators"]},
   "sql-foundations":{queries:["query","select"],joins:["joins"],grouping:["aggregation","group","count"],changes:["update","schema"],nulls:["null","injection"]},
   "javascript-foundations":{scope:["scope","variables"],arrays:["arrays","array"],types:["type","coercion"],async:["promises","async"],browser:["browser","dom","json"]},
   "html-foundations":{semantics:["semantic","structure"],forms:["form"],a11y:["accessibility","aria"],document:["metadata","document"],content:["navigation","elements"]}
 };
 export function getTopicResources(assessmentId:AssessmentId,topicId:string,limit=3){
+  if (!isDiagnosticAssessmentId(assessmentId)) return [];
   const skillId=assessmentCatalog.find(item=>item.id===assessmentId)?.skillId;
   if(!skillId||!diagnosticTopics[assessmentId].some(topic=>topic.id===topicId))return [];
   const terms=keywords[assessmentId][topicId]??[];
