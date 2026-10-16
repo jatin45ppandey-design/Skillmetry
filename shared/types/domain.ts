@@ -21,7 +21,9 @@ export type Mission = {
   simulatedGain: number;
   deliverables: string[];
 };
-export type AssessmentId = "python-foundations" | "sql-foundations" | "javascript-foundations" | "html-foundations";
+export type LegacyAssessmentId = "python-foundations" | "sql-foundations" | "javascript-foundations" | "html-foundations";
+export type AssessmentId = LegacyAssessmentId
+  | "math-foundations" | "css-foundations" | "data-processing-foundations" | "ml-foundations-foundations" | "typescript-foundations" | "react-foundations" | "node-foundations" | "model-evaluation-foundations" | "rest-api-foundations" | "docker-foundations" | "deployment-foundations" | "accessibility-foundations" | "testing-foundations" | "authentication-foundations";
 export type PublicQuizQuestion = { id: string; prompt: string; choices: readonly string[] };
 export type AssessmentSummary = {
   id: AssessmentId;

@@ -1,6 +1,8 @@
 import "server-only";
 
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { AssessmentId, LegacyAssessmentId } from "@skillmetry/shared/types/domain";
+import { draftFoundationQuestions } from "@skillmetry/backend/lib/assessments/additional-foundations.server";
+import { buildAdditionalDiagnosticQuestions } from "@skillmetry/backend/lib/assessments/additional-diagnostics.server";
 import { buildDiagnosticQuestions, DIAGNOSTIC_VERSION, type DiagnosticQuestion } from "@skillmetry/backend/lib/assessments/diagnostic-bank.server";
 import type { GradedQuestion } from "@skillmetry/backend/lib/assessments/grading.server";
 
@@ -85,15 +87,24 @@ const questionBank = {
       { id: "html-10", prompt: "Where should page metadata such as the title normally appear?", choices: ["Inside <main>", "Inside <head>", "After </body>", "Inside every <section>"], correctIndex: 1 }
     ]
   }
-} as const satisfies Record<AssessmentId, AssessmentDefinition>;
+} as const satisfies Record<LegacyAssessmentId, AssessmentDefinition>;
 
 /** Version-aware sessions preserve 2026.2 grading even after 2026.3 launches. */
 export function getAssessmentDefinition(id: AssessmentId, version?: string): AssessmentDefinition {
-  const base = questionBank[id];
+  const extraSkill = id.endsWith("-foundations") ? id.slice(0, -"-foundations".length) : "";
+  const base = Object.prototype.hasOwnProperty.call(questionBank,id)
+    ? questionBank[id as LegacyAssessmentId]
+    : (() => {
+      const questions = draftFoundationQuestions(extraSkill);
+      if (questions.length !== 10) throw new Error("Unknown assessment definition");
+      return {id, version:"2026.2", skillId:extraSkill, title:extraSkill+" foundations", questions};
+    })();
   if (version === "2026.2" || (!version && process.env.NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED !== "true")) return base;
   if (version && version !== DIAGNOSTIC_VERSION) throw new Error("Unknown assessment version");
   return { id: base.id, skillId: base.skillId, title: base.title, version: DIAGNOSTIC_VERSION,
-    questions: buildDiagnosticQuestions(id, base.questions) };
+    questions: Object.prototype.hasOwnProperty.call(questionBank,id)
+      ? buildDiagnosticQuestions(id as LegacyAssessmentId, base.questions)
+      : buildAdditionalDiagnosticQuestions(id, base.questions) };
 }
 export function isDiagnosticDefinition(definition: AssessmentDefinition): definition is AssessmentDefinition & {questions: readonly DiagnosticQuestion[]} {
   return definition.version === DIAGNOSTIC_VERSION;

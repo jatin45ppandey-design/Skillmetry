@@ -23,7 +23,7 @@ export function buildTopicDiagnosis(assessmentId:AssessmentId,reviews:readonly D
     return {id:topic.id,label:topic.label,correct,questions:count,percent,status};
   });
 }
-const keywords:Record<AssessmentId,Record<string,readonly string[]>>={
+const keywords:Partial<Record<AssessmentId,Record<string,readonly string[]>>>={
   "python-foundations":{types:["basics","variables"],collections:["collections","data structures"],functions:["functions","control flow"],exceptions:["errors","exceptions"],operators:["basics","operators"]},
   "sql-foundations":{queries:["query","select"],joins:["joins"],grouping:["aggregation","group","count"],changes:["update","schema"],nulls:["null","injection"]},
   "javascript-foundations":{scope:["scope","variables"],arrays:["arrays","array"],types:["type","coercion"],async:["promises","async"],browser:["browser","dom","json"]},
@@ -32,7 +32,7 @@ const keywords:Record<AssessmentId,Record<string,readonly string[]>>={
 export function getTopicResources(assessmentId:AssessmentId,topicId:string,limit=3){
   const skillId=assessmentCatalog.find(item=>item.id===assessmentId)?.skillId;
   if(!skillId||!diagnosticTopics[assessmentId].some(topic=>topic.id===topicId))return [];
-  const terms=keywords[assessmentId][topicId]??[];
+  const terms=keywords[assessmentId]?.[topicId]??[];
   const ranked=getResourcesForSkill(skillId).filter(r=>getResourceAvailability(r).available)
     .map(resource=>{
       const body=[resource.title,resource.topic,...(resource.subtopics??[])].join(" ").toLowerCase();
