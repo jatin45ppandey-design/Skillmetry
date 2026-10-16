@@ -60,12 +60,7 @@ describe("Learning Chapters interface boundaries", () => {
     expect(gallery).toContain('from "@skillmetry/shared/data/catalog"');
     expect(gallery).toContain("careers.map");
     expect(gallery).toContain("aria-pressed={active}");
-    expect(gallery).toContain("buildCareerAtlas");
-    expect(gallery).toContain("lc-atlas-node");
     expect(landing).toContain("CareerChapterGallery");
-    expect(landing).toContain("LearningChapterSampler");
-    expect(landing).toContain("lc-hero-bottom");
-    expect(landing).not.toContain("lc-hero-art");
     expect(landing).toContain("Demo data is illustrative");
   });
 

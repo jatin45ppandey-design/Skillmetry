@@ -53,7 +53,7 @@ Custom illustration language is built from layered paper objects, editorial cuto
 
 ## Content and UI architecture
 
-1. **Landing / Discover (V2):** full-width editorial opening (no left-copy/right-decoration split), four-role career switcher, clickable atlas built from canonical prerequisite closure and real quiz availability, readable focused-skill detail, honest evidence statement, and interactive study-book sampler. No repeated generic career-card grid.
+1. **Landing / Discover:** bold editorial hero, interactive career islands from the real catalog, honest process story and original illustrations.
 2. **Onboarding / Build a study kit:** choose optional career, skills, and tools with live goal preview. Do not invent any proficiency.
 3. **My Studio / Now:** one current recommendation, a contextual trail, trusted evidence counts, and one grounded resource.
 4. **Assessment / Focus:** large readable question booklet, visible question status, locally preserved answers where supported, final submission confirmation and trustworthy result/history.
@@ -89,4 +89,4 @@ Avoid deceptive progress bars, invented streaks, generic AI assistant panels, ex
 
 ## Current implementation status
 
-The branch `design/learning-chapters-studio-v1` establishes the new design grammar and updates the key public and studio flows. Supporting authenticated routes receive warm visual treatment but **are not yet complete bespoke screen redesigns**. Per-screen responsive and accessibility audits, custom illustration assets, performance measures and production acceptance remain pending. See `docs/LEARNING_CHAPTERS_IMPLEMENTATION.md`.
+The Learning Chapters V1 design grammar is retained on `main`. The later interactive landing V2 was reverted to restore the previously preferred landing layout. Supporting authenticated routes receive warm visual treatment but **are not yet complete bespoke screen redesigns**. Per-screen responsive and accessibility audits, custom illustration assets, performance measures and production acceptance remain pending. See `docs/LEARNING_CHAPTERS_IMPLEMENTATION.md`.
