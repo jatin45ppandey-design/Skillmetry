@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Activity, ArrowUpRight, BookMarked, BriefcaseBusiness, Cloud, CloudOff,
   Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu,
@@ -50,10 +50,10 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  function closeDrawer() {
+  const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
     menuButtonRef.current?.focus();
-  }
+  }, []);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -80,7 +80,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
     }
     document.addEventListener("keydown", onDrawerKeyDown);
     return () => document.removeEventListener("keydown", onDrawerKeyDown);
-  }, [drawerOpen]);
+  }, [drawerOpen, closeDrawer]);
   const { name, profileSource } = useSkillmetry();
   const { user, syncStatus } = useAuth();
   const current = [...primary, ...secondary].find(item => item.href === pathname);
