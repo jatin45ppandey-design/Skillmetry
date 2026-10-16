@@ -1,186 +1,101 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  BookOpenCheck,
-  CheckCircle2,
-  Compass,
-  GitBranch,
-  MoveUpRight,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, BookOpenText, Compass, Fingerprint, GitBranch, ShieldCheck, Sparkles } from "lucide-react";
 import { Brand } from "@/components/brand";
-import "./landing.css";
+import { CareerChapterGallery } from "@/components/career-chapter-gallery";
+import "./chapter-landing.css";
 
-const principles = [
-  {
-    index: "01",
-    title: "Start with a direction.",
-    description:
-      "Choose a career or a few skills you want to work on. You can change your focus as you learn.",
-    detail: "Career and skill goals",
-  },
-  {
-    index: "02",
-    title: "Let evidence do the talking.",
-    description:
-      "Take an available, server-graded assessment. A missing quiz result is marked unknown, never zero.",
-    detail: "Measured results, clear limits",
-  },
-  {
-    index: "03",
-    title: "Work on a useful next step.",
-    description:
-      "Explore prerequisite-aware paths and curated resources grounded in your goals and available evidence.",
-    detail: "Explainable recommendations",
-  },
-];
-
-const workflow = [
-  { number: "01", title: "Choose your direction", description: "A career track is optional. Start with the skills that matter to you." },
-  { number: "02", title: "Take a supported quiz", description: "A completed assessment adds a measured result to your private record." },
-  { number: "03", title: "Understand the gaps", description: "See what has been measured and what still needs evidence." },
-  { number: "04", title: "Learn, then reassess", description: "Follow the next step and compare your assessment history over time." },
-];
-
-function LearningRecordPreview() {
-  return (
-    <div className="sl-record" aria-label="Illustrative Skillmetry learning record, not live user data">
-      <div className="sl-record-top">
-        <span className="sl-record-brand"><span className="sl-record-mark" aria-hidden="true">s.</span> Learning record</span>
-        <span className="sl-record-demo">ILLUSTRATIVE VIEW</span>
-      </div>
-      <div className="sl-record-body">
-        <div className="sl-record-heading">
-          <span className="sl-micro">YOUR DIRECTION</span>
-          <h2>Backend Developer</h2>
-          <p>A learning direction, not an employability score.</p>
-        </div>
-        <div className="sl-record-divider" />
-        <div className="sl-record-section-heading">
-          <span className="sl-micro">SKILL EVIDENCE</span>
-          <span className="sl-record-note">Example before your first quiz</span>
-        </div>
-        <div className="sl-evidence-row">
-          <div className="sl-evidence-symbol"><BookOpenCheck size={17} aria-hidden="true" /></div>
-          <div><strong>Assessment record</strong><small>No completed quiz yet</small></div>
-          <span className="sl-evidence-state">Not assessed</span>
-        </div>
-        <div className="sl-evidence-row sl-evidence-row-muted">
-          <div className="sl-evidence-symbol"><GitBranch size={17} aria-hidden="true" /></div>
-          <div><strong>Learning pathway</strong><small>Based on your selected goal</small></div>
-          <span className="sl-evidence-state">Explore</span>
-        </div>
-        <div className="sl-record-callout">
-          <span className="sl-callout-symbol" aria-hidden="true">→</span>
-          <div>
-            <span className="sl-micro">YOUR NEXT MOVE</span>
-            <strong>Take a supported skill assessment.</strong>
-            <p>Get a measured starting point before making conclusions about your skills.</p>
-          </div>
-        </div>
-      </div>
-      <div className="sl-record-bottom">
-        <span><ShieldCheck size={14} aria-hidden="true" /> Unknown is not a failed score</span>
-        <span>SKILLMETRY / 01</span>
-      </div>
-    </div>
-  );
-}
+const chapters = [
+  { chapter: "01", label: "DISCOVER", title: "Choose a direction.", copy: "Begin with a role or the skills you want to explore. You don't need a perfect career plan to get started.", icon: Compass, tone: "apricot", href: "/onboarding", action: "Make a learning profile" },
+  { chapter: "02", label: "UNDERSTAND", title: "Let evidence speak.", copy: "A supported quiz gives you a measured result. Unassessed skills stay unknown—not failures in disguise.", icon: Fingerprint, tone: "sage", href: "/assessments", action: "See assessments" },
+  { chapter: "03", label: "GROW", title: "Find the next move.", copy: "Explore real prerequisite connections and curated learning materials that reflect your goals and available evidence.", icon: GitBranch, tone: "lilac", href: "/roadmap", action: "Explore the skill map" }
+] as const;
 
 export default function Home() {
   return (
-    <main className="sl-page">
-      <a className="sl-skip" href="#main-content">Skip to main content</a>
-      <div className="sl-wrap">
-        <header className="sl-header">
+    <main className="lc-site">
+      <a href="#main-content" className="lc-skip">Skip to content</a>
+      <div className="lc-frame">
+        <header className="lc-header">
           <Brand />
-          <nav aria-label="Main navigation" className="sl-nav">
-            <a href="#approach">The approach</a>
-            <a href="#how-it-works">How it works</a>
-            <Link href="/careers">Career paths</Link>
+          <nav className="lc-nav" aria-label="Public navigation">
+            <a href="#explore">Explore careers</a>
+            <a href="#chapters">The journey</a>
+            <a href="#why">Our approach</a>
           </nav>
-          <div className="sl-header-actions">
-            <Link className="sl-signin" href="/auth/sign-in">Sign in</Link>
-            <Link className="sl-header-cta" href="/onboarding">Get started <ArrowUpRight size={16} aria-hidden="true" /></Link>
+          <div className="lc-header-actions">
+            <Link href="/auth/sign-in" className="lc-signin">Sign in</Link>
+            <Link href="/onboarding" className="lc-nav-cta">Start exploring <ArrowUpRight size={17} aria-hidden="true" /></Link>
           </div>
         </header>
 
         <div id="main-content">
-          <section className="sl-hero" aria-labelledby="sl-title">
-            <div className="sl-hero-copy">
-              <p className="sl-kicker"><span className="sl-kicker-line" /> SKILLMETRY / CAREER LEARNING SYSTEM</p>
-              <h1 id="sl-title">Your next skill <span>shouldn&apos;t be a guess.</span></h1>
-              <p className="sl-hero-description">
-                Choose where you want to go. Measure what supported quizzes can tell you.
-                Then follow a learning path that makes your next move clearer.
-              </p>
-              <div className="sl-actions">
-                <Link className="sl-button sl-button-primary" href="/onboarding">Set my direction <ArrowUpRight size={18} aria-hidden="true" /></Link>
-                <Link className="sl-button sl-button-secondary" href="/dashboard">Explore the demo <ArrowRight size={17} aria-hidden="true" /></Link>
+          <section className="lc-hero" aria-labelledby="lc-hero-title">
+            <div className="lc-hero-copy">
+              <p className="lc-eyebrow"><span className="lc-eyebrow-dot" /> A LEARNING STUDIO THAT GROWS WITH YOU</p>
+              <h1 id="lc-hero-title">Find your <span className="lc-hero-line">direction<span className="lc-swoosh" aria-hidden="true" /></span><span className="lc-hero-last">One skill at a time<span className="lc-period">.</span></span></h1>
+              <p className="lc-hero-intro">Your career journey isn't a checklist. Discover a path, measure what a quiz can tell you, and make sense of what to learn next.</p>
+              <div className="lc-hero-ctas">
+                <Link href="/onboarding" className="lc-split-cta"><span>Build my learning profile</span><span className="lc-cta-orbit"><ArrowUpRight aria-hidden="true" size={21} /></span></Link>
+                <Link href="/dashboard" className="lc-text-action">Explore a demo <ArrowRight size={17} aria-hidden="true" /></Link>
               </div>
-              <p className="sl-hero-disclosure">The demo uses illustrative data. Sign in to take a secure assessment.</p>
-              <div className="sl-hero-bottom">
-                <span>ONE CONNECTED LEARNING LOOP</span>
-                <strong>Assess <span>/</span> Understand <span>/</span> Learn <span>/</span> Reassess</strong>
-              </div>
+              <p className="lc-hero-note"><ShieldCheck size={15} aria-hidden="true" /> Demo data is illustrative. Secure assessments require sign-in.</p>
+              <div className="lc-hero-stamp"><span>EXPLORE</span><ArrowDownRight size={22} aria-hidden="true" /><span>01—03</span></div>
             </div>
-            <div className="sl-hero-visual">
-              <div className="sl-visual-label"><span>THE PRODUCT, NOT THE PROMISE</span><span>FIG. 01</span></div>
-              <LearningRecordPreview />
-              <div className="sl-visual-footnote"><span>Built around the evidence you actually have.</span><span>NO INVENTED SCORES</span></div>
+            <div className="lc-hero-art" aria-label="Illustration of learning notes connected along a curved path">
+              <div className="lc-art-paper lc-art-paper--back"><span>NOTES / 001</span><span className="lc-handdrawn">Curiosity<br />is a start.</span></div>
+              <div className="lc-art-sun" aria-hidden="true"><Sparkles size={30} /></div>
+              <div className="lc-art-path" aria-hidden="true" />
+              <div className="lc-art-note lc-art-note--one"><span>01 / CHOOSE</span><Compass size={30} /><strong>YOUR<br />DIRECTION</strong></div>
+              <div className="lc-art-note lc-art-note--two"><span>02 / MEASURE</span><Fingerprint size={34} /><strong>WHAT'S<br />KNOWN</strong></div>
+              <div className="lc-art-note lc-art-note--three"><span>03 / GROW</span><GitBranch size={33} /><strong>WHAT'S<br />NEXT</strong></div>
+              <div className="lc-art-sticker">your path<br />unfolds ↗</div>
+              <div className="lc-art-side-note">FIG. 01 / THE LEARNING LOOP</div>
             </div>
           </section>
 
-          <section className="sl-belief" aria-label="Core principle">
-            <div className="sl-belief-label"><span className="sl-small-rule" /> THE IDEA</div>
-            <div><p>Not assessed <em>does not</em> mean not skilled.</p><span>Skillmetry keeps missing evidence separate from measured results. It shows the limits of what it knows instead of filling gaps with made-up certainty.</span></div>
+          <section id="explore" className="lc-discovery" aria-labelledby="lc-discovery-title">
+            <div className="lc-section-intro">
+              <div>
+                <span className="lc-eyebrow">CHAPTER 01 / DISCOVER</span>
+                <h2 id="lc-discovery-title">There are many ways <em>to begin.</em></h2>
+              </div>
+              <p>Four real career directions in the Skillmetry catalog. Explore their skills before deciding where your learning should begin.</p>
+            </div>
+            <CareerChapterGallery />
           </section>
 
-          <section id="approach" className="sl-approach" aria-labelledby="sl-approach-title">
-            <div className="sl-section-intro">
-              <div><span className="sl-kicker sl-kicker-small">01 / HOW SKILLMETRY THINKS</span><h2 id="sl-approach-title">Less noise. <span>More direction.</span></h2></div>
-              <p>Not another dashboard full of percentages. A focused system for turning assessment evidence into a practical learning decision.</p>
-            </div>
-            <div className="sl-principles">
-              {principles.map((item) => (
-                <article className="sl-principle" key={item.index}>
-                  <span className="sl-principle-index">{item.index}</span>
-                  <div><h3>{item.title}</h3><p>{item.description}</p></div>
-                  <span className="sl-principle-detail">{item.detail}</span>
+          <section id="chapters" className="lc-chapter-section" aria-labelledby="lc-chapters-title">
+            <div className="lc-chapter-heading"><span className="lc-eyebrow">A PATH, NOT A PILE OF DASHBOARDS</span><h2 id="lc-chapters-title">A little more clarity.<br /><em>At every chapter.</em></h2></div>
+            <div className="lc-chapter-stack">
+              {chapters.map(({chapter,label,title,copy,icon:Icon,tone,href,action}) => (
+                <article className={"lc-chapter lc-chapter--" + tone} key={chapter}>
+                  <span className="lc-chapter-num">{chapter} / {label}</span>
+                  <div className="lc-chapter-icon"><Icon size={36} strokeWidth={1.65} aria-hidden="true" /></div>
+                  <div className="lc-chapter-content"><h3>{title}</h3><p>{copy}</p></div>
+                  <Link href={href} className="lc-chapter-link" aria-label={action}><ArrowUpRight size={21} aria-hidden="true" /></Link>
                 </article>
               ))}
             </div>
           </section>
 
-          <section id="how-it-works" className="sl-process" aria-labelledby="sl-process-title">
-            <div className="sl-process-lead">
-              <span className="sl-kicker sl-kicker-small">02 / YOUR LEARNING LOOP</span>
-              <h2 id="sl-process-title">Make progress you can <em>explain.</em></h2>
-              <p>A clear sequence from setting a goal to reviewing new evidence. No placement prediction, no shortcut to professional verification.</p>
-              <Link href="/roadmap" className="sl-inline-link">Explore an example roadmap <MoveUpRight size={16} aria-hidden="true" /></Link>
-            </div>
-            <ol className="sl-process-list">
-              {workflow.map((item) => (
-                <li key={item.number}>
-                  <span>{item.number}</span>
-                  <div><h3>{item.title}</h3><p>{item.description}</p></div>
-                  <CheckCircle2 size={17} aria-hidden="true" />
-                </li>
-              ))}
-            </ol>
+          <section id="why" className="lc-statement" aria-labelledby="lc-statement-title">
+            <div className="lc-statement-mark"><BookOpenText size={27} aria-hidden="true" /><span>OUR POINT OF VIEW / 001</span></div>
+            <h2 id="lc-statement-title">Not assessed <span>doesn't mean</span> not skilled.</h2>
+            <div className="lc-statement-bottom"><p>Skillmetry separates missing evidence from measured results. Your next move is explained through your selected goals, supported assessments and real skill prerequisites—not imaginary placement probabilities.</p><Link href="/twin">Explore the Skill Twin <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
           </section>
 
-          <section className="sl-last" aria-labelledby="sl-last-title">
-            <div><span className="sl-kicker sl-kicker-small">READY WHEN YOU ARE</span><h2 id="sl-last-title">Begin with a goal.<br />Build with evidence.</h2></div>
-            <Link className="sl-button sl-button-primary" href="/onboarding">Create my learning path <ArrowUpRight size={18} aria-hidden="true" /></Link>
+          <section className="lc-end" aria-labelledby="lc-end-title">
+            <span className="lc-eyebrow">YOUR STORY ISN'T PREWRITTEN</span>
+            <h2 id="lc-end-title">Ready to start a new <em>chapter?</em></h2>
+            <Link href="/onboarding" className="lc-split-cta"><span>Find my direction</span><span className="lc-cta-orbit"><ArrowUpRight size={21} aria-hidden="true" /></span></Link>
           </section>
         </div>
 
-        <footer className="sl-footer">
+        <footer className="lc-footer">
           <Brand />
-          <div><span>Made for learning, not for hiring predictions.</span><small>Early MVP · Quiz results are not professional certifications.</small></div>
-          <Link href="/auth/sign-in"><Compass size={16} aria-hidden="true" /> Go to my workspace</Link>
+          <p>Made for curious people learning real skills.</p>
+          <span>Early MVP · Quiz outcomes aren't professional certifications or hiring predictions.</span>
+          <Link href="/auth/sign-in">Sign in ↗</Link>
         </footer>
       </div>
     </main>
