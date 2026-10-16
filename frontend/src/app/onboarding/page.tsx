@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight, Info } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LearningGoalEditor } from "@/components/learning-goal-editor";
@@ -20,15 +20,6 @@ export default function Onboarding() {
   const [localName, setLocalName] = useState(name === "Demo Student" ? "" : name);
   const [selected, setSelected] = useState<CareerId>(careerId);
   const [learningGoals, setLearningGoals] = useState(preferences.learning);
-  // A public explorer selection is only a suggested goal. Validate against the
-  // canonical catalog; do not import scores or bypass onboarding confirmation.
-  useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("career");
-    const matching = careers.find(career => career.id === requested);
-    if (!matching) return;
-    setSelected(matching.id);
-    setLearningGoals(current => ({ ...current, primaryCareerId: matching.id }));
-  }, []);
   const previewCareer = careers.find(career => career.id === learningGoals.primaryCareerId) ?? null;
   const previewSkills = learningGoals.selectedSkillIds.map(id => skillById[id]?.label ?? id);
 
