@@ -26,6 +26,7 @@ describe("backend learning streak boundary", () => {
   it("derives activity from trusted, immutable server events", () => {
     const sql = read("../database/supabase/migrations/202610160006_learning_streak.sql");
     expect(sql).toContain("security invoker");
+    expect(sql).not.toContain("pg_catalog.coalesce");
     expect(sql).toContain("a.grading_method = 'server_quiz'");
     expect(sql).toContain("public.practice_lab_attempts");
     expect(sql).toContain("auth.uid()");

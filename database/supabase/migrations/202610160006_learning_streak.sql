@@ -57,18 +57,18 @@ begin
   select pg_catalog.jsonb_build_object(
     'timeZone', p_timezone,
     'asOfDate', v_today::text,
-    'currentStreak', pg_catalog.coalesce((
+    'currentStreak', coalesce((
       select pg_catalog.max(day_count) from streak_runs
       where end_day = v_today or end_day = v_today - 1
     ), 0),
-    'longestStreak', pg_catalog.coalesce((select pg_catalog.max(day_count) from streak_runs),0),
+    'longestStreak', coalesce((select pg_catalog.max(day_count) from streak_runs),0),
     'totalActiveDays', (select pg_catalog.count(*)::integer from active_days),
     'lastActiveDate', (select pg_catalog.max(day)::text from active_days),
     'activeToday', (select exists(select 1 from active_days where day=v_today)),
     'dueToday', (select not exists(select 1 from active_days where day=v_today)
       and exists(select 1 from active_days where day=v_today-1)),
     'last7Days', (
-      select pg_catalog.coalesce(
+      select coalesce(
         pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
           'date', recent.day::date::text,
           'active', exists(select 1 from active_days a where a.day=recent.day::date)
