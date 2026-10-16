@@ -1,4 +1,11 @@
 -- P3–P6: additive learning activity; deliberately separate from immutable quiz scores.
+-- Full Stack mission additions complete the existing four-career learning catalog.
+insert into public.missions(id,career_id,skill_id,title,description,estimated_hours) values
+ ('fullstack-task-hub','full-stack-developer','react','Build a full-stack task hub','Ship an end-to-end task manager with persistent data and accessible controls.',8),
+ ('fullstack-auth-portal','full-stack-developer','authentication','Implement a private account portal','Build login and owner-scoped profile access with defensive error handling.',8),
+ ('fullstack-release','full-stack-developer','deployment','Prepare a safe full-stack release','Configure deployment, health reporting and a reproducible setup guide.',6)
+on conflict (id) do nothing;
+
 -- Do not apply to a hosted project without staging RLS/E2E and explicit approval.
 create table if not exists public.learning_plan_tasks (
   id uuid primary key default gen_random_uuid(),
