@@ -1,11 +1,16 @@
 "use client";
-import {useState,type FormEvent} from "react";
+import {Suspense,useEffect,useState,type FormEvent} from "react";
+import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 import {skills} from "@skillmetry/shared/data/catalog";
 type Answer={mode:"ai"|"curated";answer:string;resources:{id:string;title:string;provider:string;url:string}[];disclaimer:string};
-export default function Tutor(){
- const [skill,setSkill]=useState("javascript"),[question,setQuestion]=useState("");
+function TutorContent(){
+ const search=useSearchParams();
+ const requested=search.get("skill");
+ const validSkill=requested && skills.some(item=>item.id===requested) ? requested : "javascript";
+ const [skill,setSkill]=useState(validSkill),[question,setQuestion]=useState("");
+ useEffect(()=>{setSkill(validSkill);setQuestion("");},[validSkill]);
  const [consent,setConsent]=useState(false),[answer,setAnswer]=useState<Answer|null>(null);
  const [pending,setPending]=useState(false),[error,setError]=useState("");
  async function ask(event:FormEvent<HTMLFormElement>){
@@ -50,3 +55,5 @@ export default function Tutor(){
   </div>
  </>;
 }
+
+export default function Tutor(){return <Suspense fallback={<p role="status">Loading learning guidance…</p>}><TutorContent/></Suspense>;}

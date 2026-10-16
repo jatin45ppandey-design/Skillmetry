@@ -242,7 +242,7 @@ function AssessmentExperience() {
             <Link className="btn btn-primary" href={"/resources?skill=" + encodeURIComponent(safeResult.attempt.skillId)}>
               Learn this topic <ArrowRight size={16} aria-hidden="true"/></Link>
             <Link className="btn btn-outline" href="/lab">Try guided practice</Link>
-            <Link className="btn btn-quiet" href="/twin">View my progress</Link>
+            <Link className="btn btn-quiet" href="/twin">View my progress</Link><Link className="btn btn-quiet" href={"/tutor?skill="+encodeURIComponent(safeResult.attempt.skillId)}>Ask about this skill</Link>
           </div>
         </section> : null}
         {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span><button className="btn btn-quiet" type="button" onClick={() => setError(null)}>Dismiss</button></div> : null}

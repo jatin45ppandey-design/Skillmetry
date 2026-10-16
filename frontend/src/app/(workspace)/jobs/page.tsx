@@ -83,7 +83,9 @@ export default function Jobs(){
           req.nextStep==="practice"?"/lab":`/resources?skill=${encodeURIComponent(req.skillId)}`}>
           {req.nextStep==="assessment"?"Check assessment availability":req.nextStep==="practice"?"Practice":"Find learning resources"}
         </Link>
+        <Link href={"/tutor?skill="+encodeURIComponent(req.skillId)}>Understand this skill</Link>
       </article>)}
+      {result.requirements.length?<p className="note">Need help understanding a requirement? Open its skill explanation in the learning tutor; no job text is sent automatically.</p>:null}
       <h3>Related career pathways</h3>
       {result.matchingCareers.filter(x=>x.matchedSkillCount>0).map(c=><p key={c.id}>{c.title}: {c.matchedSkillCount} matching requirements</p>)}
       <p className="note">{result.notice}</p>
