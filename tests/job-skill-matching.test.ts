@@ -8,7 +8,7 @@ describe("private deterministic job description matching", () => {
     expect(matches.every(item => item.score === null && item.evidenceState === "not-assessed")).toBe(true);
   });
   it("distinguishes trusted 0 from missing evidence", () => {
-    const matches = matchJobSkillMentions("Strong SQL and Node.js testing background.", { sql: 0, node: 85 });
+    const matches = matchJobSkillMentions("Strong SQL and Node.js experience with unit tests.", { sql: 0, node: 85 });
     expect(matches.find(item => item.skillId === "sql")?.evidenceState).toBe("needs-practice");
     expect(matches.find(item => item.skillId === "sql")?.score).toBe(0);
     expect(matches.find(item => item.skillId === "node")?.score).toBe(85);
