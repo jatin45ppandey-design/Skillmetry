@@ -26,7 +26,7 @@ describe("Backend-only writes and staged migration invariants", () => {
   });
   it("prevents a repeat of the malformed SQL trigger-delimiter defect", () => {
     const sql = read("../database/supabase/migrations/202610160005_passport_sharing.sql");
-    expect(sql).toMatch(/returns trigger language plpgsql set search_path='' as \$\$/);
+    expect(sql).toContain("returns trigger language plpgsql set search_path='' as $passport$");
     expect(sql).not.toMatch(/\bend;\s*\$\s*;/);
   });
 });

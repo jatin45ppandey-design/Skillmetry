@@ -25,7 +25,8 @@ for (let index = 0; index < sql.length; index++) {
   assert(!/\bend;\s*\$\s*;/i.test(text), "No malformed bare-dollar closing: " + prefixes[index]);
   const dollarPairs = (text.match(/\$\$/g) || []).length;
   const namedPairs = (text.match(/\$streak\$/g) || []).length;
-  assert(dollarPairs % 2 === 0 && namedPairs % 2 === 0, "Function dollar-quotes balanced: " + prefixes[index]);
+  const passportPairs = (text.match(/\$passport\$/g) || []).length;
+  assert(dollarPairs % 2 === 0 && namedPairs % 2 === 0 && passportPairs % 2 === 0, "Function dollar-quotes balanced: " + prefixes[index]);
 }
 
 assert(sql[3].includes("grant select, update (status, planned_date, updated_at)") &&
