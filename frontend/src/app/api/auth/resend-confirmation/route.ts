@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { resendSignupConfirmationSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
-import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
+import { trustedAuthCallback } from "@skillmetry/backend/lib/security/site-origin.server";
 
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {

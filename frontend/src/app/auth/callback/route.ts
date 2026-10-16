@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
-import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
+import { trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
 
 export async function GET(request: NextRequest) {
   const site = trustedSiteOrigin(request);
