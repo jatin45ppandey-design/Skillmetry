@@ -27,6 +27,7 @@ const secondary = [
   { href: "/simulator", label: "What-if simulator", icon: FlaskConical },
   { href: "/missions", label: "Missions", icon: Target },
   { href: "/jobs", label: "Job analyzer", icon: BriefcaseBusiness },
+  { href: "/tutor", label: "AI learning tutor", icon: BookOpen },
   { href: "/passport", label: "Career passport", icon: WandSparkles },
   { href: "/settings", label: "Learning goals & settings", icon: Settings2 }
 ] as const;
