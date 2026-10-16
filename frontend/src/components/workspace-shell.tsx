@@ -20,7 +20,8 @@ const primary = [
   { href: "/twin", label: "Progress", short: "Progress", icon: Fingerprint }
 ] as const;
 
-const secondaryGroups = [
+type SecondaryLink = { href: string; label: string; icon: typeof BookOpen };
+const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
   { label: "LEARN & PRACTICE", items: [
     { href: "/resources", label: "Learning resources", icon: BookMarked },
     { href: "/planner", label: "My weekly plan", icon: BookOpen },
@@ -36,7 +37,7 @@ const secondaryGroups = [
     { href: "/passport", label: "Career passport", icon: WandSparkles },
     { href: "/settings", label: "My goals & settings", icon: Settings2 }
   ] }
-] as const;
+ ];
 const secondary = secondaryGroups.flatMap(group => group.items);
 
 function StudioLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {

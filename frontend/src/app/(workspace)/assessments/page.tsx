@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
+import { AlertCircle, ArrowRight, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
 import { DiagnosticResultPanel } from "@/components/diagnostic-result-panel";
