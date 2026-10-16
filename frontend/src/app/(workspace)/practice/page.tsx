@@ -40,7 +40,7 @@ function PracticeContent() {
       setError(e instanceof Error?e.message:"Practice is unavailable");setLoading(false);
     });
     return ()=>controller.abort();
-  },[assessment?.id,topic?.id]);
+  },[assessment,topic]);
 
   async function checkAnswers(){
     if(!assessment||!topic||questions.some(q=>answers[q.id]===undefined))return;

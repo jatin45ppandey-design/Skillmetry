@@ -18,7 +18,7 @@ export function DiagnosticTwinInsights(){
       .then(data=>{setInsights(data.insights);setError(false);})
       .catch(()=>{if(!controller.signal.aborted)setError(true);});
     return ()=>controller.abort();
-  },[user?.id]);
+  },[user]);
   if(!user||process.env.NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED!=="true")return null;
   return <section className="diagnostic-twin-panel">
     <div className="resource-section-head"><div><span className="eyebrow">Diagnostic intelligence</span><h2>Learn from topic evidence</h2></div></div>

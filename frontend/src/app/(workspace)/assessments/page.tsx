@@ -45,13 +45,13 @@ function AssessmentExperience() {
     setCurrentTime(Date.now());
     const timer = window.setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => window.clearInterval(timer);
-  }, [session?.sessionId]);
+  }, [session]);
   useEffect(() => {
     if (!session || !user) return;
     try {
       sessionStorage.setItem(`skillmetry-quiz-draft:${user.id}:${session.sessionId}`, JSON.stringify(answers));
     } catch { /* Storage may be unavailable in private browsing. */ }
-  }, [answers, session?.sessionId, user?.id]);
+  }, [answers, session, user]);
 
   useEffect(() => {
     const known = assessmentCatalog.find(item => item.id === requestedAssessment);
@@ -92,7 +92,7 @@ function AssessmentExperience() {
       if (!response.ok || !body.session) throw new Error(body.error ?? "The assessment could not be started.");
       // The server remains the authority for session ID, question order and expiry.
       // Local drafts only restore the student's own in-progress selections.
-      let draft: Record<string, number> = {};
+      const draft: Record<string, number> = {};
       try {
         const raw = sessionStorage.getItem(`skillmetry-quiz-draft:${user.id}:${body.session.sessionId}`);
         const parsed = raw ? JSON.parse(raw) as Record<string, unknown> : {};
