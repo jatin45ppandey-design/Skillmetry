@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
@@ -30,6 +30,8 @@ function AssessmentExperience() {
   const [pending, setPending] = useState<"start" | "submit" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
+  const submitDialogRef = useRef<HTMLDialogElement>(null);
   const [flagged, setFlagged] = useState<string[]>([]);
   const [reviewAttemptId, setReviewAttemptId] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
@@ -41,6 +43,12 @@ function AssessmentExperience() {
   const safeResult = result?.ownerId === user?.id ? result : null;
   const secondsRemaining = session ? Math.max(0, Math.floor((Date.parse(session.expiresAt) - currentTime) / 1000)) : 0;
   const expired = Boolean(session && secondsRemaining === 0);
+  useEffect(() => {
+    const dialog = submitDialogRef.current;
+    if (!dialog) return;
+    if (confirmSubmit && !dialog.open) dialog.showModal();
+    else if (!confirmSubmit && dialog.open) dialog.close();
+  }, [confirmSubmit]);
   useEffect(() => {
     if (!session) return;
     setCurrentTime(Date.now());
@@ -58,7 +66,7 @@ function AssessmentExperience() {
   // when the authenticated identity changes within a mounted workspace.
   useEffect(() => {
     setSession(null);setAnswers({});setResult(null);setReviewAttemptId(null);
-    setFlagged([]);setActiveQuestionIndex(0);
+    setFlagged([]);setActiveQuestionIndex(0);setConfirmSubmit(false);
   }, [user?.id]);
 
   useEffect(() => {
@@ -124,7 +132,8 @@ function AssessmentExperience() {
   }
 
   async function submit() {
-    if (!session || !complete || !user) return;
+    if (!session || !complete || !user || expired) return;
+    setConfirmSubmit(false);
     setPending("submit");
     setError(null);
     const previousScore = latest?.score ?? null;
@@ -152,6 +161,18 @@ function AssessmentExperience() {
   }
 
   return <>
+    <dialog ref={submitDialogRef} className="studio-submit-dialog" onClose={() => setConfirmSubmit(false)} onCancel={() => setConfirmSubmit(false)} aria-labelledby="studio-submit-dialog-title" aria-describedby="studio-submit-dialog-description">
+      <div className="studio-submit-dialog-inner">
+        <span className="studio-kicker">FINAL REVIEW / ASSESSMENT</span>
+        <h2 id="studio-submit-dialog-title">Ready to hand in your answers?</h2>
+        <p id="studio-submit-dialog-description">You have answered {answered} of {session?.questions.length ?? 0} questions. Once submitted, the server grades this attempt and saves your result. You cannot edit a completed attempt.</p>
+        {flagged.length ? <p className="studio-dialog-flagged">{flagged.length} question(s) marked for review. You can go back and check them.</p> : null}
+        <div className="studio-dialog-actions">
+          <button className="btn btn-outline" type="button" onClick={() => setConfirmSubmit(false)}>Return to answers</button>
+          <button className="btn btn-primary" type="button" disabled={!complete || pending === "submit" || expired} onClick={() => { setConfirmSubmit(false); void submit(); }}>Confirm and submit</button>
+        </div>
+      </div>
+    </dialog>
     <SectionTitle eyebrow="Skill assessments" title="Measure what you know" description="Authenticated quizzes are graded on the server. The latest completed result becomes the current score while every prior attempt remains in your history."/>
     <section className="assessment-warning"><ShieldCheck aria-hidden="true"/><div><strong>{illustrative ? "Illustrative demo history" : "Server-authoritative scoring"}</strong><p>{illustrative ? "These sample results demonstrate the experience and are not connected to you. Sign in to create trusted results." : "Answer keys never reach the browser. Students can read results but cannot create or edit grades directly."}</p></div>{!user ? <Link className="btn btn-primary" href="/auth/sign-in?next=/assessments"><LockKeyhole aria-hidden="true"/>Sign in to assess</Link> : null}</section>
 
@@ -203,7 +224,7 @@ function AssessmentExperience() {
             </div>
           </div>}
           <div className="assessment-submit"><span><Clock3 aria-hidden="true"/>Expires {new Intl.DateTimeFormat("en-IN",{hour:"numeric",minute:"2-digit"}).format(new Date(session.expiresAt))}</span>
-            <button className="btn btn-primary" type="button" disabled={!complete||pending==="submit"||expired} onClick={submit}>
+            <button className="btn btn-primary" type="button" disabled={!complete||pending==="submit"||expired} onClick={() => setConfirmSubmit(true)}>
               {pending==="submit"?<LoaderCircle className="spin" aria-hidden="true"/>:null}
               {pending==="submit"?"Grading securely…":"Submit complete assessment"}
             </button>
