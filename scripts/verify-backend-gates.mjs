@@ -67,6 +67,14 @@ for (const name of ["NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED", "SKILLMETRY_STREAK
   assert(env.includes(name + "=false"), name + " default off");
 }
 for (const name of ["learning_workflows_rls", "learning_streak_rls", "passport_sharing_rls"]) {
+  const source = "database/supabase/tests/" + name + ".test.sql";
+  if (existsSync(join(root, source))) {
+    const pg = read(source);
+    assert(!/\\b(?:throws_ok|results_eq|is_empty)\\(\\$[a-z]+\\s/i.test(pg),
+      "pgTAP statements use valid dollar-quoted SQL: " + name);
+  }
+}
+for (const name of ["learning_workflows_rls", "learning_streak_rls", "passport_sharing_rls"]) {
   assert(existsSync(join(root, "database/supabase/tests/" + name + ".test.sql")),
     "pgTAP scenario present: " + name);
 }
