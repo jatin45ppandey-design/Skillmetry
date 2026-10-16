@@ -14,11 +14,12 @@ type SkillNodeData = {
   status: SkillState;
   selected: boolean;
   recommended: boolean;
+  related: boolean;
 } & Record<string, unknown>;
 
 function SkillNode({ data }: NodeProps<Node<SkillNodeData>>) {
   const stateLabel = data.status === "strong" ? "Strong Quiz Performance" : data.status === "unassessed" ? "Assessment Recommended" : data.status === "blocked" ? "Prerequisite unassessed" : "Developing";
-  return <div className={`flow-node state-${data.status} ${data.selected ? "selected" : ""} ${data.recommended ? "recommended" : ""}`}>
+  return <div className={`flow-node state-${data.status} ${data.selected ? "selected" : ""} ${data.recommended ? "recommended" : ""} ${data.related ? "is-related" : "is-muted"}`}>
     <Handle type="target" position={Position.Top} className="flow-handle"/>
     <div className="flow-node-top"><span className="flow-group">{data.typeLabel}</span><span className="flow-score">{data.score === null ? "N/A" : data.score}</span></div>
     <div className="flow-title">{data.title}</div>
@@ -51,6 +52,20 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
     };
     skillIds.forEach(add);
     const shown = visibleIds ? new Set([...included].filter(id => visibleIds.has(id))) : included;
+    // Visually foreground real prerequisite connections for the selected skill.
+    // This affects presentation only; no new edges or scores are inferred.
+    const related = new Set<string>();
+    if (selectedId && shown.has(selectedId)) {
+      function includePrerequisites(id: string) {
+        if (related.has(id) || !shown.has(id)) return;
+        related.add(id);
+        skillById[id].prerequisites.forEach(includePrerequisites);
+      }
+      includePrerequisites(selectedId);
+      shown.forEach(id => {
+        if (skillById[id].prerequisites.includes(selectedId)) related.add(id);
+      });
+    }
     const memo = new Map<string, number>();
     const columns = new Map<number, string[]>();
     [...included].forEach(id => {
@@ -63,15 +78,15 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
       ids.forEach((id, index) => {
         const skill = skillById[id];
         const score = Object.hasOwn(proficiency, id) ? clamp(proficiency[id]) : null;
-        nodes.push({ id, type: "skill", position: { x: index * 244 - level * 10, y: level * 176 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id) } });
+        nodes.push({ id, type: "skill", position: { x: index * 244 - level * 10, y: level * 176 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id), related: !selectedId || related.has(id) } });
       });
     }
     const edges: Edge[] = [];
     shown.forEach(id => skillById[id].prerequisites.forEach(prerequisite => {
-      if (shown.has(prerequisite)) edges.push({ id: `${prerequisite}-${id}`, source: prerequisite, target: id, type: "smoothstep", style: { stroke: "#69796c", strokeWidth: 1.4 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#69796c" } });
+      if (shown.has(prerequisite)) edges.push({ id: `${prerequisite}-${id}`, source: prerequisite, target: id, type: "smoothstep", style: { stroke: "#8da98e", strokeWidth: 1.7, opacity: selectedId && !related.has(id) ? 0.28 : 1 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#8da98e" } });
     }));
     return { nodes, edges };
   }, [proficiency, recommendedIds, selectedId, skillIds, visibleIds]);
 
-  return <div className="flow-wrap"><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodeClick={(_, node) => onSelect?.(node.id)} fitView fitViewOptions={{ padding: .2 }} minZoom={.25} maxZoom={1.35} nodesDraggable={false} nodesConnectable={false} nodesFocusable proOptions={{ hideAttribution: false }}><Background color="#39483d" gap={24} size={1}/><MiniMap zoomable pannable nodeColor={node => node.id === selectedId ? "#d9ed82" : "#526257"} maskColor="#121914d9"/><Controls showInteractive={false}/></ReactFlow></div>;
+  return <div className="flow-wrap"><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodeClick={(_, node) => onSelect?.(node.id)} fitView fitViewOptions={{ padding: .2 }} minZoom={.25} maxZoom={1.35} nodesDraggable={false} nodesConnectable={false} nodesFocusable proOptions={{ hideAttribution: false }}><Background color="#d0dccb" gap={24} size={1}/><MiniMap zoomable pannable nodeColor={node => node.id === selectedId ? "#356343" : "#bbd4b8"} maskColor="#faf7eece"/><Controls showInteractive={false}/></ReactFlow></div>;
 }
