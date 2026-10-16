@@ -31,9 +31,9 @@ Date: 2026-10-16. All code changes committed directly to `main`. **Workflow clou
 ## Private storage / gates
 
 `202610160004_learning_workflows.sql` is an additive migration for:
-- `learning_plan_tasks` (owner-only select/insert/update)
+- `learning_plan_tasks` (owner-only select and status/date updates; generated task insertion now requires the authorized server)
 - `practice_lab_attempts` (owner-only read, trusted-server insert)
-- `mission_work` (owner-only select/insert/update)
+- `mission_work` (owner-only select; validated create/update now requires the authorized server)
 
 All three tables have forced RLS and foreign keys to owner and known skill/mission catalog IDs. Practice and mission evidence are not trusted assessments.
 
@@ -52,3 +52,7 @@ NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=false
 - All: production API throttling, dependency/incident reviews, performance/device/browser QA, staging migrations, RLS and full authenticated E2E.
 
 Avoid declaring P3–P6 fully shipped until these gaps and release gates are resolved.
+
+## Backend-first security update
+
+The staged migration `202610160004_learning_workflows.sql` and corresponding API code were strengthened before any hosted application: learners cannot directly insert generated study tasks, edit canonical task identity, or bypass validated mission submissions through the Data API. The authorized server derives the user ID from authenticated claims before a service-role write. A future frontend redesign can consume the read-only `/api/learning/overview` recommendations without new scoring authority.

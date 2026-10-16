@@ -53,3 +53,7 @@ SKILLMETRY_STREAKS_ENABLED=false
 - Mission writes now require the validated server API and server-only database client, rather than permitting direct authenticated table writes.
 - pgTAP scenarios were expanded for forged tasks and direct mission writes, but require a disposable Supabase staging database before they can be marked passed.
 - CI now runs a **static migration safety source gate** for SQL delimiters, grants, streak trust boundaries and default-off flags. It is explicitly not a SQL parser or a substitute for migrations + database integration tests.
+
+## Connected next-step API
+
+`GET /api/learning/overview` is a new authenticated, read-only API for the later UX redesign. It returns an onboarding-required state or a single actionable recommendation using the existing deterministic recommender and the current user's genuine server-graded quiz evidence. The API separately labels measured-skill count and up to two upcoming recommendations. It does not infer unknown grades, manufacture learning activity, or change any persistent record. No frontend redesign is included in this milestone.

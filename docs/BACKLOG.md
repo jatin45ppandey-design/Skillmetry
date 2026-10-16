@@ -120,3 +120,7 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [ ] Audit plan/mission integrity, API authorization, exports, auth recovery and production rate limits.
 - [ ] Obtain explicit approval before hosted migrations, enabling feature flags or changing production secrets.
 - [ ] Build streak UI as part of subsequent frontend redesign, after backend staging approval.
+
+- [x] Introduce authenticated read-only `/api/learning/overview` for a grounded, single recommended learning action.
+- [x] Limit direct study-plan mutations to scheduling fields; require backend-authenticated creation and mission submission.
+- [x] Add a dedicated backend static CI gate to detect known unsafe SQL/function delimiters, broad grants, and disabled-feature regressions.
