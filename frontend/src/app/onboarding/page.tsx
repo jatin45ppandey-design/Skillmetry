@@ -21,11 +21,14 @@ const intentions: { id: Intent; label: string; description: string; icon: typeof
 export default function Onboarding() {
   const router = useRouter();
   const { user, syncStatus } = useAuth();
-  const { name, preferences, completeOnboarding, careerId } = useSkillmetry();
+  const { name, preferences, completeOnboarding, careerId, onboardingCompleted } = useSkillmetry();
   const [step, setStep] = useState(1);
   const [localName, setLocalName] = useState(name === "Demo Student" ? "" : name);
   const [intent, setIntent] = useState<Intent>("career");
-  const [learning, setLearning] = useState<LearningPreferences>(preferences.learning);
+  const [learning, setLearning] = useState<LearningPreferences>(
+    () => onboardingCompleted ? preferences.learning :
+      { primaryCareerId: null, selectedSkillIds: [], selectedToolIds: [] }
+  );
   const [hours, setHours] = useState(preferences.hoursPerWeek);
   const [advanced, setAdvanced] = useState(false);
   const selectedCareer = careers.find(item => item.id === learning.primaryCareerId);

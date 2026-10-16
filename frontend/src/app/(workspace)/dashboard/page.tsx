@@ -18,6 +18,7 @@ export default function Dashboard() {
   const career = careers.find(item => item.id === learning.primaryCareerId) ?? null;
   const hasFocus = Boolean(career || learning.selectedSkillIds.length || learning.selectedToolIds.length);
   const loading = !illustrative && status === "loading";
+  const evidenceUnavailable = !illustrative && (status === "error" || status === "offline") && !attempts.length;
   const twin = useMemo(() => buildDigitalTwinSnapshot({
     attempts, learning, context: illustrative ? "demo" : "authenticated"
   }), [attempts, illustrative, learning]);
@@ -88,7 +89,7 @@ export default function Dashboard() {
         {career ? <div className="sx-skill-stack">
           {careerSkills.map(item => <div key={item.skillId} className="sx-skill-row">
             <span>{skillById[item.skillId]?.label ?? item.skillId}</span>
-            <strong>{Object.hasOwn(scores,item.skillId) ? scores[item.skillId] + "/100" : "Not assessed"}</strong>
+            <strong>{Object.hasOwn(scores,item.skillId) ? scores[item.skillId] + "/100" : evidenceUnavailable ? "Evidence unavailable" : "Not assessed"}</strong>
           </div>)}
         </div> : null}
         <Link href={career ? "/roadmap" : "/onboarding"} className="sx-inline-link">
@@ -99,13 +100,13 @@ export default function Dashboard() {
         <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU HAVE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
         <h2 id="sx-evidence-heading">Your learning evidence</h2>
         <div className="sx-evidence-stats">
-          <div><strong>{loading ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
-          <div><strong>{loading ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
+          <div><strong>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
+          <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
         </div>
         <p>{lastAttempt && !loading ?
           "Last quiz: " + (skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId) +
           " · " + lastAttempt.score + "/100" :
-          "Your first quiz will give you a real baseline. No scores are guessed."}</p>
+          evidenceUnavailable ? "Trusted history could not be loaded. Please try again when online." : "Your first quiz will give you a real baseline. No scores are guessed."}</p>
         <Link href="/twin" className="sx-inline-link">See my progress <ArrowRight size={17} aria-hidden="true"/></Link>
       </section>
       <LearningStreakCard/>

@@ -10,6 +10,7 @@ describe("Connected learning experience source contracts", () => {
     expect(page).toContain("What brings you here?");
     expect(page).toContain('Intent = "career" | "explore" | "skill"');
     expect(page).toContain("setAdvanced(!advanced)");
+    expect(page).toContain("onboardingCompleted ? preferences.learning");
     expect(page).toContain("LearningGoalEditor");
     expect(page).toContain('primaryCareerId: null');
     expect(page).toContain("completeOnboarding(");
@@ -28,6 +29,7 @@ describe("Connected learning experience source contracts", () => {
     expect(home).toContain("buildDigitalTwinSnapshot");
     expect(home).toContain("useAssessmentProfile");
     expect(home).toContain("Object.hasOwn(scores,item.skillId)");
+    expect(home).toContain("Evidence unavailable");
     expect(streak).toContain("NEXT_PUBLIC_LEARNING_STREAK_ENABLED");
     expect(streak).toContain("/api/learning/streak");
     expect(streak).not.toContain("localStorage.setItem");
