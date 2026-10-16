@@ -21,7 +21,8 @@ describe("private learning data export", () => {
     expect(route).toContain('private, no-store, max-age=0');
     expect(route).toContain("Content-Disposition");
     expect(route).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
-    expect(passport).toContain("Public sharing — coming later");
+    expect(passport).toContain("PassportShareControl");
+    expect(passport).toContain("Download my private learning record");
   });
   it("separates trusted scores from self-reported projects and detects missing migration", () => {
     expect(route).toContain('"server_quiz"');
