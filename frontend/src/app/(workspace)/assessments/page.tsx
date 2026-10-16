@@ -13,7 +13,7 @@ import { performanceLabel } from "@skillmetry/shared/lib/assessments/grading";
 import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
 import type { AssessmentAttempt, AssessmentId, AssessmentSession } from "@skillmetry/shared/types/domain";
 
-type ResultState = { attempt: AssessmentAttempt; previousScore: number | null };
+type ResultState = { attempt: AssessmentAttempt; previousScore: number | null; ownerId: string };
 
 function scoreTone(score: number): "success" | "warning" {
   return score >= 75 ? "success" : "warning";
@@ -38,6 +38,7 @@ function AssessmentExperience() {
   const answered = session?.questions.filter(question => answers[question.id] !== undefined).length ?? 0;
   const complete = Boolean(session && answered === session.questions.length);
   const progressPercent = session ? Math.round((answered / session.questions.length) * 100) : 0;
+  const safeResult = result?.ownerId === user?.id ? result : null;
   const secondsRemaining = session ? Math.max(0, Math.floor((Date.parse(session.expiresAt) - currentTime) / 1000)) : 0;
   const expired = Boolean(session && secondsRemaining === 0);
   useEffect(() => {
@@ -52,6 +53,13 @@ function AssessmentExperience() {
       sessionStorage.setItem(`skillmetry-quiz-draft:${user.id}:${session.sessionId}`, JSON.stringify(answers));
     } catch { /* Storage may be unavailable in private browsing. */ }
   }, [answers, session, user]);
+
+  // Do not retain a prior learner's in-progress selections or detailed results
+  // when the authenticated identity changes within a mounted workspace.
+  useEffect(() => {
+    setSession(null);setAnswers({});setResult(null);setReviewAttemptId(null);
+    setFlagged([]);setActiveQuestionIndex(0);
+  }, [user?.id]);
 
   useEffect(() => {
     const known = assessmentCatalog.find(item => item.id === requestedAssessment);
@@ -116,7 +124,7 @@ function AssessmentExperience() {
   }
 
   async function submit() {
-    if (!session || !complete) return;
+    if (!session || !complete || !user) return;
     setPending("submit");
     setError(null);
     const previousScore = latest?.score ?? null;
@@ -128,7 +136,7 @@ function AssessmentExperience() {
       });
       const body = await response.json() as { attempt?: AssessmentAttempt; error?: string };
       if (!response.ok || !body.attempt) throw new Error(body.error ?? "The assessment could not be submitted.");
-      setResult({ attempt: body.attempt, previousScore });
+      setResult({ attempt: body.attempt, previousScore, ownerId: user.id });
       setReviewAttemptId(body.attempt.assessmentVersion === "2026.3" ? body.attempt.id : null);
       if (user) {
         try { sessionStorage.removeItem(`skillmetry-quiz-draft:${user.id}:${session.sessionId}`); } catch { /* Optional local draft only. */ }
@@ -153,7 +161,7 @@ function AssessmentExperience() {
       <section className="assessment-paper">
         <div className="assessment-paper-head"><div><StatusPill tone="accent">{assessment.skillId}</StatusPill><h2>{assessment.title}</h2><p>{assessment.description}</p></div>{session ? <div className="assessment-progress"><div><strong>{answered}/{session.questions.length}</strong><span>answered</span></div><div className="assessment-progress-track" role="progressbar" aria-label="Assessment questions answered" aria-valuemin={0} aria-valuemax={session.questions.length} aria-valuenow={answered}><span style={{ width: `${progressPercent}%` }}/></div></div> : <StatusPill tone={latest ? "success" : "neutral"}>{latest ? `Latest ${latest.score}%` : "Not assessed"}</StatusPill>}</div>
 
-        {!session && !result ? <div className="assessment-start-state"><BookOpenCheck aria-hidden="true"/><h3>{user ? "Ready for a secure attempt?" : "Sign in to begin"}</h3><p>{user ? "You have 30 minutes after starting. Immediate retakes are available after completion; only one session stays active for this assessment version." : "Secure sessions, grading, saved history, and retakes require an authenticated account."}</p>{user ? <button className="btn btn-primary" type="button" onClick={start} disabled={pending === "start"}>{pending === "start" ? <LoaderCircle className="spin" aria-hidden="true"/> : <ShieldCheck aria-hidden="true"/>}{pending === "start" ? "Starting securely…" : latest ? "Start another attempt" : "Start assessment"}</button> : <Link className="btn btn-primary" href="/auth/sign-in?next=/assessments">Sign in</Link>}</div> : null}
+        {!session && !safeResult ? <div className="assessment-start-state"><BookOpenCheck aria-hidden="true"/><h3>{user ? "Ready for a secure attempt?" : "Sign in to begin"}</h3><p>{user ? "You have 30 minutes after starting. Immediate retakes are available after completion; only one session stays active for this assessment version." : "Secure sessions, grading, saved history, and retakes require an authenticated account."}</p>{user ? <button className="btn btn-primary" type="button" onClick={start} disabled={pending === "start"}>{pending === "start" ? <LoaderCircle className="spin" aria-hidden="true"/> : <ShieldCheck aria-hidden="true"/>}{pending === "start" ? "Starting securely…" : latest ? "Start another attempt" : "Start assessment"}</button> : <Link className="btn btn-primary" href="/auth/sign-in?next=/assessments">Sign in</Link>}</div> : null}
 
         {session ? <div className="diagnostic-quiz-workspace">
           <div className="diagnostic-question-toolbar">
@@ -202,9 +210,9 @@ function AssessmentExperience() {
           </div>
         </div> : null}
 
-        {result ? <div className={`assessment-outcome ${result.attempt.passed ? "passed" : "retry"}`} role="status">{result.attempt.passed ? <CheckCircle2 aria-hidden="true"/> : <X aria-hidden="true"/>}<div><span>Trusted result saved</span><h3>{result.attempt.score}% · {performanceLabel(result.attempt.score)}</h3><p>{result.previousScore === null ? `This is your first measured score for this skill. The pass threshold for this version is ${result.attempt.passThreshold}%.` : result.attempt.score > result.previousScore ? `Improved by ${result.attempt.score - result.previousScore} points from your previous score.` : result.attempt.score < result.previousScore ? `Changed by ${result.attempt.score - result.previousScore} points from your previous score.` : "Your score is unchanged from the previous attempt."}</p></div><button className="btn btn-quiet" type="button" onClick={() => setResult(null)}><RotateCcw aria-hidden="true"/>View retake</button></div> : null}
+        {safeResult ? <div className={`assessment-outcome ${safeResult.attempt.passed ? "passed" : "retry"}`} role="status">{safeResult.attempt.passed ? <CheckCircle2 aria-hidden="true"/> : <X aria-hidden="true"/>}<div><span>Trusted result saved</span><h3>{safeResult.attempt.score}% · {performanceLabel(safeResult.attempt.score)}</h3><p>{safeResult.previousScore === null ? `This is your first measured score for this skill. The pass threshold for this version is ${safeResult.attempt.passThreshold}%.` : safeResult.attempt.score > safeResult.previousScore ? `Improved by ${safeResult.attempt.score - safeResult.previousScore} points from your previous score.` : safeResult.attempt.score < safeResult.previousScore ? `Changed by ${safeResult.attempt.score - safeResult.previousScore} points from your previous score.` : "Your score is unchanged from the previous attempt."}</p></div><button className="btn btn-quiet" type="button" onClick={() => setResult(null)}><RotateCcw aria-hidden="true"/>View retake</button></div> : null}
 
-        {result?.attempt.assessmentVersion === "2026.3" ? <DiagnosticResultPanel attemptId={result.attempt.id}/> : null}
+        {safeResult?.attempt.assessmentVersion === "2026.3" ? <DiagnosticResultPanel attemptId={safeResult.attempt.id}/> : null}
 
         {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span><button className="btn btn-quiet" type="button" onClick={() => setError(null)}>Dismiss</button></div> : null}
       </section>
@@ -214,7 +222,7 @@ function AssessmentExperience() {
             <button type="button" className="btn btn-quiet" onClick={() => setReviewAttemptId(current => current === attempt.id ? null : attempt.id)}>
               {reviewAttemptId === attempt.id ? "Hide diagnosis" : "View diagnosis"}
             </button> : null}</div>; })}</div> : <EmptyState title="No completed assessments" description="Unassessed means unknown, not 0%. Start a quiz to create your first trusted score."/>}</section>
-    {reviewAttemptId && reviewAttemptId !== result?.attempt.id ? <DiagnosticResultPanel key={reviewAttemptId} attemptId={reviewAttemptId}/> : null}
+    {user && reviewAttemptId && reviewAttemptId !== safeResult?.attempt.id ? <DiagnosticResultPanel key={reviewAttemptId} attemptId={reviewAttemptId}/> : null}
   </>;
 }
 
