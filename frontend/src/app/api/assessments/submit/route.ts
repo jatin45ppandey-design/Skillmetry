@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
+
 import { gradeAnswers } from "@skillmetry/backend/lib/assessments/grading.server";
 import { getAssessmentDefinition, orderedGradedQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
 import { DIAGNOSTIC_VERSION } from "@skillmetry/shared/data/diagnostic-taxonomy";
@@ -37,6 +39,10 @@ export async function POST(request: Request) {
 
   const parsed = submitAssessmentSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Assessment answers are invalid." }, { status: 400 });
+
+  const limit = await checkRequestLimit("assessment:submit", auth.userId, 40, 3600);
+  if (limit === "blocked") return NextResponse.json({ error: "Assessment submission limit reached. Retry later." }, { status: 429, headers: { "Retry-After": "3600" } });
+  if (limit === "unavailable") return NextResponse.json({ error: "The secure assessment service is temporarily unavailable." }, { status: 503 });
 
   const admin = createAdminClient();
   const { data: session, error: sessionError } = await admin

@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
+
 import { authCredentialsSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
@@ -12,6 +14,10 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Enter a valid email and a password of at least 8 characters." }, { status: 400 });
   }
+
+  const limit = await checkRequestLimit("auth:sign-in", parsed.data.email, 12, 900);
+  if (limit === "blocked") return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429, headers: { "Retry-After": "900" } });
+  if (limit === "unavailable") return NextResponse.json({ error: "Sign-in is temporarily unavailable." }, { status: 503 });
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({

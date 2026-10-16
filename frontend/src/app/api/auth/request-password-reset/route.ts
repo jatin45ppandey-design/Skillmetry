@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
+
 import { passwordResetRequestSchema } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
@@ -26,6 +28,10 @@ export async function POST(request: Request) {
   if (!callback) return NextResponse.json({ error: "Password recovery has not been configured for this deployment." }, { status: 503 });
   const parsed = passwordResetRequestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+
+  const limit = await checkRequestLimit("auth:reset", parsed.data.email, 3, 3600);
+  if (limit === "blocked") return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429, headers: { "Retry-After": "3600" } });
+  if (limit === "unavailable") return NextResponse.json({ error: "Password recovery is temporarily unavailable." }, { status: 503 });
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {

@@ -1,5 +1,7 @@
 import { randomInt } from "node:crypto";
 import { NextResponse } from "next/server";
+import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
+
 import { getAssessmentRetakePolicy } from "@skillmetry/backend/lib/assessments/policy.server";
 import { getAssessmentDefinition, isDiagnosticDefinition, publicQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
 import { selectDiagnosticQuestionIds } from "@skillmetry/backend/lib/assessments/diagnostic-selection.server";
@@ -48,6 +50,10 @@ export async function POST(request: Request) {
 
   const parsed = startAssessmentSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Assessment selection is invalid." }, { status: 400 });
+
+  const limit = await checkRequestLimit("assessment:start", auth.userId, 30, 3600);
+  if (limit === "blocked") return NextResponse.json({ error: "Assessment start limit reached. Retry later." }, { status: 429, headers: { "Retry-After": "3600" } });
+  if (limit === "unavailable") return NextResponse.json({ error: "The secure assessment service is temporarily unavailable." }, { status: 503 });
 
   const assessmentId = parsed.data.assessmentId as AssessmentId;
   const definition = getAssessmentDefinition(assessmentId);
