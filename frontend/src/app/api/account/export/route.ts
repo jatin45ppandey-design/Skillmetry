@@ -6,15 +6,15 @@ const PAGE_SIZE = 250;
 const MAX_ROWS_PER_TABLE = 10000;
 
 const exportTables = [
-  { name: "profiles", owner: "id" },
-  { name: "user_skills", owner: "user_id" },
-  { name: "user_missions", owner: "user_id" },
-  { name: "assessment_attempts", owner: "user_id" },
-  { name: "assessment_question_reviews", owner: "user_id", optionalMigration: true },
-  { name: "evidence", owner: "user_id" },
-  { name: "scenario_runs", owner: "user_id" },
-  { name: "job_analyses", owner: "user_id" },
-  { name: "passport_settings", owner: "user_id" }
+  { name: "profiles", owner: "id", order: "id" },
+  { name: "user_skills", owner: "user_id", order: "skill_id" },
+  { name: "user_missions", owner: "user_id", order: "id" },
+  { name: "assessment_attempts", owner: "user_id", order: "id" },
+  { name: "assessment_question_reviews", owner: "user_id", order: "attempt_id", secondOrder: "ordinal", optionalMigration: true },
+  { name: "evidence", owner: "user_id", order: "id" },
+  { name: "scenario_runs", owner: "user_id", order: "id" },
+  { name: "job_analyses", owner: "user_id", order: "id" },
+  { name: "passport_settings", owner: "user_id", order: "user_id" }
 ] as const;
 
 export async function GET() {
@@ -31,11 +31,14 @@ export async function GET() {
   for (const table of exportTables) {
     const rows: unknown[] = [];
     for (let start = 0; start <= MAX_ROWS_PER_TABLE; start += PAGE_SIZE) {
-      const { data, error } = await auth.supabase
+      const query = auth.supabase
         .from(table.name)
         .select("*")
         .eq(table.owner, auth.userId)
-        .range(start, start + PAGE_SIZE - 1);
+        .order(table.order, { ascending: true });
+      const { data, error } = "secondOrder" in table
+        ? await query.order(table.secondOrder, { ascending: true }).range(start, start + PAGE_SIZE - 1)
+        : await query.range(start, start + PAGE_SIZE - 1);
       if (error) {
         if ("optionalMigration" in table && ["PGRST205", "42P01"].includes(error.code ?? "")) {
           omitted.push(table.name + " (optional migration not present)");

@@ -16,6 +16,8 @@ describe("private account export contract", () => {
     const code = read("../frontend/src/app/api/account/export/route.ts");
     expect(code).toContain("MAX_ROWS_PER_TABLE");
     expect(code).toContain(".range(start, start + PAGE_SIZE - 1)");
+    expect(code).toContain(".order(table.order, { ascending: true })");
+    expect(code).toContain('secondOrder: "ordinal"');
     expect(code).toContain("no partial export was created");
     expect(code).toContain("assessment_question_reviews");
   });

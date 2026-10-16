@@ -18,6 +18,8 @@ npm run dev
 
 Open `http://localhost:3000`. Next.js reads local Supabase settings from `frontend/.env.local` (not a root `.env.local`); restart the dev server after changing it.
 
+**P1/P2 ongoing (2026-10-16):** The `main` branch now contains the roadmap prerequisite fix, a staged password recovery flow (requires `SKILLMETRY_SITE_URL`), owner-scoped account JSON export, staged atomic request throttling (default off), and five additional foundational 2026.2 quizzes (default off until SQL rollout). See [P1/P2 release status](docs/P1_P2_RELEASE_STATUS.md). This is **not** a claim that all P1/P2 tasks or hosted rollouts are complete.
+
 **Phase D:** The repository includes expanded 2026.3 diagnostics (30 questions per skill, 15 per attempt), private topic-level answer reviews, five unscored practice questions per topic and an updated Digital Twin insight section. This rollout is **disabled by default**. The additional PostgreSQL migration is not applied to the hosted project. See [Phase D rollout and acceptance plan](docs/PHASE_D_IMPLEMENTATION.md) before enabling `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED`.
 
 For authenticated assessments, configure the two public Supabase values plus the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Never prefix either elevated variable with `NEXT_PUBLIC_`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
