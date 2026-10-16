@@ -48,6 +48,14 @@ export function normalizeOnboardingPreferences(value: unknown, fallbackCareerId:
     : { ...parsed.data, learning: defaultLearningPreferences(fallbackCareerId) };
 }
 
+export const passwordResetRequestSchema = z.object({
+  email: z.string().trim().email().max(254)
+}).strict();
+
+export const passwordUpdateSchema = z.object({
+  password: z.string().min(8).max(128)
+}).strict();
+
 export const authCredentialsSchema = z.object({
   email: z.string().trim().email().max(254),
   password: z.string().min(8).max(128),

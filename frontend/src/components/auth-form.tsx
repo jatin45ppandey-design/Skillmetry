@@ -78,6 +78,7 @@ export function AuthForm({ mode, configured, nextPath, initialError, oauthProvid
     <label className="field">Email address<input className="input" name="email" type="email" autoComplete="email" maxLength={254} required disabled={pending}/></label>
     <label className="field">Password<input className="input" name="password" type="password" autoComplete={isSignUp ? "new-password" : "current-password"} minLength={8} maxLength={128} required disabled={pending}/></label>
     <button className="btn btn-primary auth-submit" type="submit" disabled={pending}>{pending ? <LoaderCircle className="spin" aria-hidden="true"/> : null}{pending ? "Checking securely…" : isSignUp ? "Create account" : "Sign in"}</button>
+    {!isSignUp ? <p className="auth-switch"><Link href="/auth/forgot-password">Forgot your password?</Link></p> : null}
     <p className="auth-switch">{isSignUp ? "Already have an account?" : "New to Skillmetry?"} <Link href={`${isSignUp ? "/auth/sign-in" : "/auth/sign-up"}?next=${encodeURIComponent(nextPath)}`}>{isSignUp ? "Sign in" : "Create one"}</Link></p>
     <p className="auth-trust">Authentication is handled by Supabase. Numerical skill scores are created only by the server-side quiz grader.</p>
   </form>;

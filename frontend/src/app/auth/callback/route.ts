@@ -4,12 +4,12 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const destination = safeInternalPath(request.nextUrl.searchParams.get("next") ?? undefined);
+  const type = request.nextUrl.searchParams.get("type");
+  const destination = type === "recovery" ? "/auth/update-password" : safeInternalPath(request.nextUrl.searchParams.get("next") ?? undefined);
   const code = request.nextUrl.searchParams.get("code");
   const tokenHash = request.nextUrl.searchParams.get("token_hash");
-  const type = request.nextUrl.searchParams.get("type");
   const providerError = request.nextUrl.searchParams.get("error");
-  const isConfirmationLink = Boolean(tokenHash && type === "email");
+  const isConfirmationLink = Boolean(tokenHash && (type === "email" || type === "recovery"));
   if (!isSupabaseConfigured() || (!code && !isConfirmationLink)) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { error } = code
     ? await supabase.auth.exchangeCodeForSession(code)
-    : await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "email" });
+    : await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: type === "recovery" ? "recovery" : "email" });
   if (error) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
