@@ -33,6 +33,7 @@
 - Preserves existing Learning Chapters identity while extending workspace UI.
 - Adds referrer suppression, framing denial, content-type protection, browser capability restrictions, and private URL search-index exclusions.
 - Adds static source/release checks in CI (in addition to TypeScript, ESLint, Vitest and production Next.js build).
+- Adds a server-token-gated database readiness probe and operational incident runbook; no live monitor or incident channel is configured.
 - Print layout respects privacy, focus outlines and reduced-motion behavior.
 - **Not a substitute** for real desktop/mobile keyboard, screen-reader, browser, load and authenticated end-to-end testing.
 - A deployment-approved CSP needs dynamic nonces and should be configured only after QA; no brittle CSP header has been guessed.
