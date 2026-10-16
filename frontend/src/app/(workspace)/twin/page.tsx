@@ -12,7 +12,7 @@ export default function Twin() {
     <section className="studio-evidence-cover" aria-label="Evidence journal introduction">
       <div>
         <span className="studio-kicker">CHAPTER 04 / THE EVIDENCE JOURNAL</span>
-        <h2>Keep a record of <em>what's real.</em></h2>
+        <h2>Keep a record of <em>what&apos;s real.</em></h2>
         <p>Every completed, server-graded quiz becomes a dated entry. Explore actual evidence, revisit the same skill and distinguish missing results from measured zeros.</p>
       </div>
       <div className="studio-evidence-cover-art" aria-hidden="true">
