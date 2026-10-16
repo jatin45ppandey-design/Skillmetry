@@ -12,6 +12,9 @@ describe("revocable opt-in passport sharing",()=>{
     expect(management).toContain("30 * 86400000");
     expect(management).toContain("includeName");
     expect(management).toContain("includeScores");
+    expect(management).toContain('const sharePath = "/passport/s/" + token');
+    expect(management).not.toContain("new URL(");
+    expect(management).not.toContain("request.url");
   });
   it("does not grant anonymous access to private tables and restricts public RPC",()=>{
     expect(schema).toContain("force row level security");

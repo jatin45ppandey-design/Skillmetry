@@ -21,10 +21,11 @@ export function PassportShareControl() {
     try {
       const response=await fetch("/api/passport/share",{method,headers:{"Content-Type":"application/json"},
         body: method==="POST"?JSON.stringify({includeName,includeScores}):undefined});
-      const result=await response.json() as {error?:string;shareUrl?:string};
+      const result=await response.json() as {error?:string;sharePath?:string};
       if(!response.ok)throw new Error(result.error??"Sharing is unavailable.");
       setActive(method==="POST");
-      setUrl(method==="POST"?result.shareUrl??null:null);
+      setUrl(method==="POST" && result.sharePath?.startsWith("/passport/s/")
+        ? window.location.origin + result.sharePath : null);
     }catch(cause){setError(cause instanceof Error?cause.message:"Sharing is unavailable.");}
     finally{setPending(false);}
   }

@@ -72,8 +72,10 @@ export async function POST(request: Request) {
   }, { onConflict: "user_id" }).select("user_id").single();
   if (saved.error) return NextResponse.json({ error: "Passport share could not be saved. Verify database migration and RLS." }, { status: 503 });
 
-  const shareUrl = new URL("/passport/s/" + token, request.url).toString();
-  return NextResponse.json({ shareUrl, expiresAt,
+  // Return a relative path. Do not trust the request Host/X-Forwarded-Host
+  // as the origin of a student-shared public link.
+  const sharePath = "/passport/s/" + token;
+  return NextResponse.json({ sharePath, expiresAt,
     notice: "Only selected fields are visible. Generating another link revokes the previous one." }, { headers });
 }
 
