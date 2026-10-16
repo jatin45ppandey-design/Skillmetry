@@ -14,7 +14,10 @@ const exportTables = [
   { name: "evidence", owner: "user_id", order: "id" },
   { name: "scenario_runs", owner: "user_id", order: "id" },
   { name: "job_analyses", owner: "user_id", order: "id" },
-  { name: "passport_settings", owner: "user_id", order: "user_id" }
+  { name: "passport_settings", owner: "user_id", order: "user_id" },
+  { name: "learning_plan_tasks", owner: "user_id", order: "id", optionalMigration: true },
+  { name: "practice_lab_attempts", owner: "user_id", order: "id", optionalMigration: true },
+  { name: "mission_work", owner: "user_id", order: "id", optionalMigration: true }
 ] as const;
 
 export async function GET() {

@@ -20,5 +20,8 @@ describe("private account export contract", () => {
     expect(code).toContain('secondOrder: "ordinal"');
     expect(code).toContain("no partial export was created");
     expect(code).toContain("assessment_question_reviews");
+    for(const table of ["learning_plan_tasks","practice_lab_attempts","mission_work"]){
+      expect(code).toContain(table);
+    }
   });
 });
