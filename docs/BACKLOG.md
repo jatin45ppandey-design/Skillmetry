@@ -110,3 +110,13 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [ ] P9: approval and staged/hosted application of migration `202610160005_passport_sharing.sql`; manual consent, link expiry and cross-user E2E.
 - [ ] P10: full production browser/device/accessibility/performance QA; security and dependency review; incident alerting/backup/restore; account deletion and legally reviewed notices.
 - [ ] All: staged migrations 001–005 remain pending explicit owner approval; no hosted writes or deployment were performed.
+
+## Backend-first UX rebuild preparation: streaks and release safety (staged)
+
+- [x] Define trusted streak sources: server-graded quizzes and coding lab attempts only.
+- [x] Add owner-scoped SQL streak calculation, API contract, IANA local-day grouping, yesterday grace, tests, and default-off flag.
+- [x] Correct malformed dollar-quote delimiters in un-applied Passport migration 005.
+- [ ] Complete local PostgreSQL migration rehearsal and executable pgTAP test of streaks and all existing RLS policies.
+- [ ] Audit plan/mission integrity, API authorization, exports, auth recovery and production rate limits.
+- [ ] Obtain explicit approval before hosted migrations, enabling feature flags or changing production secrets.
+- [ ] Build streak UI as part of subsequent frontend redesign, after backend staging approval.
