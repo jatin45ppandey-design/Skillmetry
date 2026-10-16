@@ -331,3 +331,20 @@
 .studio-app .mission-journal-list p { margin: 6px 0; color: #5a735e; font-size: .83rem; }
 .studio-app .mission-journal-list small { display: block; color: #526d56; max-width: 68ch; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .studio-app .mission-evidence-actions { flex-direction: column; } .studio-app .mission-evidence-actions .btn { width: 100%; } }
+
+/* Private text-only job vocabulary matcher; no external AI request or hidden "fit" score. */
+.studio-app .studio-job-trust { display:flex; gap: 12px; align-items:flex-start; padding: 18px 23px; margin: 15px 0 25px; border: 1px solid #c8ddc3; background: #e9f1e4; border-radius: 20px 52px 20px 20px; }
+.studio-app .studio-job-trust svg { width: 21px; min-width: 21px; color: #40734a; }
+.studio-app .studio-job-trust p { margin: 0; color: #435d47; font-size: .88rem; line-height: 1.6; }
+.studio-app .studio-job-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; align-items:start; }
+.studio-app .studio-job-input, .studio-app .studio-job-output { min-width: 0; background: #fffcf4; border: 1px solid #d5dfd0; border-radius: 19px 58px 19px 19px; }
+.studio-app .studio-job-input .input { width: 100%; max-width: 100%; box-sizing: border-box; }
+.studio-app .studio-job-output-head { display: flex; align-items: center; gap: 12px; }
+.studio-app .studio-job-output-head h2 { margin: 5px 0 12px; color: #2b4934; }
+.studio-app .studio-job-matches { display: grid; gap: 10px; margin: 18px 0; }
+.studio-app .studio-job-matches article { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; background: #f1f4eb; border-radius: 14px; border: 1px solid #d8e2d3; }
+.studio-app .studio-job-matches strong { display: block; color: #2a4432; }
+.studio-app .studio-job-matches small { display: block; color: #667b69; margin-top: 5px; }
+.studio-app .studio-job-match-actions { display: flex; width: 100%; gap: 12px; flex-wrap: wrap; font-size: .79rem; }
+.studio-app .studio-job-match-actions a { color: #3b7550; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 900px) { .studio-app .studio-job-layout { grid-template-columns: 1fr; } }

@@ -16,6 +16,10 @@ This is the first **implemented vertical slice** of the Phase 2 roadmap (P2.1/P2
 
 The private Career Passport now offers an authenticated **Download my private learning record** JSON action. `GET /api/account/learning-export` uses Supabase SSR Auth to fetch that student's profile, paginated trusted quiz history, and (when available) self-reported mission submissions. The response uses `Content-Disposition: attachment` and `Cache-Control: private, no-store`. The export includes an explicit completeness flag if the Phase 2 mission migration has not yet run. This is a **learning-record export**, not a full Supabase Auth/Storage GDPR export, public sharing link or verified Career Passport. Real-account email/session testing remains a release gate.
 
+## Job-description vocabulary matching (P2.4 baseline)
+
+The Jobs page now provides a functional, **browser-only deterministic vocabulary matcher** for the 18 existing canonical skills. It identifies explicit named technologies/terms and maps each one to an existing server-graded result or `Not assessed`; it links to relevant learning resources and supported assessments. **No job text is sent to an external API or persisted.** This is not AI extraction, a complete job requirement parser, hiring prediction, resume recommendation or fitness grade. Those advanced capabilities require a reviewed provider integration and reliable benchmark evaluation.
+
 ## Database activation
 
 Migration: `database/supabase/migrations/202610160002_mission_submissions.sql`.
