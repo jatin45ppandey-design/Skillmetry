@@ -6,7 +6,7 @@
 
 - `/jobs` now accepts a public job description, validates 50–12,000 characters, extracts curated canonical skill mentions and gives actionable links.
 - `/api/jobs/analyze` optionally compares with the authenticated user's latest supported server-graded quiz evidence.
-- The input is **not stored**, and anonymous analysis never uses illustrative sample scores.
+- The input is **not stored** by default. Authenticated students may explicitly save a compact private requirement summary (`GET/POST/DELETE /api/jobs/saved`) containing only the chosen role title and recognized canonical skills, never the raw pasted description or any quiz-derived grade. Anonymous analysis never uses illustrative sample scores.
 - This is deterministic phrase matching, not a comprehensive ATS, company database or placement probability engine.
 - Saved job comparisons, opportunity data and deeper experience requirements remain pending.
 
