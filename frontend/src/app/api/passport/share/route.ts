@@ -28,7 +28,8 @@ export async function POST(request: Request) {
   const profile = await auth.supabase.from("profiles")
     .select("display_name,target_career_id").eq("id", auth.userId).maybeSingle();
   if (profile.error || !profile.data) return NextResponse.json({ error: "Complete your cloud profile before sharing." }, { status: 409 });
-  const career = careers.find(item => item.id === profile.data.target_career_id);
+  const currentProfile = profile.data;
+  const career = careers.find(item => item.id === currentProfile.target_career_id);
   if (!career) return NextResponse.json({ error: "Choose a valid career first." }, { status: 409 });
 
   const snapshot: {
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     career: career.title,
     disclaimer: "Student-consented snapshot. Quiz performance is not a certification, career-readiness score or employment prediction."
   };
-  if (parsed.data.includeName) snapshot.name = profile.data.display_name;
+  if (parsed.data.includeName) snapshot.name = currentProfile.display_name;
   if (parsed.data.includeScores) {
     const history = await auth.supabase.from("assessment_attempts")
       .select("skill_id,score,completed_at,id")
