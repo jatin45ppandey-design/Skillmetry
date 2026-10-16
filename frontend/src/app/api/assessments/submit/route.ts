@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { gradeAnswers } from "@skillmetry/backend/lib/assessments/grading.server";
 import { getAssessmentDefinition, orderedGradedQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import { DIAGNOSTIC_VERSION } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import { submitAssessmentSchema } from "@skillmetry/backend/lib/assessments/schema";
 import { createAdminClient } from "@skillmetry/backend/lib/supabase/admin";
 import { hasSupabaseServerCredentials } from "@skillmetry/backend/lib/supabase/config.server";
@@ -74,20 +75,41 @@ export async function POST(request: Request) {
   }
 
   let result;
+  const questions = orderedGradedQuestions(definition, session.question_ids);
   try {
-    result = gradeAnswers(orderedGradedQuestions(definition, session.question_ids), parsed.data.answers);
+    result = gradeAnswers(questions, parsed.data.answers);
   } catch {
     return NextResponse.json({ error: "Every question must be answered exactly once." }, { status: 400 });
   }
 
-  const { data: attemptId, error: completionError } = await admin.rpc("complete_assessment_session", {
-    p_session_id: session.id,
-    p_user_id: auth.userId,
-    p_score: result.score,
-    p_correct_count: result.correctCount,
-    p_total_questions: result.totalQuestions,
-    p_passed: result.passed
-  });
+  const isDiagnostic = definition.version === DIAGNOSTIC_VERSION;
+  // Only the trusted server constructs evidence; never accept topic labels or
+  // correctness from the student's JSON. The new RPC persists it atomically.
+  const reviews = isDiagnostic ? questions.map((question, ordinal) => {
+    if (!question.topicId || !question.difficulty || !question.explanation) {
+      throw new Error("Incomplete server-side diagnostic question metadata.");
+    }
+    return {
+      question_id: question.id,
+      topic_id: question.topicId,
+      difficulty: question.difficulty,
+      selected_index: parsed.data.answers[question.id],
+      correct_index: question.correctIndex,
+      explanation: question.explanation,
+      ordinal
+    };
+  }) : [];
+  const { data: attemptId, error: completionError } = await admin.rpc(
+    isDiagnostic ? "complete_diagnostic_assessment_session" : "complete_assessment_session", {
+      p_session_id: session.id,
+      p_user_id: auth.userId,
+      p_score: result.score,
+      p_correct_count: result.correctCount,
+      p_total_questions: result.totalQuestions,
+      p_passed: result.passed,
+      ...(isDiagnostic ? { p_reviews: reviews } : {})
+    }
+  );
 
   if (completionError || typeof attemptId !== "string") {
     const { data: completedAttempt, error: completedAttemptError } = await admin
@@ -107,7 +129,10 @@ export async function POST(request: Request) {
         { headers: { "Cache-Control": "private, no-store" } }
       );
     }
-    return NextResponse.json({ error: "This assessment could not be completed." }, { status: 409 });
+    if (isDiagnostic && completionError?.code === "PGRST202") {
+      return NextResponse.json({ error: "Diagnostic database migration is not installed. No result was saved; ask the project owner to complete rollout." }, { status: 503 });
+    }
+    return NextResponse.json({ error: "This assessment could not be completed. Please retry without starting a new session." }, { status: 409 });
   }
 
   const { data: attempt, error: attemptError } = await admin
@@ -118,5 +143,6 @@ export async function POST(request: Request) {
     .single();
 
   if (attemptError || !attempt) return NextResponse.json({ error: "The result was saved but could not be loaded." }, { status: 503 });
-  return NextResponse.json({ attempt: serializeAttempt(attempt) }, { headers: { "Cache-Control": "private, no-store" } });
+  return NextResponse.json({ attempt: serializeAttempt(attempt), reviewAvailable: isDiagnostic },
+    { headers: { "Cache-Control": "private, no-store" } });
 }
