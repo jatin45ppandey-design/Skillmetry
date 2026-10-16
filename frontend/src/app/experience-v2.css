@@ -107,3 +107,10 @@
 .studio-app .sx-result-next p{margin:0;font-size:.88rem;line-height:1.5;color:#5f7060}
 .studio-app .sx-result-next-links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 @media(max-width:750px){.studio-app .sx-result-next-links{width:100%}.studio-app .sx-result-next-links .btn{flex:1;justify-content:center}}
+
+.studio-app .sx-task-focus{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;padding:clamp(20px,3vw,28px);margin:18px 0;background:#e8f1e0;border:1px solid #c8d9c3;border-radius:22px;color:#294a34}
+.studio-app .sx-task-focus>div{display:grid;gap:6px}.studio-app .sx-task-focus h2{font:730 clamp(1.4rem,2vw,1.9rem)/1.14 var(--font-display),sans-serif;letter-spacing:-.03em;margin:4px 0}
+.studio-app .sx-task-focus p,.studio-app .sx-task-focus small{margin:0;color:#627663;font-size:.85rem}
+.studio-app .sx-lab-next{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.studio-app .sx-lab-next .btn{min-height:45px}
+@media(max-width:680px){.studio-app .sx-task-focus .sx-main-action{width:100%;justify-content:center}}
