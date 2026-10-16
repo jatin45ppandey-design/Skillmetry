@@ -29,6 +29,8 @@ for (let index = 0; index < sql.length; index++) {
   assert(dollarPairs % 2 === 0 && namedPairs % 2 === 0 && passportPairs % 2 === 0, "Function dollar-quotes balanced: " + prefixes[index]);
 }
 
+assert(!sql[2].includes("pg_catalog.extract(") && sql[2].includes("extract(epoch from now())"),
+  "Rate limiter uses PostgreSQL EXTRACT syntax correctly");
 assert(sql[3].includes("grant select, update (status, planned_date, updated_at)") &&
   !sql[3].includes("grant select,insert,update on public.learning_plan_tasks to authenticated"),
   "Plan creation is server-only; browser updates constrained to scheduling fields");

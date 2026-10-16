@@ -24,6 +24,11 @@ describe("Backend-only writes and staged migration invariants", () => {
     expect(api).toContain('createAdminClient().from("mission_work").upsert');
     expect(api).toContain("hasSupabaseServerCredentials()");
   });
+  it("uses legal PostgreSQL EXTRACT grammar in the DB-backed rate limit function", () => {
+    const sql = read("../database/supabase/migrations/202610160003_api_burst_limits.sql");
+    expect(sql).toContain("extract(epoch from now())");
+    expect(sql).not.toContain("pg_catalog.extract(");
+  });
   it("prevents a repeat of the malformed SQL trigger-delimiter defect", () => {
     const sql = read("../database/supabase/migrations/202610160005_passport_sharing.sql");
     expect(sql).toContain("returns trigger language plpgsql set search_path='' as $passport$");
