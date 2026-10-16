@@ -54,6 +54,16 @@ export const authCredentialsSchema = z.object({
   next: z.string().max(256).optional()
 }).strict();
 
+/** Recovery requests do not reveal whether an email belongs to an account. */
+export const passwordRecoveryRequestSchema = z.object({
+  email: z.string().trim().email().max(254)
+}).strict();
+
+/** Only a verified Supabase session may set a new password. */
+export const passwordRecoveryUpdateSchema = z.object({
+  password: z.string().min(8).max(128)
+}).strict();
+
 /** User-entered signup confirmation code; never accepts score/identity fields. */
 export const emailConfirmationOtpSchema = z.object({
   email: z.string().trim().email().max(254),
