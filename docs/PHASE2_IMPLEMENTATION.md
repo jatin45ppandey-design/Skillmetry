@@ -53,3 +53,7 @@ Migration: `database/supabase/migrations/202610160002_mission_submissions.sql`.
 - Both routes require an authenticated account, `SKILLMETRY_AI_ENABLED=true`, a server-only `GEMINI_API_KEY`, and the approved `202610160003_ai_usage_daily.sql` migration. `consume_ai_usage` enforces 3 requests per feature per user UTC day atomically. Expensive provider calls happen only after quota consumption.
 - Gemini API requests have 12-second timeouts and capped output; responses are validated and never create official proficiency scores. No AI text is saved by this implementation.
 - **No hosted migrations, provider billing setup or AI flag enablement performed.** Real provider integration and moderation/cost evaluation remain staging gates.
+
+## Voluntary pilot feedback (P2.9)
+
+An authenticated pilot form and owner-scoped database table are implemented at `/feedback`. Each student can submit up to one response per UTC day, with bounded rating/category/text and no modification of assessments. This does **not** mean that any real-student pilot study, consent review, analysis or usability testing has occurred. Migration `202610160005_pilot_feedback.sql` requires authorized staging approval before live collection.
