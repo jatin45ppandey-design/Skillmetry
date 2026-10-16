@@ -31,6 +31,22 @@ Default Supabase confirmation emails may contain only a link, not a visible code
 
 **Acceptance test:** Create a disposable account from the assessment page, complete the actual confirmation email, confirm the session and return to `/assessments`, and start a server-graded quiz. Also test expired OTP, resend cooldown, existing verified accounts, and mobile. Never modify hosted auth settings or apply database migrations without owner approval.
 
+### Phase D diagnostic rollout (NOT YET APPLIED TO HOSTED SUPABASE)
+
+The application supports a new 2026.3 bank of 30 questions per skill, sampling 15 balanced across five topics and three difficulties. It remains **off by default**. Version 2026.2 attempts and trusted scoring stay fully usable.
+
+Rollout requires (1) review the additive `database/supabase/migrations/202610160001_phase_d_diagnostics.sql`; (2) run staging/local migration and `database/supabase/tests/diagnostics_rls.test.sql`; (3) get the owner's explicit approval to apply to hosted Supabase; (4) only after success set `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=true` in the deployment's build environment or `frontend/.env.local` for local; (5) rebuild/restart the frontend and test private review/retake/practice endpoints. **Do not enable the flag before installing the migration.**
+
+For local-only development with a separately migrated database:
+
+```dotenv
+NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=true
+```
+
+This is a public feature gate, not an access-control mechanism; all grades and evidence are server-authoritative. To roll back application behavior without modifying data, set it to `false` and rebuild. Do not drop the evidence table or rewrite historical attempts.
+
+See [Phase D Implementation and Validation](PHASE_D_IMPLEMENTATION.md).
+
 ## 2. Review and apply migrations
 
 Migrations run in order:
@@ -42,6 +58,7 @@ Migrations run in order:
 - `20261011180657_assessment_concurrency_hardening.sql`: atomic start/resume, one-active-session uniqueness, explicit versioned pass thresholds, deterministic history ordering, and stronger database invariants.
 - `20261012000000_add_full_stack_career.sql`: adds the fourth career and its canonical skill relationships.
 - `20261012000001_enforce_trusted_attempt_metadata.sql`: closes nullable metadata gaps for trusted quiz results.
+- `202610160001_phase_d_diagnostics.sql`: **pending owner approval**; adds immutable per-question diagnostic review evidence, owner-scoped RLS, and atomic version-2026.3 completion RPC.
 
 The assessment migration chain preserves profiles, claimed skill rows, and old attempts. It does not convert any legacy value into a trusted score.
 

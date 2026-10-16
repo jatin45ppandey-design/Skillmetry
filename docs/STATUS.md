@@ -80,3 +80,7 @@ npm run verify:assessment
 ```
 
 See `docs/SUPABASE_SETUP.md` for the local environment required by the final two commands.
+
+## Phase D implementation note (2026-10-16)
+
+Versioned diagnostic assessment, evidence, practice and frontend workflow code have been added to `main`, but the **hosted Phase D database migration is not applied**. The `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED` flag remains off by default, retaining working 2026.2 assessments. The Phase D feature will be functionally active only after reviewed/staged migration and explicit owner approval. See `docs/PHASE_D_IMPLEMENTATION.md`; do not present untested cloud verification as completed.

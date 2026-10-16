@@ -70,3 +70,18 @@ Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve 
 - External roadmap resources
 
 The hosted assessment loop was verified on 2026-10-15. Future resource and advanced-assessment phases may proceed independently of the remaining public-launch security and privacy gates.
+
+## Phase D — diagnostic improvements (code implemented; cloud rollout pending)
+
+- [x] D1: versioned 2026.3 question bank (30 questions each for Python, SQL, JavaScript, HTML) with five tagged topics and per-question difficulty metadata.
+- [x] D1: random 15-item blueprint with topic/tier coverage, score precision, old version compatibility, and tests.
+- [x] D2: atomic additive owner-scoped question-level evidence migration and deterministic diagnostic insights with insufficient-evidence states.
+- [x] D2: per-topic targeted resource matching and independently authored unscored practice set.
+- [x] D3: one-question assessment navigation, flag/review palette, optional local answer draft restoration and timer.
+- [x] D3: topic breakdown, post-submission answer review, practice/assessment navigation and Digital Twin diagnostic insight surface.
+- [ ] D2: broaden practice beyond initial two exercises per topic; expand authored explanations and difficulty coverage.
+- [ ] D2: compare topic trajectories across multiple diagnostic versions/attempts.
+- [ ] Hosted/staging: owner-approved migration; run pgTAP and authenticated end-to-end review test.
+- [ ] D3: manual desktop/mobile/accessibility/browser QA and logged-in multi-user isolation walkthrough.
+
+**Default-off until migration approval:** `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED`. See `docs/PHASE_D_IMPLEMENTATION.md`.
