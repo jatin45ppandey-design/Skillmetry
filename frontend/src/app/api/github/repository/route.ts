@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
     const session=await auth.supabase.auth.getUser();
     const identity=session.data.user?.id===auth.userId
       ? session.data.user.identities?.find(i=>i.provider==="github") : null;
-    const linkedId=identity?.provider_id;
+    // Supabase stores the provider's stable GitHub numeric subject in identity_data.sub.
+    // The local Supabase identity.id is not the GitHub account ID.
+    const linkedId=(identity?.identity_data as Record<string,unknown> | undefined)?.sub;
     const ownershipMatched=Boolean(linkedId && result.owner?.id &&
       String(linkedId)===String(result.owner.id));
     return NextResponse.json({repository:{
