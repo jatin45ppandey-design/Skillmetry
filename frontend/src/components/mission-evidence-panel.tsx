@@ -6,6 +6,7 @@ import type { Mission } from "@skillmetry/shared/types/domain";
 import { isSafeEvidenceUrl, type MissionSubmission } from "@skillmetry/shared/lib/mission-evidence";
 import type { MissionStorageStatus } from "@/hooks/use-mission-submissions";
 import { StatusPill } from "@/components/workspace-ui";
+import { GitHubRepositoryInspector } from "@/components/github-repository-inspector";
 
 export function MissionEvidencePanel({ mission, record, status, onSaved }: {
   mission: Mission;
@@ -67,6 +68,7 @@ export function MissionEvidencePanel({ mission, record, status, onSaved }: {
       {record.evidenceUrl && isSafeEvidenceUrl(record.evidenceUrl) ?
         <a href={record.evidenceUrl} target="_blank" rel="noopener noreferrer">View submitted project ↗</a> : null}
       {record.reflection ? <p>{record.reflection}</p> : null}
+      <GitHubRepositoryInspector url={record.evidenceUrl} />
       <small>Submitted {record.submittedAt ? new Date(record.submittedAt).toLocaleDateString() : "previously"}. Submitted work is read-only.</small>
     </div> : null}
     {status === "ready" && record?.status !== "submitted" ? <div className="mission-evidence-editor">
@@ -87,6 +89,7 @@ export function MissionEvidencePanel({ mission, record, status, onSaved }: {
           placeholder="What did you build, test or learn?" disabled={Boolean(pending)}
           onChange={event => setReflection(event.target.value)}/>
       </label>
+      <GitHubRepositoryInspector url={evidenceUrl.trim() || null} />
       {error ? <p className="auth-error" role="alert">{error}</p> : null}
       {notice ? <p className="note" role="status">{notice}</p> : null}
       <div className="mission-evidence-actions">
