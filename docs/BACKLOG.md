@@ -97,3 +97,16 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [ ] Test two-user, cross-browser and mobile E2E for all workflow routes; enable production feature flag.
 - [ ] Finish advanced P3 analytics, P4 reminders/rescheduling, P5 isolated code runner, P6 external evidence verification.
 - [ ] Expand catalog missions and content editorial coverage, preserving scoring trust boundaries.
+
+## P7–P10 core implementation (2026-10-16)
+
+- [x] P7: deterministic canonical job requirement extraction with measured-vs-unassessed score evidence and private opt-in saved role summaries.
+- [x] P8: guided tutor page with existing curated resources, authenticated opt-in AI endpoint, strict limits and external provider disabled by default.
+- [x] P9: printable private Career Passport; stage 7-day expiring, revocable, chosen-skill public shares with 256-bit opaque tokens and server-side hash lookup.
+- [x] P9: add immutable share snapshot controls and multi-user pgTAP RLS test cases for staging.
+- [x] P10: browser security headers, private route robots rules, CI static release checks, token-gated database readiness probe and incident runbook.
+- [ ] P7: save full job comparisons with explicit retention controls, external opportunity verification and wider semantic requirement coverage.
+- [ ] P8: production provider/account enablement, topic-diagnostic context, human AI evaluation, cost and observability controls.
+- [ ] P9: approval and staged/hosted application of migration `202610160005_passport_sharing.sql`; manual consent, link expiry and cross-user E2E.
+- [ ] P10: full production browser/device/accessibility/performance QA; security and dependency review; incident alerting/backup/restore; account deletion and legally reviewed notices.
+- [ ] All: staged migrations 001–005 remain pending explicit owner approval; no hosted writes or deployment were performed.

@@ -8,6 +8,8 @@ Skillmetry is a responsive career digital twin for students. A student chooses a
 
 **P3–P6 staged learning workspaces (2026-10-16):** The roadmap/Digital Twin now distinguish unscored learning activity from assessed skill evidence, and the repository includes a weekly study planner, a safe guided coding lab, and learner-reported project mission workflows. The lab can run without cloud persistence; the planner offers an explicitly unsaved preview. Private task, practice and mission storage requires `202610160004_learning_workflows.sql` and `NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=true`, both **unapplied/disabled by default**. See [P3–P6 rollout status](docs/P3_P6_IMPLEMENTATION.md).
 
+**P7–P10 source implementation (2026-10-16):** Skillmetry now includes canonical job-description parsing with private opt-in saved requirement summaries, an optional consent-based AI tutor with curated non-AI guidance, printable private Career Passport, staged expiring/revocable share URLs, and additional browser/security/release checks. AI requests and public passport sharing are **disabled by default**. Hosted database migrations and cloud configuration have not been applied. See [P7–P10 release status](docs/P7_P10_IMPLEMENTATION.md), [operations](docs/OPERATIONS_RUNBOOK.md) and the [project backlog](docs/BACKLOG.md). This is not a claim of a completed public-production launch.
+
 ## Getting started
 
 Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.
