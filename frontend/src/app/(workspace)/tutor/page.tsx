@@ -39,7 +39,7 @@ export default function Tutor(){
    </form>
    <section className="panel" aria-live="polite">
     <h2>Your study guidance</h2>
-    {!answer?<p>Select a topic and ask a question. Start with curated guidance if AI isn't configured.</p>:
+    {!answer?<p>Select a topic and ask a question. Start with curated guidance if AI is not configured.</p>:
      <><p><strong>{answer.mode==="ai"?"AI-generated explanation":"Curated learning pathway"}</strong></p>
       <p className="workflow-answer">{answer.answer}</p>
       <h3>Reviewed learning resources</h3>
