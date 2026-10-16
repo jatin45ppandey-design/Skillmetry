@@ -57,3 +57,7 @@ SKILLMETRY_STREAKS_ENABLED=false
 ## Connected next-step API
 
 `GET /api/learning/overview` is a new authenticated, read-only API for the later UX redesign. It returns an onboarding-required state or a single actionable recommendation using the existing deterministic recommender and the current user's genuine server-graded quiz evidence. The API separately labels measured-skill count and up to two upcoming recommendations. It does not infer unknown grades, manufacture learning activity, or change any persistent record. No frontend redesign is included in this milestone.
+
+## Isolated SQL verification workflow
+
+`.github/workflows/database-integration.yml` triggers a disposable Supabase Docker database for migration changes in a pull request or for a manual workflow run. It performs `npx supabase start --workdir database` (which stages migrations) followed by `npm run test:rls`, and stops the local database regardless of outcome. This is separate from standard JS/TS CI and intentionally has no hosted Supabase credentials. Completion must be checked in the actual GitHub Actions run; adding the workflow does not mean SQL tests have passed.
