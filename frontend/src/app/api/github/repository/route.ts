@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       lastPush:result.pushed_at??null,
       defaultBranch:result.default_branch??null,
       linkedGitHubOwner:ownershipMatched
-    },disclaimer:"Matching a linked GitHub identity proves the public repository owner account ID, not who wrote the code, reviewed the project, or mastered the skill."},
+    },disclaimer:"Matching a linked GitHub identity can confirm the public repository owner account ID. This does not prove who wrote the code, independently reviewed the project, or mastered the skill."},
     {headers:{"Cache-Control":"private, no-store"}});
   }catch {
     return NextResponse.json({error:"Public GitHub metadata could not be fetched."},{status:502});
