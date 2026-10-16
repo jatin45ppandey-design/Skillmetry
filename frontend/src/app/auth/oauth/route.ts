@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
+import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
 import { isSupabaseConfigured, requireSupabaseConfig } from "@/lib/supabase/config";
 import { isOAuthProviderEnabled } from "@/lib/supabase/oauth-config.server";
 import { parseOAuthProvider } from "@skillmetry/shared/lib/social-oauth";
@@ -10,7 +11,7 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest) {
   const next = safeInternalPath(request.nextUrl.searchParams.get("next") ?? undefined);
   function backToSignIn(error: "oauth_unavailable" | "oauth_disabled" | "oauth_invalid") {
-    const url = new URL("/auth/sign-in", request.url);
+    const url = new URL("/auth/sign-in", trustedSiteOrigin(request) ?? request.url);
     url.searchParams.set("next", next);
     url.searchParams.set("error", error);
     return NextResponse.redirect(url, { headers: { "Cache-Control": "no-store" } });
@@ -21,8 +22,8 @@ export async function GET(request: NextRequest) {
   if (!isSupabaseConfigured()) return backToSignIn("oauth_unavailable");
   if (!isOAuthProviderEnabled(provider)) return backToSignIn("oauth_disabled");
 
-  const callbackUrl = new URL("/auth/callback", request.url);
-  callbackUrl.searchParams.set("next", next);
+  const callbackUrl = trustedAuthCallback(request, next);
+  if (!callbackUrl) return backToSignIn("oauth_unavailable");
 
   try {
     const supabase = await createClient();

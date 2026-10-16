@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { resendSignupConfirmationSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
+import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
 
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
@@ -11,8 +12,8 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
   }
-  const callbackUrl = new URL("/auth/callback", request.url);
-  callbackUrl.searchParams.set("next", safeInternalPath(parsed.data.next));
+  const callbackUrl = trustedAuthCallback(request, safeInternalPath(parsed.data.next));
+  if (!callbackUrl) return NextResponse.json({ error: "Email redirect origin is not configured." }, { status: 503 });
   const supabase = await createClient();
   const { error } = await supabase.auth.resend({
     type: "signup",

@@ -2,8 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
+import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
 
 export async function GET(request: NextRequest) {
+  const site = trustedSiteOrigin(request);
+  if (!site) return NextResponse.json({ error: "Authentication callback origin is not configured." }, { status: 503 });
   const type = request.nextUrl.searchParams.get("type");
   const destination = type === "recovery" ? "/auth/update-password" : safeInternalPath(request.nextUrl.searchParams.get("next") ?? undefined);
   const code = request.nextUrl.searchParams.get("code");
@@ -11,7 +14,7 @@ export async function GET(request: NextRequest) {
   const providerError = request.nextUrl.searchParams.get("error");
   const isConfirmationLink = Boolean(tokenHash && (type === "email" || type === "recovery"));
   if (!isSupabaseConfigured() || (!code && !isConfirmationLink)) {
-    const failed = request.nextUrl.clone();
+    const failed = new URL(request.nextUrl.pathname, site);
     failed.pathname = "/auth/sign-in";
     failed.search = "";
     failed.searchParams.set("error", !isSupabaseConfigured() ? "not_configured" : providerError ? "oauth_cancelled" : "invalid_callback");
@@ -32,5 +35,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(failed);
   }
 
-  return NextResponse.redirect(new URL(destination, request.url));
+  return NextResponse.redirect(new URL(destination, site));
 }

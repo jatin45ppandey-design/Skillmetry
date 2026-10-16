@@ -4,6 +4,7 @@ import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate
 import { authCredentialsSchema, safeInternalPath } from "@skillmetry/shared/lib/profile-schema";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@skillmetry/backend/lib/supabase/server";
+import { trustedAuthCallback, trustedSiteOrigin } from "@skillmetry/backend/lib/security/site-origin.server";
 
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
@@ -20,8 +21,8 @@ export async function POST(request: Request) {
   if (limit === "unavailable") return NextResponse.json({ error: "Sign-up is temporarily unavailable." }, { status: 503 });
 
   const next = safeInternalPath(parsed.data.next);
-  const callbackUrl = new URL("/auth/callback", request.url);
-  callbackUrl.searchParams.set("next", next);
+  const callbackUrl = trustedAuthCallback(request, next);
+  if (!callbackUrl) return NextResponse.json({ error: "Email redirect origin is not configured." }, { status: 503 });
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
