@@ -85,3 +85,15 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [ ] D3: manual desktop/mobile/accessibility/browser QA and logged-in multi-user isolation walkthrough.
 
 **Default-off until migration approval:** `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED`. See `docs/PHASE_D_IMPLEMENTATION.md`.
+
+## P3–P6 core MVP implementation (2026-10-16, staged)
+
+- [x] P3: separate learning activity from immutable quiz scores; show in Roadmap and Digital Twin.
+- [x] P4: deterministic weekly study plan, authenticated task API and labeled preview.
+- [x] P5: guided coding/SQL practice with server-only answers and optional private attempt history.
+- [x] P6: curated mission checklists, notes, HTTPS evidence links and self-reported submission flow.
+- [x] Add migration for private owner-scoped workflow tables, contract/unit tests and pgTAP isolation cases.
+- [ ] Obtain explicit approval, rehearse and apply workflow migration in staging/hosted projects.
+- [ ] Test two-user, cross-browser and mobile E2E for all workflow routes; enable production feature flag.
+- [ ] Finish advanced P3 analytics, P4 reminders/rescheduling, P5 isolated code runner, P6 external evidence verification.
+- [ ] Expand catalog missions and content editorial coverage, preserving scoring trust boundaries.

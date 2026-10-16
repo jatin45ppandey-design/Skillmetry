@@ -6,6 +6,8 @@ Skillmetry is a responsive career digital twin for students. A student chooses a
 
 > **Development status — quiz-driven MVP.** Supabase SSR authentication, private profile persistence, server-only assessment grading, immutable attempt history, owner-scoped RLS, and an anonymous illustrative demo are implemented. Unassessed skills remain unknown; they are never displayed as 0%. The product does not claim hiring probability, professional readiness, human verification, or project/GitHub-derived skill scores.
 
+**P3–P6 staged learning workspaces (2026-10-16):** The roadmap/Digital Twin now distinguish unscored learning activity from assessed skill evidence, and the repository includes a weekly study planner, a safe guided coding lab, and learner-reported project mission workflows. The lab can run without cloud persistence; the planner offers an explicitly unsaved preview. Private task, practice and mission storage requires `202610160004_learning_workflows.sql` and `NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=true`, both **unapplied/disabled by default**. See [P3–P6 rollout status](docs/P3_P6_IMPLEMENTATION.md).
+
 ## Getting started
 
 Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.
