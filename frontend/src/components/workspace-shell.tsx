@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Activity, ArrowUpRight, BookMarked, BriefcaseBusiness, Cloud, CloudOff,
   Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu,
@@ -46,6 +46,41 @@ function StudioLinks({ current, onNavigate }: { current: string; onNavigate?: ()
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerPanelRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+    menuButtonRef.current?.focus();
+  }
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    closeButtonRef.current?.focus();
+    function onDrawerKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeDrawer();
+      }
+      if (event.key !== "Tab") return;
+      const controls = drawerPanelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onDrawerKeyDown);
+    return () => document.removeEventListener("keydown", onDrawerKeyDown);
+  }, [drawerOpen]);
   const { name, profileSource } = useSkillmetry();
   const { user, syncStatus } = useAuth();
   const current = [...primary, ...secondary].find(item => item.href === pathname);
@@ -82,7 +117,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
             <Link className="studio-avatar" href={accountHref} aria-label={user ? "Open account" : "Sign in"}>
               {user ? <span>{(name || "S").slice(0, 1).toUpperCase()}</span> : <LogIn size={19} aria-hidden="true" />}
             </Link>
-            <button type="button" className="studio-mobile-menu" onClick={() => setDrawerOpen(true)}
+            <button type="button" className="studio-mobile-menu" ref={menuButtonRef} onClick={() => setDrawerOpen(true)}
               aria-label="Open all navigation" aria-expanded={drawerOpen} aria-controls="studio-navigation-drawer">
               <Menu size={22} aria-hidden="true" />
             </button>
@@ -105,18 +140,18 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
       {drawerOpen ? (
         <div className="studio-drawer" id="studio-navigation-drawer" role="dialog" aria-modal="true" aria-label="All Skillmetry sections">
-          <button type="button" className="studio-drawer-backdrop" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" />
-          <aside className="studio-drawer-panel">
+          <button type="button" className="studio-drawer-backdrop" onClick={closeDrawer} aria-label="Close navigation" />
+          <aside className="studio-drawer-panel" ref={drawerPanelRef}>
             <div className="studio-drawer-heading">
               <Brand />
-              <button type="button" className="studio-icon-button" onClick={() => setDrawerOpen(false)} aria-label="Close navigation"><X size={19} /></button>
+              <button type="button" className="studio-icon-button" ref={closeButtonRef} onClick={closeDrawer} aria-label="Close navigation"><X size={19} /></button>
             </div>
             <span className="studio-drawer-caption">YOUR CHAPTERS</span>
-            <nav aria-label="All learning pages"><StudioLinks current={pathname} onNavigate={() => setDrawerOpen(false)} /></nav>
+            <nav aria-label="All learning pages"><StudioLinks current={pathname} onNavigate={closeDrawer} /></nav>
             <span className="studio-drawer-caption">MORE TO EXPLORE</span>
             <nav aria-label="Additional learning pages">
               {secondary.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} onClick={() => setDrawerOpen(false)}
+                <Link key={href} href={href} onClick={closeDrawer}
                   className={"studio-nav-link" + (pathname === href ? " is-current" : "")}>
                   <Icon size={17} aria-hidden="true" />{label}
                 </Link>
