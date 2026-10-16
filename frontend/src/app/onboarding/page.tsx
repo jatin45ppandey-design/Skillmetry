@@ -3,53 +3,138 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Info } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Info, SlidersHorizontal } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LearningGoalEditor } from "@/components/learning-goal-editor";
-import { StepMarker } from "@/components/workspace-ui";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
-import type { CareerId } from "@skillmetry/shared/types/domain";
+import type { CareerId, LearningPreferences } from "@skillmetry/shared/types/domain";
+
+type Intent = "career" | "explore" | "skill";
+const intentions: { id: Intent; label: string; description: string; icon: typeof Compass }[] = [
+  { id: "career", label: "I have a career in mind", description: "Explore the skills for a specific role.", icon: Compass },
+  { id: "explore", label: "I'm still figuring it out", description: "Look around without committing to a career.", icon: BookOpen },
+  { id: "skill", label: "I want to learn a skill", description: "Make a path around a topic that interests you.", icon: SlidersHorizontal }
+];
 
 export default function Onboarding() {
   const router = useRouter();
   const { user, syncStatus } = useAuth();
-  const { name, careerId, preferences, completeOnboarding } = useSkillmetry();
+  const { name, preferences, completeOnboarding, careerId } = useSkillmetry();
   const [step, setStep] = useState(1);
   const [localName, setLocalName] = useState(name === "Demo Student" ? "" : name);
-  const [selected, setSelected] = useState<CareerId>(careerId);
-  const [learningGoals, setLearningGoals] = useState(preferences.learning);
-  const previewCareer = careers.find(career => career.id === learningGoals.primaryCareerId) ?? null;
-  const previewSkills = learningGoals.selectedSkillIds.map(id => skillById[id]?.label ?? id);
+  const [intent, setIntent] = useState<Intent>("career");
+  const [learning, setLearning] = useState<LearningPreferences>(preferences.learning);
+  const [hours, setHours] = useState(preferences.hoursPerWeek);
+  const [advanced, setAdvanced] = useState(false);
+  const selectedCareer = careers.find(item => item.id === learning.primaryCareerId);
+  const chooseCareer = (id: CareerId) => setLearning(current => ({
+    ...current, primaryCareerId: id
+  }));
+  const canFinish = intent !== "career" || Boolean(learning.primaryCareerId);
 
-  function submit() {
-    completeOnboarding(localName.trim() || "Student", selected, { ...preferences, learning: learningGoals });
+  function finish() {
+    if (!canFinish || !localName.trim()) return;
+    // Anonymous browsing may be self-directed; backend careerId retains an
+    // existing canonical fallback, but no target career is falsely selected.
+    const finalLearning = intent === "explore"
+      ? { ...learning, primaryCareerId: null }
+      : learning;
+    completeOnboarding(localName.trim(), finalLearning.primaryCareerId ?? careerId, {
+      ...preferences, hoursPerWeek: hours, learning: finalLearning
+    });
     router.push("/dashboard");
   }
 
-  return <main className="onboarding-shell">
-    <nav className="onboarding-nav"><Brand/><Link className="btn btn-quiet" href="/"><ArrowLeft aria-hidden="true"/>Back to home</Link></nav>
+  return <main className="onboarding-shell sx-onboarding">
+    <nav className="onboarding-nav"><Brand/><Link className="btn btn-quiet" href="/"><ArrowLeft aria-hidden="true"/>Back home</Link></nav>
     <div className="onboarding-layout">
       <aside className="onboarding-aside">
-        <div><span className="eyebrow">Learning setup</span><h1>Choose a direction. Or build your own.</h1><p>Your Digital Twin begins unassessed. Numerical skill scores appear only after a secure, server-graded quiz.</p></div>
-        <div className="onboarding-steps"><StepMarker step={1} label="About you" active={step === 1} complete={step > 1}/><StepMarker step={2} label="Learning goals" active={step === 2} complete={false}/></div>
-        <div className="privacy-note"><Info aria-hidden="true"/><p>{user ? syncStatus === "offline" ? "You are offline. Your selection stays local and will sync after reconnecting." : "Your learning goals will sync to your private account." : "This profile stays in this browser. Sign in when you want to take secure assessments."}</p></div>
+        <div>
+          <span className="eyebrow">YOUR FIRST STEP</span>
+          <h1>Build a path that feels <em>like yours.</em></h1>
+          <p>You do not need to know every skill or tool yet. Start simple; refine things whenever you're ready.</p>
+        </div>
+        <ol className="sx-onboarding-progress" aria-label="Setup steps">
+          <li className={step === 1 ? "active" : "complete"}><span>1</span> About you</li>
+          <li className={step === 2 ? "active" : ""}><span>2</span> Your direction</li>
+        </ol>
+        <div className="privacy-note"><Info aria-hidden="true"/><p>{user ? syncStatus === "offline"
+          ? "You are offline. Your choices will try to sync after reconnecting."
+          : "Your learning goals will sync to your private account."
+          : "You can explore locally. Sign in later to take a secure assessment."}</p></div>
       </aside>
-      <section className="onboarding-card" aria-live="polite">
-        {step === 1 ? <div><span className="step-kicker">Step 1 of 2</span><h2>What should we call you?</h2><p className="form-lead">We use your first name to personalize your workspace.</p><label className="field">First name<input autoFocus className="input input-large" value={localName} onChange={event => setLocalName(event.target.value)} maxLength={64} placeholder="e.g. Jatin" autoComplete="given-name"/></label><div className="form-actions"><span/><button className="btn btn-primary" type="button" disabled={!localName.trim()} onClick={() => setStep(2)}>Choose a career <ArrowRight aria-hidden="true"/></button></div></div> : null}
-        {step === 2 ? <div><span className="step-kicker">Step 2 of 2</span><h2>Build your own study kit</h2><p className="form-lead">A career is optional. Add one or more skills and tools instead, or combine all three. Unassessed skills remain explicitly unknown.</p><aside className="onboarding-preview" aria-live="polite" aria-label="Live learning direction preview">
-          <div className="onboarding-preview-head"><Info size={16} aria-hidden="true"/> YOUR LEARNING KIT / LIVE PREVIEW</div>
-          <h3>{previewCareer?.title ?? "A self-directed learning path"}</h3>
-          <p>{previewCareer?.subtitle ?? "Your selected skills and tools shape your personal direction. Choosing a career is optional."}</p>
-          <div className="onboarding-preview-chips">
-            {previewSkills.slice(0, 4).map(label => <span key={label}>{label}</span>)}
-            {previewSkills.length > 4 ? <span>+{previewSkills.length - 4} skills</span> : null}
-            <span>{learningGoals.selectedToolIds.length} tools selected</span>
+      <section className="onboarding-card sx-onboarding-card" aria-live="polite">
+        {step === 1 ? <div>
+          <span className="step-kicker">STEP 1 OF 2</span>
+          <h2>What brings you here?</h2>
+          <p className="form-lead">There's no wrong starting point.</p>
+          <div className="sx-intent-grid" role="group" aria-label="Your reason for exploring">
+            {intentions.map(option => {
+              const Icon = option.icon;
+              return <button key={option.id} type="button"
+                aria-pressed={intent === option.id}
+                className={`sx-intent-option ${intent === option.id ? "selected" : ""}`}
+                onClick={() => { setIntent(option.id); if (option.id === "explore") setLearning(current => ({...current, primaryCareerId:null})); }}>
+                <Icon aria-hidden="true" size={24}/>
+                <span><strong>{option.label}</strong><small>{option.description}</small></span>
+                {intent === option.id ? <Check aria-hidden="true" size={18}/> : null}
+              </button>;
+            })}
           </div>
-          <small className="onboarding-preview-note">This previews your chosen goals, not assessment scores. Your skill record starts unassessed until you complete a supported secure quiz.</small>
-        </aside>
-        <LearningGoalEditor value={learningGoals} onChange={value => { setLearningGoals(value); if (value.primaryCareerId) setSelected(value.primaryCareerId); }}/><div className="form-actions"><button className="btn btn-quiet" type="button" onClick={() => setStep(1)}><ArrowLeft aria-hidden="true"/>Back</button><button className="btn btn-primary" type="button" onClick={submit}>Open my workspace <ArrowRight aria-hidden="true"/></button></div></div> : null}
+          <label className="field sx-name-input">What should we call you?
+            <input autoComplete="given-name" className="input input-large" maxLength={64}
+              placeholder="Your first name" value={localName} onChange={e => setLocalName(e.target.value)}/>
+          </label>
+          <div className="form-actions"><span/><button className="btn btn-primary"
+            type="button" disabled={!localName.trim()} onClick={() => setStep(2)}>
+            Continue <ArrowRight aria-hidden="true"/></button></div>
+        </div> : null}
+        {step === 2 ? <div>
+          <span className="step-kicker">STEP 2 OF 2</span>
+          <h2>{intent === "career" ? "What would you like to become?" : intent === "skill" ?
+            "What would you like to learn?" : "Explore at your own pace."}</h2>
+          <p className="form-lead">{intent === "career" ? "Choose one direction. You can change it at any time." :
+            "No career decision needed right now. Start with one interesting skill, or explore freely."}</p>
+          {intent === "career" ? <div className="sx-career-picker">
+            {careers.map(option => <button type="button" key={option.id}
+              aria-pressed={learning.primaryCareerId === option.id}
+              className={`sx-career-choice ${learning.primaryCareerId === option.id ? "selected" : ""}`}
+              onClick={() => chooseCareer(option.id)}>
+              <strong>{option.title}</strong><small>{option.subtitle}</small>
+              {learning.primaryCareerId === option.id ? <Check aria-hidden="true" size={19}/> : <ArrowRight aria-hidden="true" size={19}/>}
+            </button>)}
+          </div> : null}
+          {intent === "skill" ? <div className="sx-onboarding-topic">
+            <LearningGoalEditor value={{...learning, primaryCareerId:null}}
+              compact onChange={value => setLearning({...value, primaryCareerId:null})}/>
+          </div> : null}
+          {selectedCareer && intent === "career" ? <div className="sx-path-preview">
+            <span className="eyebrow">YOUR STARTING PATH</span>
+            <p>{selectedCareer.title} — explore skills such as {selectedCareer.skills.slice(0,3)
+              .map(item=>skillById[item.skillId]?.label ?? item.skillId).join(", ")}.</p>
+            <small>These are career prerequisites, not scores or an assessment of you.</small>
+          </div> : null}
+          <label className="field sx-hours-field">How many hours can you spend learning each week?
+            <select className="input" value={hours} onChange={e => setHours(Number(e.target.value))}>
+              {[2,4,6,8,10,12,15].map(value=><option value={value} key={value}>{value} hours / week</option>)}
+            </select>
+          </label>
+          {intent === "career" ? <div className="sx-advanced">
+            <button type="button" className="sx-advanced-toggle" aria-expanded={advanced} onClick={()=>setAdvanced(!advanced)}>
+              <SlidersHorizontal aria-hidden="true" size={17}/> {advanced ? "Hide" : "Customize"} skills and tools (optional)
+            </button>
+            {advanced ? <LearningGoalEditor value={learning} compact onChange={setLearning}/> : null}
+          </div> : null}
+          <div className="form-actions">
+            <button type="button" className="btn btn-quiet" onClick={()=>setStep(1)}>
+              <ArrowLeft aria-hidden="true"/> Back</button>
+            <button type="button" className="btn btn-primary" disabled={!canFinish} onClick={finish}>
+              Take me to my learning home <ArrowRight aria-hidden="true"/>
+            </button>
+          </div>
+        </div> : null}
       </section>
     </div>
   </main>;
