@@ -28,6 +28,16 @@ describe("server grading rules", () => {
     expect(gradeAnswers(questions, { q1: 0, q2: 0 }).score).toBe(0);
   });
 
+  it("rounds a fifteen-question score to database-compatible hundredths", () => {
+    const bank = Array.from({ length: 15 }, (_, index) => ({
+      id: "f" + index, prompt: "Question", choices: ["a", "b", "c", "d"], correctIndex: 0
+    }));
+    const answers = Object.fromEntries(bank.map((q, i) => [q.id, i < 10 ? 0 : 1]));
+    expect(gradeAnswers(bank, answers)).toMatchObject({
+      correctCount: 10, totalQuestions: 15, score: 66.67, passed: false
+    });
+  });
+
   it("rejects missing, extra, or replay-shaped answer payloads", () => {
     expect(() => gradeAnswers(questions, { q1: 1 })).toThrow();
     expect(() => gradeAnswers(questions, { q1: 1, q2: 3, forged: 0 })).toThrow();

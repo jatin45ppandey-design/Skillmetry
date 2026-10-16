@@ -20,7 +20,7 @@ export function gradeAnswers(
     (total, question) => total + (answers[question.id] === question.correctIndex ? 1 : 0),
     0
   );
-  const score = Math.round((correctCount / questions.length) * 100);
+  const score = Math.round((correctCount * 10000) / questions.length) / 100;
   return {
     correctCount,
     totalQuestions: questions.length,
