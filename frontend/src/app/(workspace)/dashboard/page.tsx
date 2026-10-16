@@ -96,7 +96,7 @@ export default function Dashboard() {
         </Link>
       </section>
       <section className="sx-home-panel" aria-labelledby="sx-evidence-heading">
-        <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU'VE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
+        <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU HAVE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
         <h2 id="sx-evidence-heading">Your learning evidence</h2>
         <div className="sx-evidence-stats">
           <div><strong>{loading ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>

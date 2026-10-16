@@ -54,7 +54,7 @@ export default function Onboarding() {
         <div>
           <span className="eyebrow">YOUR FIRST STEP</span>
           <h1>Build a path that feels <em>like yours.</em></h1>
-          <p>You do not need to know every skill or tool yet. Start simple; refine things whenever you're ready.</p>
+          <p>You do not need to know every skill or tool yet. Start simple; refine things whenever you are ready.</p>
         </div>
         <ol className="sx-onboarding-progress" aria-label="Setup steps">
           <li className={step === 1 ? "active" : "complete"}><span>1</span> About you</li>
@@ -69,7 +69,7 @@ export default function Onboarding() {
         {step === 1 ? <div>
           <span className="step-kicker">STEP 1 OF 2</span>
           <h2>What brings you here?</h2>
-          <p className="form-lead">There's no wrong starting point.</p>
+          <p className="form-lead">There is no wrong starting point.</p>
           <div className="sx-intent-grid" role="group" aria-label="Your reason for exploring">
             {intentions.map(option => {
               const Icon = option.icon;
