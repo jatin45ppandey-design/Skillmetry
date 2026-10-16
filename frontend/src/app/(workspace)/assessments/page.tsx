@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
+import { AlertCircle, ArrowRight, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
 import { DiagnosticResultPanel } from "@/components/diagnostic-result-panel";
@@ -235,6 +235,16 @@ function AssessmentExperience() {
 
         {safeResult?.attempt.assessmentVersion === "2026.3" ? <DiagnosticResultPanel attemptId={safeResult.attempt.id}/> : null}
 
+        {safeResult ? <section className="sx-result-next" aria-label="Your learning next steps">
+          <div><span className="eyebrow">WHAT TO DO NEXT</span><h3>Use this result to decide your next step.</h3>
+            <p>Your quiz is one piece of evidence, not your entire skill level.</p></div>
+          <div className="sx-result-next-links">
+            <Link className="btn btn-primary" href={"/resources?skill=" + encodeURIComponent(safeResult.attempt.skillId)}>
+              Learn this topic <ArrowRight size={16} aria-hidden="true"/></Link>
+            <Link className="btn btn-outline" href="/lab">Try guided practice</Link>
+            <Link className="btn btn-quiet" href="/twin">View my progress</Link><Link className="btn btn-quiet" href={"/tutor?skill="+encodeURIComponent(safeResult.attempt.skillId)}>Ask about this skill</Link>
+          </div>
+        </section> : null}
         {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span><button className="btn btn-quiet" type="button" onClick={() => setError(null)}>Dismiss</button></div> : null}
       </section>
     </div>

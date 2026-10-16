@@ -25,3 +25,22 @@ jobs:
         run: npm run verify:release
       - name: Backend migration safety source gates
         run: npm run verify:backend
+      # Does not use a hosted database, account or provider credential. Ensures
+      # that the built app actually serves its public and demo-facing routes.
+      - name: Public learning journey HTTP smoke
+        run: |
+          npm --prefix frontend run start -- -p 3101 > /tmp/skillmetry-public-smoke.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID 2>/dev/null || true' EXIT
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3101/api/health > /dev/null; then READY=1; break; fi
+            sleep 2
+          done
+          if [ "$READY" != 1 ]; then cat /tmp/skillmetry-public-smoke.log; exit 1; fi
+          for route in / /onboarding /dashboard /careers /roadmap /assessments /twin /planner /lab /missions /jobs /tutor /passport; do
+            status=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3101$route")
+            echo "$route: $status"
+            if [ "$status" != "200" ]; then cat /tmp/skillmetry-public-smoke.log; exit 1; fi
+          done
+

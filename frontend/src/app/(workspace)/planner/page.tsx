@@ -49,6 +49,8 @@ export default function Planner() {
   const visible=persisted?tasks:preview;
   const completed=visible.filter(t=>t.status==="completed").length;
   const focus=visible.filter(t=>t.status!=="skipped");
+  const upcoming=visible.find(t=>t.status==="in_progress")??visible.find(t=>t.status==="todo");
+  const nextTaskHref=upcoming?(upcoming.kind==="reassess"?"/assessments":upcoming.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(upcoming.skillId)):"/roadmap";
   return <>
     <SectionTitle eyebrow="Chapter 05 / Learning planner" title="Your weekly learning rhythm"
       description="A practical plan based on selected goals, available study hours and real quiz evidence. Task completion is activity—not a skill score."
@@ -56,6 +58,13 @@ export default function Planner() {
     {!user?<p className="workflow-notice" role="status">Illustrative local plan. <Link href="/auth/sign-in?next=/planner">Sign in</Link> to save activity after the workflow rollout.</p>
       :!enabled?<p className="workflow-notice" role="status">Planning preview only: saved tasks require an approved database rollout. No changes are being saved.</p>:null}
     {illustrative?<p className="note">The example quiz results shown in demo mode are not your personal assessment evidence.</p>:null}
+    {upcoming?<section className="sx-task-focus" aria-label="Your next unfinished study task">
+      <div><span className="sx-eyebrow">YOUR NEXT STUDY ACTION</span><h2>{upcoming.title}</h2>
+      <p>{upcoming.estimatedMinutes} minutes · {upcoming.kind==="learn"?"Learning":upcoming.kind==="practice"?"Guided practice":"Assessment review"}
+        · {upcoming.plannedDate}</p></div>
+      <Link href={nextTaskHref} className="sx-main-action">Continue this task →</Link>
+      {!persisted?<small>Preview only. Your task status is not stored until the approved database rollout.</small>:null}
+    </section>:null}
     <section className="panel workflow-panel">
       <div className="workflow-top"><div><span className="eyebrow">WEEK OF {week}</span><h2>Focused learning plan</h2>
         <p className="note">{persisted?"Your private saved tasks":"Generated draft from your current learning preferences"} · {preferences.hoursPerWeek} study hours/week</p></div>

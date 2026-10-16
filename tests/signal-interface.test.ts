@@ -26,9 +26,10 @@ describe("Learning Chapters interface boundaries", () => {
     expect(dashboard).toContain("buildDigitalTwinSnapshot");
     expect(dashboard).toContain("getPersonalizedResources");
     expect(dashboard).toContain("catalogCoverage.measuredSkillCount");
-    expect(dashboard).toContain("catalogCoverage.catalogSkillCount");
-    expect(dashboard).toContain("catalogCoverage.catalogCoveragePercent");
-    expect(dashboard).toContain("Illustrative demo history");
+    expect(dashboard).toContain("Object.hasOwn(scores,item.skillId)");
+    expect(dashboard).toContain("This is a sample learning journey");
+    expect(dashboard).toContain("LearningStreakCard");
+    expect(dashboard).toContain('"/onboarding"');
     expect(dashboard).not.toContain("readiness(");
   });
 
@@ -61,7 +62,8 @@ describe("Learning Chapters interface boundaries", () => {
     expect(gallery).toContain("careers.map");
     expect(gallery).toContain("aria-pressed={active}");
     expect(landing).toContain("CareerChapterGallery");
-    expect(landing).toContain("Demo data is illustrative");
+    expect(landing).toContain("Explore without an account");
+    expect(landing).toContain("EXAMPLE ONLY");
   });
 
   it("requires deliberate confirmation before a trusted quiz submission", () => {

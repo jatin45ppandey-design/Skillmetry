@@ -13,24 +13,32 @@ import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
 
 const primary = [
-  { href: "/dashboard", label: "My Studio", short: "Studio", icon: Activity },
-  { href: "/careers", label: "Explore", short: "Explore", icon: Compass },
-  { href: "/roadmap", label: "My Path", short: "My Path", icon: GitBranch },
-  { href: "/assessments", label: "Assess", short: "Assess", icon: BookOpen },
-  { href: "/twin", label: "Evidence", short: "Evidence", icon: Fingerprint }
+  { href: "/dashboard", label: "Home", short: "Home", icon: Activity },
+  { href: "/careers", label: "Careers", short: "Explore", icon: Compass },
+  { href: "/roadmap", label: "My path", short: "My path", icon: GitBranch },
+  { href: "/assessments", label: "Quizzes", short: "Quiz", icon: BookOpen },
+  { href: "/twin", label: "Progress", short: "Progress", icon: Fingerprint }
 ] as const;
 
-const secondary = [
-  { href: "/resources", label: "Learning resources", icon: BookMarked },
-  { href: "/planner", label: "Weekly study planner", icon: BookOpen },
-  { href: "/lab", label: "Coding practice lab", icon: BookOpen },
-  { href: "/simulator", label: "What-if simulator", icon: FlaskConical },
-  { href: "/missions", label: "Missions", icon: Target },
-  { href: "/jobs", label: "Job analyzer", icon: BriefcaseBusiness },
-  { href: "/tutor", label: "AI learning tutor", icon: BookOpen },
-  { href: "/passport", label: "Career passport", icon: WandSparkles },
-  { href: "/settings", label: "Learning goals & settings", icon: Settings2 }
-] as const;
+type SecondaryLink = { href: string; label: string; icon: typeof BookOpen };
+const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
+  { label: "LEARN & PRACTICE", items: [
+    { href: "/resources", label: "Learning resources", icon: BookMarked },
+    { href: "/planner", label: "My weekly plan", icon: BookOpen },
+    { href: "/lab", label: "Guided coding practice", icon: Target },
+    { href: "/tutor", label: "Learning tutor", icon: BookOpen }
+  ] },
+  { label: "BUILD & EXPLORE", items: [
+    { href: "/missions", label: "Project challenges", icon: Target },
+    { href: "/simulator", label: "Try learning scenarios", icon: FlaskConical },
+    { href: "/jobs", label: "Job description analyzer", icon: BriefcaseBusiness }
+  ] },
+  { label: "MY SPACE", items: [
+    { href: "/passport", label: "Career passport", icon: WandSparkles },
+    { href: "/settings", label: "My goals & settings", icon: Settings2 }
+  ] }
+ ];
+const secondary = secondaryGroups.flatMap(group => group.items);
 
 function StudioLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
   return (
@@ -107,11 +115,14 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
                 More <span aria-hidden="true">⌄</span>
               </summary>
               <div className="studio-more-list">
-                {secondary.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}>
-                    <Icon size={17} aria-hidden="true" /> {label}
-                  </Link>
-                ))}
+                {secondaryGroups.map(group => <div className="sx-more-group" key={group.label}>
+                  <span>{group.label}</span>
+                  {group.items.map(({ href, label, icon: Icon }) => (
+                    <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}>
+                      <Icon size={17} aria-hidden="true" /> {label}
+                    </Link>
+                  ))}
+                </div>)}
               </div>
             </details>
           </nav>
@@ -153,12 +164,15 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
             <nav aria-label="All learning pages"><StudioLinks current={pathname} onNavigate={closeDrawer} /></nav>
             <span className="studio-drawer-caption">MORE TO EXPLORE</span>
             <nav aria-label="Additional learning pages">
-              {secondary.map(({ href, label, icon: Icon }) => (
-                <Link key={href} href={href} onClick={closeDrawer}
-                  className={"studio-nav-link" + (pathname === href ? " is-current" : "")}>
-                  <Icon size={17} aria-hidden="true" />{label}
-                </Link>
-              ))}
+              {secondaryGroups.map(group => <div key={group.label} className="sx-drawer-group">
+                <span className="sx-drawer-group-label">{group.label}</span>
+                {group.items.map(({ href, label, icon: Icon }) => (
+                  <Link key={href} href={href} onClick={closeDrawer}
+                    className={"studio-nav-link" + (pathname === href ? " is-current" : "")}>
+                    <Icon size={17} aria-hidden="true" />{label}
+                  </Link>
+                ))}
+              </div>)}
             </nav>
             <Link className="studio-drawer-account" href={accountHref} onClick={() => setDrawerOpen(false)}>
               <UserRound size={18} /> {user ? "My account" : "Sign in"} <ArrowUpRight size={16} />

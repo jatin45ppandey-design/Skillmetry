@@ -53,10 +53,13 @@ export default function Lab(){
       description="Predict outputs, debug concepts and fill missing syntax. No arbitrary code is executed, and practice never changes trusted quiz results."
       action={<Link href="/planner" className="btn btn-quiet">Study planner</Link>}/>
     {!saved?<p className="workflow-notice">Practice is available without cloud storage. Sign in after the approved workflow rollout to save your private practice history.</p>:null}
-    {error?<p className="auth-error" role="alert">{error}</p>:null}
+    {error?<div className="auth-error" role="alert"><p>{error}</p>
+      <button type="button" className="btn btn-outline" onClick={()=>void load()}>Try loading again</button></div>:null}
     {loading?<p role="status">Loading exercises…</p>:null}
     <div className="workflow-inline-actions"><label className="workflow-task-status">Filter exercises
-      <select className="workflow-input" value={filter} onChange={event=>{setFilter(event.target.value);setActive(null);setFeedback(null);}}>
+      <select className="workflow-input" value={filter} onChange={event=>{const value=event.target.value;setFilter(value);
+        setActive(exercises.find(x=>value==="all"||x.skillId===value)?.id??null);
+        setFeedback(null);setChoice(null);setText("");}}>
         <option value="all">All skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{id}</option>)}
       </select></label><span className="note">{history.length} recent saved attempts (unscored)</span></div>
     <div className="workflow-lab-grid">
@@ -85,7 +88,14 @@ export default function Lab(){
             <div className="workflow-field" role="status"><strong>{feedback.correct?"Correct!":"Review this concept"}</strong>
               <p>Expected answer: <code>{feedback.answer}</code></p><p>{feedback.explanation}</p>
               <p className="note">{feedback.trust}{feedback.persisted?" Your attempt was saved.":""}</p>
-              <button className="btn btn-outline" type="button" onClick={()=>choose(current.id)}>Try again</button>
+              <div className="sx-lab-next">
+                <button className="btn btn-outline" type="button" onClick={()=>choose(current.id)}>Try again</button>
+                <button className="btn btn-primary" type="button" onClick={()=>{
+                  const index=visible.findIndex(x=>x.id===current.id);
+                  choose(visible[(index+1)%visible.length]?.id??current.id);
+                }}>Try next challenge →</button>
+                <Link href={"/resources?skill="+encodeURIComponent(current.skillId)} className="btn btn-quiet">Study this topic</Link>
+              </div>
             </div>}
         </>:<p>Select a challenge to get started.</p>}
       </section>

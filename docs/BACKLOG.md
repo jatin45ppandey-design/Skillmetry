@@ -124,3 +124,16 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [x] Introduce authenticated read-only `/api/learning/overview` for a grounded, single recommended learning action.
 - [x] Limit direct study-plan mutations to scheduling fields; require backend-authenticated creation and mission submission.
 - [x] Add a dedicated backend static CI gate to detect known unsafe SQL/function delimiters, broad grants, and disabled-feature regressions.
+
+## Skillmetry 2.0 connected experience (source-only UX track)
+
+- [x] Rewrite landing proposition and add a clearly illustrative sample student path.
+- [x] Begin with user intent and simplify onboarding; hide advanced skill/tool configuration.
+- [x] Replace scattered dashboard emphasis with one evidence-grounded next action and clear learning entry points.
+- [x] Add staged private seven-day streak UI with no invented days.
+- [x] Group navigation and connect skill resources, practice, results and tutor links.
+- [x] Surface the next unfinished study task and improve challenge filter/retry/next flow.
+- [ ] Validate full authenticated flow in browser for all user states and two independent accounts.
+- [ ] Polish auxiliary tool pages and validate user comprehension with new learners.
+- [ ] Apply pending migrations only after explicit staging and hosted approval, then verify streak updates and saved learning progress.
+- [ ] Complete mobile/desktop accessibility, visual and performance QA before public launch.
