@@ -12,6 +12,8 @@ Skillmetry is a responsive career digital twin for students. A student chooses a
 
 **Backend-first source hardening (staged):** An authenticated learning streak API now derives consecutive active learning days from trusted quiz completions and server-graded coding-lab attempts, without ever modifying skill proficiency. A read-only `/api/learning/overview` endpoint provides a grounded next step for the future simplified frontend. Saved study-plan creation and mission submissions now require authorized backend writes, and CI checks important migration/trust-boundary invariants. `SKILLMETRY_STREAKS_ENABLED=false` stays off until migration `202610160006_learning_streak.sql` (following staged migrations 001–005) is approved and verified with actual PostgreSQL/pgTAP and authenticated E2E tests. See [backend milestone documentation](docs/BACKEND_STREAK_MILESTONE.md). No hosted changes have been applied.
 
+**Connected Learning Experience v2 (source branch):** clearer landing and onboarding, next-action student home, contextual skill pathways, guided practice continuation, readable navigation and gated verified-streak calendar. All changes preserve the core trusted assessment system. The streak calendar needs owner-approved database rollout before it can display real data. See [experience release plan](docs/EXPERIENCE_V2_RELEASE.md). No hosted migration or production deployment performed.
+
 ## Getting started
 
 Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.

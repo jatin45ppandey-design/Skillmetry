@@ -10,8 +10,8 @@ import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: { default: "Skillmetry — Your Career Digital Twin", template: "%s | Skillmetry" },
-  description: "Take secure skill assessments, explore an adaptive roadmap, and build a quiz-driven Career Digital Twin."
+  title: { default: "Skillmetry — Find Your Next Learning Step", template: "%s | Skillmetry" },
+  description: "Choose a career direction, take honest foundational assessments, and find clear learning steps through a personalized roadmap."
 };
 
 export const dynamic = "force-dynamic";
