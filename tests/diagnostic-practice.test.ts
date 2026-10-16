@@ -1,10 +1,10 @@
 import { describe,expect,it } from "vitest";
 import { getPracticeQuestions } from "@skillmetry/backend/lib/assessments/practice-bank.server";
 import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 describe("D2 unscored targeted practice",()=>{
   it("provides separately authored questions for every supported diagnostic topic",()=>{
-    const ids=Object.keys(diagnosticTopics) as AssessmentId[];
+    const ids=Object.keys(diagnosticTopics) as DiagnosticAssessmentId[];
     const all=[];
     for(const id of ids)for(const topic of diagnosticTopics[id]){
       const questions=getPracticeQuestions(id,topic.id);

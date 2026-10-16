@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { getAssessmentDefinition, isDiagnosticDefinition } from "@skillmetry/backend/lib/assessments/question-bank.server";
 import { selectDiagnosticQuestionIds } from "@skillmetry/backend/lib/assessments/diagnostic-selection.server";
 import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 
-const ids = Object.keys(diagnosticTopics) as AssessmentId[];
+const ids = Object.keys(diagnosticTopics) as DiagnosticAssessmentId[];
 describe("D1 assessment blueprint", () => {
   it.each(ids)("keeps 2026.2 and provides 30 versioned questions for %s", id => {
     const legacy = getAssessmentDefinition(id, "2026.2");
