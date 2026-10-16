@@ -3,48 +3,143 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Activity, BookMarked, BookOpen, BriefcaseBusiness, ChevronRight, Cloud, CloudOff, Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu, Settings2, Target, UserRound, WandSparkles, X } from "lucide-react";
-import { useAuth } from "@/components/auth-provider";
+import {
+  Activity, ArrowUpRight, BookMarked, BriefcaseBusiness, Cloud, CloudOff,
+  Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu,
+  Settings2, Target, UserRound, WandSparkles, X, BookOpen
+} from "lucide-react";
 import { Brand } from "@/components/brand";
-import { StatusPill } from "@/components/workspace-ui";
+import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
 
-const links = [
-  { href:"/dashboard",label:"Learning Command",shortLabel:"Home",icon:Activity,group:"Overview" },
-  { href:"/roadmap",label:"Adaptive Roadmap",shortLabel:"Roadmap",icon:GitBranch,group:"Learning system" },
-  { href:"/assessments",label:"Skill Assessments",shortLabel:"Assess",icon:BookOpen,group:"Learning system" },
-  { href:"/resources",label:"Learning Resources",shortLabel:"Learn",icon:BookMarked,group:"Learning system" },
-  { href:"/twin",label:"Digital Skill Twin",shortLabel:"Twin",icon:Fingerprint,group:"Learning system" },
-  { href:"/careers",label:"Career Explorer",shortLabel:"Careers",icon:Compass,group:"Explore" },
-  { href:"/simulator",label:"What-If Simulator",shortLabel:"Simulator",icon:FlaskConical,group:"Explore" },
-  { href:"/missions",label:"Missions Workspace",shortLabel:"Missions",icon:Target,group:"Explore" },
-  { href:"/jobs",label:"Job Analyzer",shortLabel:"Jobs",icon:BriefcaseBusiness,group:"Explore" },
-  { href:"/passport",label:"Career Passport",shortLabel:"Passport",icon:WandSparkles,group:"Explore" },
-  { href:"/settings",label:"Settings",shortLabel:"Settings",icon:Settings2,group:"Account" }
+const primary = [
+  { href: "/dashboard", label: "My Studio", short: "Studio", icon: Activity },
+  { href: "/careers", label: "Explore", short: "Explore", icon: Compass },
+  { href: "/roadmap", label: "My Path", short: "My Path", icon: GitBranch },
+  { href: "/assessments", label: "Assess", short: "Assess", icon: BookOpen },
+  { href: "/twin", label: "Evidence", short: "Evidence", icon: Fingerprint }
 ] as const;
 
-function Navigation({pathname,onNavigate}:{pathname:string;onNavigate?:()=>void}) {
-  const groups = ["Overview", "Learning system", "Explore", "Account"] as const;
-  return <nav aria-label="Workspace navigation">{groups.map((group, index) => <div className="nav-group" key={group}><div className="nav-caption"><span>0{index + 1}</span>{group}</div><div className="nav-list">{links.filter(link => link.group === group).map(({href,label,icon:Icon}) => <Link key={href} href={href} onClick={onNavigate} aria-current={pathname === href ? "page" : undefined} className={`nav-link ${pathname === href ? "active" : ""}`}><Icon aria-hidden="true"/><span>{label}</span>{pathname === href ? <ChevronRight className="nav-chevron" aria-hidden="true"/> : null}</Link>)}</div></div>)}</nav>;
+const secondary = [
+  { href: "/resources", label: "Learning resources", icon: BookMarked },
+  { href: "/simulator", label: "What-if simulator", icon: FlaskConical },
+  { href: "/missions", label: "Missions", icon: Target },
+  { href: "/jobs", label: "Job analyzer", icon: BriefcaseBusiness },
+  { href: "/passport", label: "Career passport", icon: WandSparkles },
+  { href: "/settings", label: "Learning goals & settings", icon: Settings2 }
+] as const;
+
+function StudioLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
+  return (
+    <>
+      {primary.map(({ href, label, icon: Icon }) => (
+        <Link href={href} key={href} onClick={onNavigate}
+          aria-current={current === href ? "page" : undefined}
+          className={"studio-nav-link" + (current === href ? " is-current" : "")}>
+          <Icon size={17} aria-hidden="true" />{label}
+        </Link>
+      ))}
+    </>
+  );
 }
 
-export function WorkspaceShell({children}:{children:React.ReactNode}) {
+export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [menuOpen,setMenuOpen] = useState(false);
-  const {name,profileSource} = useSkillmetry();
-  const {user,syncStatus} = useAuth();
-  const current = links.find(link => link.href === pathname);
-  const mobileLinks = links.filter(link => ["/dashboard", "/roadmap", "/assessments", "/resources", "/twin"].includes(link.href));
-  const cloudLabel = syncStatus === "offline" ? "Offline" : syncStatus === "error" ? "Sync issue" : syncStatus === "saving" ? "Saving" : syncStatus === "loading" ? "Loading" : "Cloud synced";
-  const CloudIcon = syncStatus === "offline" || syncStatus === "error" ? CloudOff : Cloud;
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { name, profileSource } = useSkillmetry();
+  const { user, syncStatus } = useAuth();
+  const current = [...primary, ...secondary].find(item => item.href === pathname);
+  const accountHref = user ? "/account" : "/auth/sign-in";
+  const cloudLabel = !user ? (profileSource === "demo" ? "Illustrative demo" : "Local profile")
+    : syncStatus === "offline" ? "Offline" : syncStatus === "error" ? "Sync issue"
+    : syncStatus === "saving" ? "Saving" : syncStatus === "loading" ? "Loading" : "Cloud synced";
+  const CloudIcon = !user ? UserRound : syncStatus === "offline" || syncStatus === "error" ? CloudOff : Cloud;
+  const isAssessmentPage = pathname === "/assessments";
 
-  return <div className="workspace">
-    <aside className="sidebar"><Brand/><Navigation pathname={pathname}/><Link href={user ? "/account" : "/auth/sign-in"} className="profile-card"><div className="profile-avatar"><UserRound aria-hidden="true"/></div><div><strong>{name || "Student"}</strong><span>{user ? cloudLabel : profileSource === "demo" ? "Illustrative demo" : "Local career profile"}</span></div></Link></aside>
-    <main className="main">
-      <header className="main-top"><button className="icon-button mobile-menu-button" type="button" onClick={()=>setMenuOpen(true)} aria-label="Open navigation" aria-expanded={menuOpen}><Menu/></button><div className="workspace-context"><span className="context-index" aria-hidden="true">{String(Math.max(1, links.findIndex(link => link.href === pathname) + 1)).padStart(2,"0")}</span><div><span>Skillmetry / Signal</span><strong>{current?.label ?? "Skillmetry"}</strong></div></div><div className="top-actions"><StatusPill tone={user ? syncStatus === "synced" ? "success" : syncStatus === "offline" || syncStatus === "error" ? "warning" : "accent" : profileSource === "demo" ? "warning" : "accent"}>{user ? <><CloudIcon aria-hidden="true"/>{cloudLabel}</> : profileSource === "demo" ? "Demo data" : "Local profile"}</StatusPill><Link href={user ? "/account" : "/auth/sign-in"} className="btn btn-quiet">{user ? <Cloud aria-hidden="true"/> : <LogIn aria-hidden="true"/>}{user ? "Account" : "Sign in"}</Link></div></header>
-      <div className={`mobile-drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="drawer-backdrop" type="button" onClick={()=>setMenuOpen(false)} aria-label="Close navigation"/><aside><div className="drawer-head"><Brand/><button className="icon-button" type="button" onClick={()=>setMenuOpen(false)} aria-label="Close navigation"><X/></button></div><Navigation pathname={pathname} onNavigate={()=>setMenuOpen(false)}/></aside></div>
-      <div className="main-content">{children}</div>
-      <nav className="mobile-bottom-nav" aria-label="Primary mobile navigation">{mobileLinks.map(({href,shortLabel,icon:Icon}) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={pathname === href ? "active" : ""}><Icon aria-hidden="true"/><span>{shortLabel}</span></Link>)}</nav>
-    </main>
-  </div>;
+  return (
+    <div className={"studio-app" + (isAssessmentPage ? " studio-app--assessment" : "")}>
+      <a href="#studio-main" className="studio-skip">Skip to main content</a>
+      <header className="studio-header">
+        <div className="studio-header-inner">
+          <Brand />
+          <nav className="studio-primary-nav" aria-label="Learning studio navigation">
+            <StudioLinks current={pathname} />
+            <details className="studio-more">
+              <summary className={"studio-nav-link" + (secondary.some(item => item.href === pathname) ? " is-current" : "")}>
+                More <span aria-hidden="true">⌄</span>
+              </summary>
+              <div className="studio-more-list">
+                {secondary.map(({ href, label, icon: Icon }) => (
+                  <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}>
+                    <Icon size={17} aria-hidden="true" /> {label}
+                  </Link>
+                ))}
+              </div>
+            </details>
+          </nav>
+          <div className="studio-header-actions">
+            <span className="studio-sync" title={cloudLabel}><CloudIcon size={14} aria-hidden="true" />{cloudLabel}</span>
+            <Link className="studio-avatar" href={accountHref} aria-label={user ? "Open account" : "Sign in"}>
+              {user ? <span>{(name || "S").slice(0, 1).toUpperCase()}</span> : <LogIn size={19} aria-hidden="true" />}
+            </Link>
+            <button type="button" className="studio-mobile-menu" onClick={() => setDrawerOpen(true)}
+              aria-label="Open all navigation" aria-expanded={drawerOpen} aria-controls="studio-navigation-drawer">
+              <Menu size={22} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="studio-contextbar">
+        <div className="studio-contextbar-inner">
+          <span className="studio-context-number">SKILLMETRY / YOUR SPACE</span>
+          <span className="studio-context-separator" aria-hidden="true">/</span>
+          <strong>{current?.label ?? "Learning Studio"}</strong>
+          <span className="studio-context-trail" aria-hidden="true">✳ &nbsp; learn at your own pace</span>
+        </div>
+      </div>
+
+      <main className="studio-main" id="studio-main">
+        <div className="studio-content">{children}</div>
+      </main>
+
+      {drawerOpen ? (
+        <div className="studio-drawer" id="studio-navigation-drawer" role="dialog" aria-modal="true" aria-label="All Skillmetry sections">
+          <button type="button" className="studio-drawer-backdrop" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" />
+          <aside className="studio-drawer-panel">
+            <div className="studio-drawer-heading">
+              <Brand />
+              <button type="button" className="studio-icon-button" onClick={() => setDrawerOpen(false)} aria-label="Close navigation"><X size={19} /></button>
+            </div>
+            <span className="studio-drawer-caption">YOUR CHAPTERS</span>
+            <nav aria-label="All learning pages"><StudioLinks current={pathname} onNavigate={() => setDrawerOpen(false)} /></nav>
+            <span className="studio-drawer-caption">MORE TO EXPLORE</span>
+            <nav aria-label="Additional learning pages">
+              {secondary.map(({ href, label, icon: Icon }) => (
+                <Link key={href} href={href} onClick={() => setDrawerOpen(false)}
+                  className={"studio-nav-link" + (pathname === href ? " is-current" : "")}>
+                  <Icon size={17} aria-hidden="true" />{label}
+                </Link>
+              ))}
+            </nav>
+            <Link className="studio-drawer-account" href={accountHref} onClick={() => setDrawerOpen(false)}>
+              <UserRound size={18} /> {user ? "My account" : "Sign in"} <ArrowUpRight size={16} />
+            </Link>
+          </aside>
+        </div>
+      ) : null}
+
+      <nav className="studio-bottom-nav" aria-label="Mobile learning navigation">
+        {primary.slice(0, 4).map(({ href, short, icon: Icon }) => (
+          <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}
+            className={pathname === href ? "is-current" : ""}>
+            <Icon size={20} aria-hidden="true" /><span>{short}</span>
+          </Link>
+        ))}
+        <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open more learning pages">
+          <Menu size={21} aria-hidden="true" /><span>More</span>
+        </button>
+      </nav>
+    </div>
+  );
 }
