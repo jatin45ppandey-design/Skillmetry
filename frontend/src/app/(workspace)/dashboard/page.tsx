@@ -119,6 +119,8 @@ export default function Dashboard() {
             {focusLabels.length > 4 ? <span>+{focusLabels.length - 4} more</span> : null}
           </div>
           <Link href={resourceHref} className="studio-quiet-link">Browse learning resources <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link href="/planner" className="studio-quiet-link">Open weekly study plan <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link href="/lab" className="studio-quiet-link">Try the code practice lab <ArrowRight size={17} aria-hidden="true" /></Link>
         </article>
       </section>
 

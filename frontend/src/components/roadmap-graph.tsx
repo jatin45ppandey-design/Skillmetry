@@ -6,6 +6,7 @@ import "@xyflow/react/dist/style.css";
 import { skillById } from "@skillmetry/shared/data/catalog";
 import { clamp, getSkillState, type SkillState } from "@skillmetry/shared/lib/readiness";
 import type { SkillMap } from "@skillmetry/shared/types/domain";
+import type { SkillActivityState } from "@skillmetry/shared/lib/learning-plan";
 
 type SkillNodeData = {
   title: string;
@@ -15,16 +16,18 @@ type SkillNodeData = {
   selected: boolean;
   recommended: boolean;
   related: boolean;
+  learningState?: SkillActivityState;
 } & Record<string, unknown>;
 
 function SkillNode({ data }: NodeProps<Node<SkillNodeData>>) {
-  const stateLabel = data.status === "strong" ? "Strong Quiz Performance" : data.status === "unassessed" ? "Assessment Recommended" : data.status === "blocked" ? "Prerequisite unassessed" : "Developing";
+  const stateLabel = data.status === "strong" ? "Strong Quiz Performance" : data.status === "unassessed" ? "Assessment Recommended" : data.status === "blocked" ? "Prerequisite needs practice" : "Developing";
   return <div className={`flow-node state-${data.status} ${data.selected ? "selected" : ""} ${data.recommended ? "recommended" : ""} ${data.related ? "is-related" : "is-muted"}`}>
     <Handle type="target" position={Position.Top} className="flow-handle"/>
     <div className="flow-node-top"><span className="flow-group">{data.typeLabel}</span><span className="flow-score">{data.score === null ? "N/A" : data.score}</span></div>
     <div className="flow-title">{data.title}</div>
     {data.score === null ? <div className="flow-evidence-unknown"><i/>No measured score</div> : <div className="progress-track compact" aria-label={`${data.score}% trusted quiz score`}><div className="progress-fill" style={{ width: `${data.score}%` }}/></div>}
     <div className="flow-small">{data.recommended ? "Recommended next step" : stateLabel}</div>
+    {data.learningState && data.learningState!=="not_started"?<div className="flow-small">Activity: {data.learningState.replaceAll("_"," ")}</div>:null}
     <Handle type="source" position={Position.Bottom} className="flow-handle"/>
   </div>;
 }
@@ -42,7 +45,7 @@ function depthOf(id: string, included: Set<string>, memo: Map<string, number>, v
   return depth;
 }
 
-export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visibleIds, recommendedIds = new Set<string>() }: { skillIds: string[]; proficiency: SkillMap; selectedId?: string; onSelect?: (skillId: string) => void; visibleIds?: Set<string>; recommendedIds?: Set<string> }) {
+export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visibleIds, recommendedIds = new Set<string>(), learningActivity }: { skillIds: string[]; proficiency: SkillMap; selectedId?: string; onSelect?: (skillId: string) => void; visibleIds?: Set<string>; recommendedIds?: Set<string>; learningActivity?: Readonly<Record<string, SkillActivityState>> }) {
   const { nodes, edges } = useMemo(() => {
     const included = new Set<string>();
     const add = (id: string) => {
@@ -78,7 +81,7 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
       ids.forEach((id, index) => {
         const skill = skillById[id];
         const score = Object.hasOwn(proficiency, id) ? clamp(proficiency[id]) : null;
-        nodes.push({ id, type: "skill", position: { x: index * 244 - level * 10, y: level * 176 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id), related: !selectedId || related.has(id) } });
+        nodes.push({ id, type: "skill", position: { x: index * 244 - level * 10, y: level * 176 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id), learningState: learningActivity?.[id], related: !selectedId || related.has(id) } });
       });
     }
     const edges: Edge[] = [];
@@ -86,7 +89,7 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
       if (shown.has(prerequisite)) edges.push({ id: `${prerequisite}-${id}`, source: prerequisite, target: id, type: "smoothstep", style: { stroke: "#8da98e", strokeWidth: 1.7, opacity: selectedId && !related.has(id) ? 0.28 : 1 }, markerEnd: { type: MarkerType.ArrowClosed, color: "#8da98e" } });
     }));
     return { nodes, edges };
-  }, [proficiency, recommendedIds, selectedId, skillIds, visibleIds]);
+  }, [proficiency, recommendedIds, selectedId, skillIds, visibleIds, learningActivity]);
 
   return <div className="flow-wrap"><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodeClick={(_, node) => onSelect?.(node.id)} fitView fitViewOptions={{ padding: .2 }} minZoom={.25} maxZoom={1.35} nodesDraggable={false} nodesConnectable={false} nodesFocusable proOptions={{ hideAttribution: false }}><Background color="#d0dccb" gap={24} size={1}/><MiniMap zoomable pannable nodeColor={node => node.id === selectedId ? "#356343" : "#bbd4b8"} maskColor="#faf7eece"/><Controls showInteractive={false}/></ReactFlow></div>;
 }
