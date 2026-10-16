@@ -7,7 +7,7 @@ const aliases: Readonly<Record<string, readonly string[]>> = {
  math:["statistics","probability","linear algebra"],"data-processing":["data cleaning","data processing","pandas","etl"],
  "ml-foundations":["machine learning","scikit-learn","supervised learning"],
  "model-evaluation":["model evaluation","precision and recall","cross validation"],
- "rest-api":["rest api","restful","http api","api development"],
+ "rest-api":["rest apis","rest api","restful","http api","api development"],
  docker:["docker","containerization"],deployment:["deployment","ci/cd","continuous deployment"],
  html:["html","semantic html"],css:["css","responsive css","flexbox","css grid"],
  javascript:["javascript","ecmascript"],typescript:["typescript"],
