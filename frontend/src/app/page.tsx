@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, ArrowUpRight, CheckCircle2, Minus, ShieldCheck } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { CareerChapterGallery } from "@/components/career-chapter-gallery";
 import { LearningChapterSampler } from "@/components/learning-chapter-sampler";
