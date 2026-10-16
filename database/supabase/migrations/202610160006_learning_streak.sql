@@ -21,7 +21,7 @@ begin
   if v_user is null then
     raise exception using errcode='42501', message='Authentication required for learning streak';
   end if;
-  if p_timezone is null or pg_catalog.char_length(p_timezone) > 64
+  if p_timezone is null or pg_catalog.length(p_timezone) > 64
     or not exists (
       select 1 from pg_catalog.pg_timezone_names where name = p_timezone
     )
