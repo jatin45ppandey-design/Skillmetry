@@ -38,7 +38,7 @@ export default function Dashboard() {
   const nowHref = now?.action.href ?? "/settings";
   const nowAction = now?.action.kind === "assessment" ? "Start an assessment" : now?.action.kind === "resources" ? "Explore learning resources" : "Choose my learning goals";
   const nowTitle = now?.skillId ? skillById[now.skillId]?.label ?? "Your next learning step"
-    : now?.toolId ? toolById[now.toolId]?.label ?? "Your next learning step"
+    : now?.toolId ? toolById[now.toolId as keyof typeof toolById]?.label ?? "Your next learning step"
     : "Your next chapter starts with a goal.";
   const nowExplanation = now?.explanation ?? "Choose a career, a skill, or a tool. Skillmetry will suggest a grounded next move without inventing a score.";
   const currentStage = !learning.primaryCareerId && !learning.selectedSkillIds.length && !learning.selectedToolIds.length ? "choose"
