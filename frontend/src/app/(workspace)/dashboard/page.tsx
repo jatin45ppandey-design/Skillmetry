@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import {
   ArrowRight, ArrowUpRight, BookOpenCheck, Compass, Fingerprint,
-  GitBranch, LibraryBig, RefreshCw, ShieldCheck, Sparkles
+  LibraryBig, RefreshCw, ShieldCheck, Sparkles
 } from "lucide-react";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { toolById } from "@skillmetry/shared/data/learning-catalog";
@@ -53,7 +53,7 @@ export default function Dashboard() {
       <header className="studio-home-greeting">
         <div>
           <span className="studio-kicker"><span className="studio-kicker-mark" /> YOUR LEARNING JOURNAL / CHAPTER ONE</span>
-          <h1>Make room for <em>what's next,</em> {name.split(" ")[0] || "Explorer"}.</h1>
+          <h1>Make room for <em>what&apos;s next,</em> {name.split(" ")[0] || "Explorer"}.</h1>
           <p>A calm place to understand your learning direction—and take one useful step forward.</p>
         </div>
         <Link href="/settings" className="studio-round-link" aria-label="Edit learning goals"><Compass size={19} /><span>Edit goals</span><ArrowUpRight size={16} /></Link>
@@ -100,7 +100,7 @@ export default function Dashboard() {
       <section className="studio-desk" aria-label="Learning journal and resource shelf">
         <article className="studio-desk-evidence">
           <div className="studio-desk-top"><span className="studio-kicker">YOUR EVIDENCE JOURNAL</span><Fingerprint size={24} aria-hidden="true" /></div>
-          <h2>See what's measured.<br /><em>Know what's not.</em></h2>
+          <h2>See what&apos;s measured.<br /><em>Know what&apos;s not.</em></h2>
           <div className="studio-evidence-row"><span>Skills with measured evidence</span><strong>{twin.catalogCoverage.measuredSkillCount} / {twin.catalogCoverage.catalogSkillCount}</strong></div>
           <div className="studio-evidence-row"><span>Catalog coverage</span><strong>{twin.catalogCoverage.catalogCoveragePercent}%</strong></div>
           <div className="studio-evidence-row"><span>Latest assessment</span><strong>{latestAttempt ? (skillById[latestAttempt.skillId]?.label ?? latestAttempt.skillId) + " · " + latestAttempt.score + "%" : "Not yet assessed"}</strong></div>
