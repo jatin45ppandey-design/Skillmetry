@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
   const type = request.nextUrl.searchParams.get("type");
   const providerError = request.nextUrl.searchParams.get("error");
   const isConfirmationLink = Boolean(tokenHash && type === "email");
-  if (!isSupabaseConfigured() || (!code && !isConfirmationLink)) {
+  const isRecoveryLink = Boolean(tokenHash && type === "recovery");
+  if (!isSupabaseConfigured() || (!code && !isConfirmationLink && !isRecoveryLink)) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
     failed.search = "";
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const { error } = code
     ? await supabase.auth.exchangeCodeForSession(code)
-    : await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "email" });
+    : await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: isRecoveryLink ? "recovery" : "email" });
   if (error) {
     const failed = request.nextUrl.clone();
     failed.pathname = "/auth/sign-in";
@@ -32,5 +33,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(failed);
   }
 
-  return NextResponse.redirect(new URL(destination, request.url));
+  // Recovery links must lead to the password form, not an arbitrary saved page.
+  return NextResponse.redirect(new URL(isRecoveryLink ? "/auth/reset-password" : destination, request.url));
 }

@@ -2,6 +2,12 @@
 
 Skillmetry runs in an anonymous illustrative demo without Supabase. Real accounts, trusted quizzes, and cross-session history require Supabase Auth, PostgreSQL migrations, and one server-only credential.
 
+## Password recovery
+
+The sign-in screen provides a **Forgot password?** link. A password-recovery request sends a Supabase recovery email without revealing whether the address exists. Supabase verifies the link through `/auth/callback?next=/auth/reset-password`, establishes a recovery session, and the student can set a new password through an owner-authenticated server route. The old password and recovery tokens are never sent to Skillmetry's browser-safe metadata.
+
+In Supabase Auth email templates, keep the recovery confirmation URL or use a verified `token_hash` recovery link. Allowlist `http://localhost:3000/auth/callback**` and the trusted production callback URL. The reset-password page requires a valid Supabase session; no service-role credential is used.
+
 ## 1. Configure a project
 
 1. Create or select a Supabase project.
