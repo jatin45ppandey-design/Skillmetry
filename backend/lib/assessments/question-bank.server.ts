@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { buildDiagnosticQuestions, DIAGNOSTIC_VERSION, type DiagnosticQuestion } from "@skillmetry/backend/lib/assessments/diagnostic-bank.server";
 import type { GradedQuestion } from "@skillmetry/backend/lib/assessments/grading.server";
 
 type AssessmentDefinition = {
@@ -86,8 +87,16 @@ const questionBank = {
   }
 } as const satisfies Record<AssessmentId, AssessmentDefinition>;
 
-export function getAssessmentDefinition(id: AssessmentId) {
-  return questionBank[id];
+/** Version-aware sessions preserve 2026.2 grading even after 2026.3 launches. */
+export function getAssessmentDefinition(id: AssessmentId, version?: string): AssessmentDefinition {
+  const base = questionBank[id];
+  if (version === "2026.2" || (!version && process.env.NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED !== "true")) return base;
+  if (version && version !== DIAGNOSTIC_VERSION) throw new Error("Unknown assessment version");
+  return { id: base.id, skillId: base.skillId, title: base.title, version: DIAGNOSTIC_VERSION,
+    questions: buildDiagnosticQuestions(id, base.questions) };
+}
+export function isDiagnosticDefinition(definition: AssessmentDefinition): definition is AssessmentDefinition & {questions: readonly DiagnosticQuestion[]} {
+  return definition.version === DIAGNOSTIC_VERSION;
 }
 
 export function publicQuestions(definition: AssessmentDefinition, order: readonly string[]) {

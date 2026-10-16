@@ -1,7 +1,8 @@
 import { randomInt } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getAssessmentRetakePolicy } from "@skillmetry/backend/lib/assessments/policy.server";
-import { getAssessmentDefinition, publicQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import { getAssessmentDefinition, isDiagnosticDefinition, publicQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import { selectDiagnosticQuestionIds } from "@skillmetry/backend/lib/assessments/diagnostic-selection.server";
 import { startAssessmentSchema } from "@skillmetry/backend/lib/assessments/schema";
 import { hasSupabaseServerCredentials } from "@skillmetry/backend/lib/supabase/config.server";
 import { createAdminClient } from "@skillmetry/backend/lib/supabase/admin";
@@ -52,7 +53,9 @@ export async function POST(request: Request) {
   const definition = getAssessmentDefinition(assessmentId);
   const admin = createAdminClient();
   const now = new Date();
-  const questionIds = shuffle(definition.questions.map(question => question.id));
+  const questionIds = isDiagnosticDefinition(definition)
+    ? selectDiagnosticQuestionIds(assessmentId, definition.questions)
+    : shuffle(definition.questions.map(question => question.id));
   const expiresAt = new Date(now.getTime() + SESSION_MINUTES * 60 * 1000).toISOString();
   let policy;
   try {

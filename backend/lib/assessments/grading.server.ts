@@ -4,7 +4,7 @@ import type { PublicQuizQuestion } from "@skillmetry/shared/types/domain";
 
 export const ASSESSMENT_PASS_THRESHOLD = 75;
 
-export type GradedQuestion = PublicQuizQuestion & { correctIndex: number };
+export type GradedQuestion = PublicQuizQuestion & { correctIndex: number; topicId?: string; difficulty?: "beginner" | "intermediate" | "advanced"; explanation?: string };
 
 export function gradeAnswers(
   questions: readonly GradedQuestion[],

@@ -68,7 +68,7 @@ export async function POST(request: Request) {
   if (Date.parse(session.expires_at) <= Date.now()) return NextResponse.json({ error: "This assessment session expired. Start a new attempt." }, { status: 410 });
 
   const assessmentId = session.assessment_id as AssessmentId;
-  const definition = getAssessmentDefinition(assessmentId);
+  const definition = getAssessmentDefinition(assessmentId, session.assessment_version);
   if (definition.version !== session.assessment_version) {
     return NextResponse.json({ error: "This assessment version is no longer available. Start a new attempt." }, { status: 409 });
   }
