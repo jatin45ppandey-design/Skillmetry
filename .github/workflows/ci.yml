@@ -21,3 +21,12 @@ jobs:
         run: npm test
       - name: Production build
         run: npm run build
+      - name: Final original-idea source coverage (informational until reviewed content is ready)
+        run: |
+          if npm run verify:completion; then
+            echo "✅ All 18 skill metadata entries exist. Hosted acceptance remains separate." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Skillmetry original idea is NOT COMPLETE; see docs/FINAL_COMPLETION_CONTRACT.md"
+            echo "⚠️ Original Skillmetry journey NOT COMPLETE. Review C01–C08 in docs/FINAL_COMPLETION_CONTRACT.md." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
