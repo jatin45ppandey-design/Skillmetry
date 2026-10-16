@@ -34,7 +34,7 @@ begin
   end if;
 
   v_start := pg_catalog.to_timestamp(
-    pg_catalog.floor(pg_catalog.extract(epoch from now()) / p_window_seconds) * p_window_seconds
+    pg_catalog.floor(extract(epoch from now()) / p_window_seconds) * p_window_seconds
   );
 
   insert into public.api_burst_limit_windows (key_hash, window_started_at, request_count)

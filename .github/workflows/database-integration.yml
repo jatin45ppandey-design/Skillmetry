@@ -1,0 +1,33 @@
+name: Isolated Supabase database tests
+
+on:
+  pull_request:
+    paths:
+      - "database/supabase/migrations/**"
+      - "database/supabase/tests/**"
+      - ".github/workflows/database-integration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  local-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      # Disposable Docker Supabase stack on the CI runner; NO hosted project
+      # credentials, token or production database is used.
+      - name: Provision ephemeral local Supabase
+        run: npx supabase start --workdir database
+      - name: Run pgTAP tenant isolation and migration tests
+        run: npm run test:rls
+      - name: Stop disposable local Supabase
+        if: always()
+        run: npx supabase stop --workdir database --no-backup || true

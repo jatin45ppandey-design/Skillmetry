@@ -1,0 +1,63 @@
+# Backend-first milestone: learning consistency streak (staged)
+
+**Status:** source implementation on `feat/backend-streaks-v1`; no frontend changes, hosted DB migrations, production environment edits, deployment or secrets changes.
+
+## Purpose
+Help a learner recognize their **participation habits**. Never make up skill proficiency, claim measured mastery, or pressure users with a paid streak freeze. Streak can remain unchanged through the day if yesterday was active.
+
+## Supported events (read from existing trustworthy database records)
+- One completed authenticated `assessment_attempts` row with `grading_method='server_quiz'`.
+- One server-graded `practice_lab_attempts` row; even a wrong response counts as an effortful attempt.
+- More than one eligible event on a local calendar day contributes **one** active day.
+- Logins, tab visits, planner checkbox changes, mission submissions, demo data and AI chats do **not** count.
+- No raw new events or user-created rewards table is used: PostgreSQL derives days from already persisted trusted events.
+
+## API
+`GET /api/learning/streak?timeZone=Asia/Kolkata`, authenticated only, `Cache-Control: private, no-store`.
+- Query accepts a valid IANA time zone (default Asia/Kolkata); SQL independently validates it.
+- Returns `timeZone`, `asOfDate`, `currentStreak`, `longestStreak`, `totalActiveDays`, `lastActiveDate`, `activeToday`, `dueToday`, `last7Days` and source/disclaimer.
+- `currentStreak` includes consecutive participation ending **today or yesterday**, so it does not prematurely reset before the student's day ends.
+- Historical data on the account is automatically reflected; no client-generated days are accepted.
+- The requested time zone affects date grouping (and is shown in the response), not scores or ownership. For consistency a future account preference should be persisted once UI is added.
+- With no activity current and longest are zero, lastActiveDate null.
+- The streak is an educational engagement metric only, never a quiz score, hiring signal, certification or penalty.
+
+## Database and security
+Migration `202610160006_learning_streak.sql` depends on `202610160004_learning_workflows.sql`.
+The read-only `get_learning_streak(text)` RPC uses `SECURITY INVOKER`, `auth.uid()`, underlying FORCE RLS and execute grant to authenticated only. No score writes, new tables or service-role escalation. PostgreSQL time-zone conversion handles local-day boundaries and DST.
+
+Default-off server gate:
+```env
+SKILLMETRY_STREAKS_ENABLED=false
+```
+
+## Release checklist
+- [x] Source RPC, API, type-safe response validation and source/contract tests written.
+- [x] Add dedicated pgTAP test for duplicate events, wrong answers, owner isolation, timezone rejection, anonymous denial and yesterday grace.
+- [ ] Rehearse all previously staged migrations `001`–`005` plus `006` in an isolated disposable Supabase/Postgres.
+- [ ] Run pgTAP and authenticated API E2E with separate learners, timezone differences and DST cases.
+- [ ] Obtain explicit approval for hosted migration / flag activation.
+- [ ] Design streak presentation, accessible calendar and low-pressure feedback during later frontend milestone.
+
+## Backend stabilization backlog (not marked complete)
+- Review and fix pending migrations (including Passport 005 function delimiter).
+- Audit user-manipulable fields in plan/mission evidence tables; enforce selected server-trusted invariants.
+- Stage schema migrations and validate grants/RLS/real RPC integration.
+- Verify auth, accounts, quizzes, retakes, diagnostics, saved workflows and exports with two real test accounts.
+- Configure/rehearse rate limiting, token safety, retention/deletion, monitoring and backup/restore.
+- Complete operational security and production readiness before UI rollout.
+
+## Security hardening added after initial streak commit
+
+- Migration 004 now reserves generated task inserts for the server and restricts browser task updates to status/date/timestamp columns; week dates are database-constrained.
+- Mission writes now require the validated server API and server-only database client, rather than permitting direct authenticated table writes.
+- pgTAP scenarios were expanded for forged tasks and direct mission writes, but require a disposable Supabase staging database before they can be marked passed.
+- CI now runs a **static migration safety source gate** for SQL delimiters, grants, streak trust boundaries and default-off flags. It is explicitly not a SQL parser or a substitute for migrations + database integration tests.
+
+## Connected next-step API
+
+`GET /api/learning/overview` is a new authenticated, read-only API for the later UX redesign. It returns an onboarding-required state or a single actionable recommendation using the existing deterministic recommender and the current user's genuine server-graded quiz evidence. The API separately labels measured-skill count and up to two upcoming recommendations. It does not infer unknown grades, manufacture learning activity, or change any persistent record. No frontend redesign is included in this milestone.
+
+## Isolated SQL verification workflow
+
+`.github/workflows/database-integration.yml` triggers a disposable Supabase Docker database for migration changes in a pull request or for a manual workflow run. It performs `npx supabase start --workdir database` (which stages migrations) followed by `npm run test:rls`, and stops the local database regardless of outcome. This is separate from standard JS/TS CI and intentionally has no hosted Supabase credentials. Completion must be checked in the actual GitHub Actions run; adding the workflow does not mean SQL tests have passed.

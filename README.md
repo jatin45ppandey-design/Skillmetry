@@ -10,6 +10,8 @@ Skillmetry is a responsive career digital twin for students. A student chooses a
 
 **P7–P10 source implementation (2026-10-16):** Skillmetry now includes canonical job-description parsing with private opt-in saved requirement summaries, an optional consent-based AI tutor with curated non-AI guidance, printable private Career Passport, staged expiring/revocable share URLs, and additional browser/security/release checks. AI requests and public passport sharing are **disabled by default**. Hosted database migrations and cloud configuration have not been applied. See [P7–P10 release status](docs/P7_P10_IMPLEMENTATION.md), [operations](docs/OPERATIONS_RUNBOOK.md) and the [project backlog](docs/BACKLOG.md). This is not a claim of a completed public-production launch.
 
+**Backend-first source hardening (staged):** An authenticated learning streak API now derives consecutive active learning days from trusted quiz completions and server-graded coding-lab attempts, without ever modifying skill proficiency. A read-only `/api/learning/overview` endpoint provides a grounded next step for the future simplified frontend. Saved study-plan creation and mission submissions now require authorized backend writes, and CI checks important migration/trust-boundary invariants. `SKILLMETRY_STREAKS_ENABLED=false` stays off until migration `202610160006_learning_streak.sql` (following staged migrations 001–005) is approved and verified with actual PostgreSQL/pgTAP and authenticated E2E tests. See [backend milestone documentation](docs/BACKEND_STREAK_MILESTONE.md). No hosted changes have been applied.
+
 ## Getting started
 
 Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.

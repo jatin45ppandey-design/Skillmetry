@@ -22,7 +22,7 @@ grant select,insert,update on public.passport_share_links to service_role;
 -- Prevent previously revoked links from becoming active again.
 -- Block all edits to score snapshots/identity even for service-level updates.
 create or replace function public.prevent_passport_share_mutation()
-returns trigger language plpgsql set search_path='' as $
+returns trigger language plpgsql set search_path='' as $passport$
 begin
  if new.user_id is distinct from old.user_id or
     new.token_hash is distinct from old.token_hash or
@@ -36,7 +36,7 @@ begin
  end if;
  return new;
 end;
-$;
+$passport$;
 drop trigger if exists passport_share_immutable on public.passport_share_links;
 create trigger passport_share_immutable before update on public.passport_share_links
  for each row execute function public.prevent_passport_share_mutation();
