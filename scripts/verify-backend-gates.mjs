@@ -9,8 +9,8 @@ const checks = [];
 const assert = (condition, message) => { checks.push(message); if (!condition) errors.push(message); };
 
 const migrationDirectory = "database/supabase/migrations";
-const prefixes = ["001_phase_d_diagnostics", "002_expand_foundational_assessments",
-  "003_api_burst_limits", "004_learning_workflows", "005_passport_sharing", "006_learning_streak"];
+const prefixes = ["0001_phase_d_diagnostics", "0002_expand_foundational_assessments",
+  "0003_api_burst_limits", "0004_learning_workflows", "0005_passport_sharing", "0006_learning_streak"];
 const sql = prefixes.map(prefix => {
   const file = join(migrationDirectory, "20261016" + prefix + ".sql");
   assert(existsSync(join(root, file)), "Additive migration present: " + file);
