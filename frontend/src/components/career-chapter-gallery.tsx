@@ -126,7 +126,7 @@ export function CareerChapterGallery() {
       </div>
       <div className="lc-explorer-footer">
         <p>Lines represent actual prerequisites. The map is a catalog preview, <strong>not a score, skill assessment or readiness prediction.</strong></p>
-        <Link href="/onboarding">Make this my learning direction <ArrowRight size={18} aria-hidden="true" /></Link>
+        <Link href={"/onboarding?career=" + encodeURIComponent(selected.id)}>Make this my learning direction <ArrowRight size={18} aria-hidden="true" /></Link>
       </div>
     </div>
   );
