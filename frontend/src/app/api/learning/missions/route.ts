@@ -1,6 +1,8 @@
 import {NextResponse} from "next/server";
 import {authenticatedRequest} from "@skillmetry/backend/lib/supabase/request-auth";
 import {normalizeMissionWork} from "@skillmetry/shared/lib/mission-work";
+import {hasSupabaseServerCredentials} from "@skillmetry/backend/lib/supabase/config.server";
+import {createAdminClient} from "@skillmetry/backend/lib/supabase/admin";
 
 export const runtime="nodejs";
 const enabled=()=>process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
@@ -30,7 +32,8 @@ export async function PUT(request:Request){
   let work;
   try{work=normalizeMissionWork(await request.json().catch(()=>null));}
   catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Invalid submission"},{status:400});}
-  const {data,error:writeError}=await auth.supabase.from("mission_work").upsert({
+  if(!hasSupabaseServerCredentials())return NextResponse.json({error:"Secure mission storage is not configured."},{status:503});
+  const {data,error:writeError}=await createAdminClient().from("mission_work").upsert({
     user_id:auth.userId,mission_id:work.missionId,status:work.status,
     completed_indices:work.completedIndices,repository_url:work.repositoryUrl||null,
     demo_url:work.demoUrl||null,notes:work.notes,updated_at:new Date().toISOString()

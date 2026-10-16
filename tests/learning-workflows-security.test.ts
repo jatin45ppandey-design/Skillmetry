@@ -12,6 +12,8 @@ describe("P4–P6 cloud persistence trust boundaries",()=>{
       expect(content).toContain("auth.userId");
       expect(content).toContain("NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED");
       expect(content).not.toContain("NEXT_PUBLIC_SUPABASE_SECRET_KEY");
+      expect(content).toContain("createAdminClient");
+      expect(content).toContain("hasSupabaseServerCredentials");
     }
   });
   it("stages owner-scoped tables with forced row-level security",()=>{
@@ -21,6 +23,9 @@ describe("P4–P6 cloud persistence trust boundaries",()=>{
       expect(sql).toContain("alter table public."+table+" force row level security");
     }
     expect(sql).toContain("for select to authenticated using (user_id=(select auth.uid()))");
+    expect(sql).toContain("grant select, update (status, planned_date, updated_at)");
+    expect(sql).toContain("grant select on public.mission_work to authenticated");
+    expect(sql).not.toContain("grant select,insert,update on public.mission_work to authenticated");
     expect(sql).toContain("Unscored learning exercise activity only");
     expect(sql).toContain("no automated or human verification implied");
   });

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticatedRequest } from "@skillmetry/backend/lib/supabase/request-auth";
+import { hasSupabaseServerCredentials } from "@skillmetry/backend/lib/supabase/config.server";
+import { createAdminClient } from "@skillmetry/backend/lib/supabase/admin";
 import { buildWeeklyStudyPlan, weekStartUtc } from "@skillmetry/shared/lib/learning-plan";
 import { careerIdSchema, normalizeOnboardingPreferences } from "@skillmetry/shared/lib/profile-schema";
 
@@ -57,7 +59,8 @@ export async function POST() {
   const plan=buildWeeklyStudyPlan({learning:preferences.learning,trustedScores:scores,
     hoursPerWeek:preferences.hoursPerWeek,monday});
   if(!plan.length)return NextResponse.json({error:"Select a career or skills before creating a plan."},{status:409});
-  const {error:writeError}=await auth.supabase.from("learning_plan_tasks").upsert(
+  if(!hasSupabaseServerCredentials())return NextResponse.json({error:"Secure plan generation is not configured."},{status:503});
+  const {error:writeError}=await createAdminClient().from("learning_plan_tasks").upsert(
     plan.map(task=>({user_id:auth.userId,task_key:task.taskKey,skill_id:task.skillId,
       title:task.title,kind:task.kind,status:task.status,estimated_minutes:task.estimatedMinutes,
       planned_date:task.plannedDate,position:task.position})),

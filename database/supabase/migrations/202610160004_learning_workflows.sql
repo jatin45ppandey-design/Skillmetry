@@ -20,7 +20,11 @@ create table if not exists public.learning_plan_tasks (
   position integer not null check (position between 0 and 100),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique(user_id,task_key)
+  unique(user_id,task_key),
+  -- The ISO Monday encoded by a generated task key is an immutable week anchor.
+  check(task_key ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}:'),
+  check(planned_date between substring(task_key from 1 for 10)::date
+    and substring(task_key from 1 for 10)::date + 6)
 );
 create index if not exists learning_plan_user_date on public.learning_plan_tasks(user_id,planned_date,position);
 
@@ -57,10 +61,16 @@ alter table public.mission_work enable row level security;
 alter table public.mission_work force row level security;
 
 revoke all on public.learning_plan_tasks, public.practice_lab_attempts, public.mission_work from public,anon,authenticated;
-grant select,insert,update on public.learning_plan_tasks to authenticated;
+-- The API's trusted generator (service_role) creates tasks. Browser users may
+-- update only self-reported scheduling fields, never immutable task identity.
+grant select, update (status, planned_date, updated_at) on public.learning_plan_tasks to authenticated;
+grant select,insert,update on public.learning_plan_tasks to service_role;
 grant select on public.practice_lab_attempts to authenticated;
 grant insert, select on public.practice_lab_attempts to service_role;
-grant select,insert,update on public.mission_work to authenticated;
+-- Mission submissions must pass the server's Zod checklist/evidence validation;
+-- direct Data API writes are prohibited even for the owning account.
+grant select on public.mission_work to authenticated;
+grant select,insert,update on public.mission_work to service_role;
 
 create policy "Learners read their study tasks" on public.learning_plan_tasks
   for select to authenticated using (user_id=(select auth.uid()));
