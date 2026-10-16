@@ -1,6 +1,7 @@
 import "server-only";
 import { diagnosticTopics } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { practiceExtensions } from "@skillmetry/backend/lib/assessments/practice-extensions.server";
 type PracticeQuestion = {id:string;assessmentId:AssessmentId;topicId:string;prompt:string;choices:readonly string[];correctIndex:number;explanation:string};
 const cases:Record<AssessmentId,readonly string[][]> = {
   "python-foundations": [
@@ -96,13 +97,13 @@ const cases:Record<AssessmentId,readonly string[][]> = {
 export function getPracticeQuestions(assessmentId:AssessmentId,topicId:string):PracticeQuestion[] {
   const index=diagnosticTopics[assessmentId].findIndex(t=>t.id===topicId);
   if(index<0)return [];
-  return cases[assessmentId][index].map((line,n)=>{
+  return [...cases[assessmentId][index], ...practiceExtensions[assessmentId][index]].map((line,n)=>{
     const parts=line.split("|");
-    if(parts.length!==6)throw new Error("Invalid practice exercise");
+    if(parts.length!==6&&parts.length!==7)throw new Error("Invalid practice exercise");
     const correctIndex=Number(parts[5]);
     if(!Number.isInteger(correctIndex)||correctIndex<0||correctIndex>3)throw new Error("Invalid practice key");
     const label=diagnosticTopics[assessmentId][index].label;
     return {id:assessmentId+"-"+topicId+"-p"+(n+1),assessmentId,topicId,prompt:parts[0],choices:parts.slice(1,5),correctIndex,
-      explanation:"Correct answer: "+parts[1+correctIndex]+". This checks "+label.toLowerCase()+"."};
+      explanation:parts[6] ?? ("Correct answer: "+parts[1+correctIndex]+". This checks "+label.toLowerCase()+".")};
   });
 }

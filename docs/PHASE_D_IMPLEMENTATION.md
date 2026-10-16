@@ -7,7 +7,7 @@ Last reviewed: 2026-10-16. Code is committed directly to the `main` branch. **Do
 | Phase | Code implemented | Caveats |
 | --- | --- | --- |
 | D1 | 30 versioned items per supported skill; 15 drawn per attempt across five topics × three tiers; 2026.2 retained | Questions need additional educator review; pool variation is modest |
-| D2 | Topic-based evidence, atomic review SQL RPC and table, deterministic weakness categories and curated resources | Hosted DB migration pending; only two separately-authored practice questions per topic so far |
+| D2 | Topic-based evidence, atomic review SQL RPC and table, deterministic weakness categories and curated resources | Hosted DB migration pending; five independently authored practice questions per topic |
 | D3 | Question navigation/palette, flags, local draft recovery, countdown, diagnostic review, answer explanations, practice page, Twin insights | Manual browser/mobile QA and hosted end-to-end testing pending |
 
 ### Security and score invariants
@@ -27,7 +27,7 @@ Last reviewed: 2026-10-16. Code is committed directly to the `main` branch. **Do
 3. Run `npm run test:rls` against staging/local Supabase and review all pgTAP suites, including `diagnostics_rls.test.sql`.
 4. Set `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=true` for this staging frontend (or `frontend/.env.local`), then restart/build.
 5. Sign in with a disposable user; take JavaScript 2026.3 quiz (15 questions) and submit. Confirm it persists one immutable attempt and exactly 15 question reviews.
-6. Verify topic diagnosis: three questions per topic, unknown vs zero, recommended resources, two targeted separate practice questions, feedback and return to assessment.
+6. Verify topic diagnosis: three questions per topic, unknown vs zero, recommended resources, five targeted separate practice questions, feedback and return to assessment.
 7. Refresh during an active attempt, choose **Start assessment** again, confirm same server session resumes with local draft answers and server expiration still enforced.
 8. Confirm answer review is unavailable before submission, and another signed-in user cannot retrieve someone else's review. Check retry/replay, wrong question IDs, score rounding, expiring sessions, and two simultaneous submissions.
 9. Verify latest diagnostic recommendations in `/twin` and that practice never changes the official score or attempt history.
@@ -39,4 +39,4 @@ Last reviewed: 2026-10-16. Code is committed directly to the `main` branch. **Do
 
 ### Remaining content and UX work
 
-Expand practice from two to five genuinely varied questions per topic, improve answer explanations with topic-specific reasoning instead of repeating the correct choice, add cross-attempt topic change visualization, and complete human QA. These are tracked openly rather than claimed completed.
+Continue educator-led editorial review of the diagnostic questions and detailed solution explanations, add cross-attempt topic change visualization, and complete human QA. These are tracked openly rather than claimed completed.

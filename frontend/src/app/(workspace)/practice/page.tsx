@@ -62,7 +62,7 @@ function PracticeContent() {
     {loading?<p role="status">Loading practice questions…</p>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
     {assessment&&topic&&!loading&&questions.length?<section className="diagnostic-practice">
-      <div className="assessment-paper-head"><div><BookOpenCheck aria-hidden="true"/><h2>{assessment.title} · {topic.label}</h2><p>Try both exercises, then reveal explanations.</p></div></div>
+      <div className="assessment-paper-head"><div><BookOpenCheck aria-hidden="true"/><h2>{assessment.title} · {topic.label}</h2><p>Answer five independently authored exercises, then review the explanations.</p></div></div>
       {questions.map((q,i)=><fieldset key={q.id} disabled={Boolean(result)||pending}>
         <legend><span>{i+1}.</span> {q.prompt}</legend>
         {q.choices.map((choice,index)=><label key={index}><input type="radio" name={q.id} checked={answers[q.id]===index}

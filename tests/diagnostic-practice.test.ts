@@ -8,7 +8,7 @@ describe("D2 unscored targeted practice",()=>{
     const all=[];
     for(const id of ids)for(const topic of diagnosticTopics[id]){
       const questions=getPracticeQuestions(id,topic.id);
-      expect(questions).toHaveLength(2);
+      expect(questions).toHaveLength(5);
       expect(questions.every(q=>q.choices.length===4&&q.correctIndex>=0&&q.correctIndex<4)).toBe(true);
       all.push(...questions.map(q=>q.id));
     }
