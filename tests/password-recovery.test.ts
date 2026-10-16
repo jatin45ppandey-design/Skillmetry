@@ -23,3 +23,13 @@ describe("password recovery input boundaries", () => {
     expect(safeInternalPath("https://evil.example")).toBe("/account");
   });
 });
+
+describe("recovery redirect must not trust incoming request Host", () => {
+  it("uses explicit server-only application origin", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const route = readFileSync(fileURLToPath(new URL("../frontend/src/app/api/auth/password-reset/request/route.ts", import.meta.url)), "utf8");
+    expect(route).toContain("process.env.SKILLMETRY_APP_ORIGIN");
+    expect(route).not.toContain('new URL("/auth/callback", request.url)');
+  });
+});

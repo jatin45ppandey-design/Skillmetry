@@ -88,3 +88,12 @@ describe("server grading rules", () => {
     expect(gradeAnswers(tenQuestions, eightCorrect).passed).toBe(true);
   });
 });
+
+describe("session-version integrity for resumed assessments", () => {
+  it("selects exactly the stored version rather than the current public feature flag", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const route = readFileSync(fileURLToPath(new URL("../frontend/src/app/api/assessments/start/route.ts", import.meta.url)), "utf8");
+    expect(route).toContain("getAssessmentDefinition(assessmentId, session.assessment_version)");
+  });
+});

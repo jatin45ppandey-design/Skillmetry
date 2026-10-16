@@ -4,7 +4,7 @@ Skillmetry runs in an anonymous illustrative demo without Supabase. Real account
 
 ## Password recovery
 
-The sign-in screen provides a **Forgot password?** link. A password-recovery request sends a Supabase recovery email without revealing whether the address exists. Supabase verifies the link through `/auth/callback?next=/auth/reset-password`, establishes a recovery session, and the student can set a new password through an owner-authenticated server route. The old password and recovery tokens are never sent to Skillmetry's browser-safe metadata.
+The sign-in screen provides a **Forgot password?** link. Set a trusted server-only `SKILLMETRY_APP_ORIGIN` for this environment (e.g. `http://localhost:3000` or an approved HTTPS staging URL); the recovery endpoint deliberately rejects an unset origin rather than constructing reset links from HTTP Host headers. A password-recovery request sends a Supabase recovery email without revealing whether the address exists. Supabase verifies the link through `/auth/callback?next=/auth/reset-password`, establishes a recovery session, and the student can set a new password through an owner-authenticated server route. The old password and recovery tokens are never sent to Skillmetry's browser-safe metadata.
 
 In Supabase Auth email templates, keep the recovery confirmation URL or use a verified `token_hash` recovery link. Allowlist `http://localhost:3000/auth/callback**` and the trusted production callback URL. The reset-password page requires a valid Supabase session; no service-role credential is used.
 
