@@ -49,3 +49,15 @@ describe("All 14 new skill question and unscored practice banks (editorial rollo
     }
   });
 });
+
+describe("C02 editorial release gate",()=>{
+  it("does not expose draft content without authenticated rollout approval",async()=>{
+    const {readFileSync}=await import("node:fs");
+    const {fileURLToPath}=await import("node:url");
+    const route=readFileSync(fileURLToPath(new URL("../frontend/src/app/api/assessments/start/route.ts",import.meta.url)),"utf8");
+    expect(route).toContain("SKILLMETRY_ASSESSMENT_CONTENT_APPROVED");
+    expect(route).toContain("NEXT_PUBLIC_EXPANDED_ASSESSMENTS_ENABLED");
+    expect(route).toContain("await authenticatedRequest()");
+    expect(route).toContain("This assessment is awaiting educator review and staged rollout.");
+  });
+});

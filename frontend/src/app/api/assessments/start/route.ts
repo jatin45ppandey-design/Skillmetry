@@ -50,6 +50,15 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Assessment selection is invalid." }, { status: 400 });
 
   const assessmentId = parsed.data.assessmentId as AssessmentId;
+  const legacyAssessmentIds = new Set(["python-foundations","sql-foundations","javascript-foundations","html-foundations"]);
+  // A public build flag alone must NEVER activate unreviewed question content.
+  if (!legacyAssessmentIds.has(assessmentId) && (
+    process.env.SKILLMETRY_ASSESSMENT_CONTENT_APPROVED !== "true" ||
+    process.env.NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED !== "true" ||
+    process.env.NEXT_PUBLIC_EXPANDED_ASSESSMENTS_ENABLED !== "true"
+  )) {
+    return NextResponse.json({ error: "This assessment is awaiting educator review and staged rollout." }, { status: 503 });
+  }
   const definition = getAssessmentDefinition(assessmentId);
   const admin = createAdminClient();
   const now = new Date();
