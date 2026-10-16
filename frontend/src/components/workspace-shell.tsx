@@ -23,6 +23,7 @@ const primary = [
 const secondary = [
   { href: "/resources", label: "Learning resources", icon: BookMarked },
   { href: "/planner", label: "Weekly study planner", icon: BookOpen },
+  { href: "/lab", label: "Coding practice lab", icon: BookOpen },
   { href: "/simulator", label: "What-if simulator", icon: FlaskConical },
   { href: "/missions", label: "Missions", icon: Target },
   { href: "/jobs", label: "Job analyzer", icon: BriefcaseBusiness },
