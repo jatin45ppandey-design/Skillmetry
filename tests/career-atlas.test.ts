@@ -37,7 +37,7 @@ describe("Public career atlas", () => {
   });
 
   it("exposes only genuinely available quiz links and no inferred scores", () => {
-    const allowedQuizIds = new Map(assessmentCatalog.map(quiz => [quiz.skillId, quiz.id]));
+    const allowedQuizIds = new Map<string, string>(assessmentCatalog.map(quiz => [quiz.skillId, quiz.id]));
     for (const career of careers) {
       for (const node of buildCareerAtlas(career).nodes) {
         expect(node.assessmentId).toBe(allowedQuizIds.get(node.id) ?? null);
