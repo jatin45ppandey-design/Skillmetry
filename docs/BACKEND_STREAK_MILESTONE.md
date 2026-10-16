@@ -46,3 +46,10 @@ SKILLMETRY_STREAKS_ENABLED=false
 - Verify auth, accounts, quizzes, retakes, diagnostics, saved workflows and exports with two real test accounts.
 - Configure/rehearse rate limiting, token safety, retention/deletion, monitoring and backup/restore.
 - Complete operational security and production readiness before UI rollout.
+
+## Security hardening added after initial streak commit
+
+- Migration 004 now reserves generated task inserts for the server and restricts browser task updates to status/date/timestamp columns; week dates are database-constrained.
+- Mission writes now require the validated server API and server-only database client, rather than permitting direct authenticated table writes.
+- pgTAP scenarios were expanded for forged tasks and direct mission writes, but require a disposable Supabase staging database before they can be marked passed.
+- CI now runs a **static migration safety source gate** for SQL delimiters, grants, streak trust boundaries and default-off flags. It is explicitly not a SQL parser or a substitute for migrations + database integration tests.

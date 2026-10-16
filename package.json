@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "test:rls": "npx supabase test db --workdir database",
     "verify:assessment": "node --env-file-if-exists=frontend/.env.local scripts/verify-assessment-flow.mjs",
-    "verify:release": "node scripts/verify-release.mjs"
+    "verify:release": "node scripts/verify-release.mjs",
+    "verify:backend": "node scripts/verify-backend-gates.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

@@ -23,3 +23,5 @@ jobs:
         run: npm run build
       - name: Static release and privacy checks
         run: npm run verify:release
+      - name: Backend migration safety source gates
+        run: npm run verify:backend
