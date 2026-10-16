@@ -70,7 +70,7 @@ for (const name of ["learning_workflows_rls", "learning_streak_rls", "passport_s
   const source = "database/supabase/tests/" + name + ".test.sql";
   if (existsSync(join(root, source))) {
     const pg = read(source);
-    assert(!/\\b(?:throws_ok|results_eq|is_empty)\\(\\$[a-z]+\\s/i.test(pg),
+    assert(!/\b(?:throws_ok|results_eq|is_empty)\(\$[a-z]+\s/i.test(pg),
       "pgTAP statements use valid dollar-quoted SQL: " + name);
   }
 }
