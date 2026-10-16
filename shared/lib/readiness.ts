@@ -2,6 +2,20 @@ import { careers, skills } from "@skillmetry/shared/data/catalog";
 import type { Career, CareerId, Mission, SkillMap } from "@skillmetry/shared/types/domain";
 
 export type SkillState = "strong" | "developing" | "unassessed" | "blocked";
+export type PrerequisiteEvidence = "met" | "not-assessed" | "below-threshold";
+
+/** Prerequisite evidence is advisory: missing a quiz is never proof of failure. */
+export function getPrerequisiteEvidence(skillId: string, proficiency: SkillMap) {
+  const skill = skills.find(item => item.id === skillId);
+  return (skill?.prerequisites ?? []).map(id => ({
+    skillId: id,
+    state: !Object.hasOwn(proficiency, id)
+      ? "not-assessed" as const
+      : clamp(proficiency[id]) >= 50
+        ? "met" as const
+        : "below-threshold" as const
+  }));
+}
 export type SkillRecommendation = "assessment-recommended" | "skill-development";
 
 export function clamp(n: number, low = 0, high = 100): number {
@@ -53,7 +67,11 @@ export function getSkillState(skillId: string, proficiency: SkillMap): SkillStat
   const assessed = Object.hasOwn(proficiency, skillId);
   const score = assessed ? clamp(proficiency[skillId]) : null;
   if (score !== null && score >= 75) return "strong";
-  const blocked = skill?.prerequisites.some(id => !Object.hasOwn(proficiency, id) || clamp(proficiency[id]) < 50) ?? false;
+  // An unavailable or untaken prerequisite assessment must never be an
+  // artificial permanent lock on the learning roadmap.
+  const blocked = skill?.prerequisites.some(id =>
+    Object.hasOwn(proficiency, id) && clamp(proficiency[id]) < 50
+  ) ?? false;
   if (blocked) return "blocked";
   if (score !== null) return "developing";
   return "unassessed";

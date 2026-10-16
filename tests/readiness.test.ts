@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { careers, missions } from "@skillmetry/shared/data/catalog";
-import { applyScenario, catalogIsValid, clamp, getNextSkills, getSkillGaps, getSkillState, readiness, selectCareer } from "@skillmetry/shared/lib/readiness";
+import { applyScenario, catalogIsValid, clamp, getNextSkills, getSkillGaps, getSkillState, getPrerequisiteEvidence, readiness, selectCareer } from "@skillmetry/shared/lib/readiness";
 
 describe("curated career knowledge base", () => {
  it("has valid weights, references and an acyclic dependency graph",()=>expect(catalogIsValid()).toBe(true));
@@ -37,6 +37,11 @@ describe("readiness engine", () => {
  it("marks downstream skills blocked until prerequisites reach the threshold",()=>{
   expect(getSkillState("ml-foundations",{python:80,math:40,"data-processing":70})).toBe("blocked");
   expect(getSkillState("ml-foundations",{python:80,math:50,"data-processing":70})).toBe("unassessed");
+ });
+ it("does not block React solely because CSS has no available quiz",()=> {
+  expect(getSkillState("react", {javascript:80,html:80})).toBe("unassessed");
+  expect(getPrerequisiteEvidence("react",{javascript:80,html:80}).find(item=>item.skillId==="css")?.state).toBe("not-assessed");
+  expect(getSkillState("react",{javascript:80,html:80,css:0})).toBe("blocked");
  });
  it("recommends only actionable, non-strong skills",()=>{
   const profile={python:80,math:60,"data-processing":65,"ml-foundations":50};
