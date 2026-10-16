@@ -1,9 +1,9 @@
 import "server-only";
 import { diagnosticTopics,DIAGNOSTIC_VERSION,type DiagnosticDifficulty } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import type { AssessmentId, LegacyAssessmentId } from "@skillmetry/shared/types/domain";
 import type { GradedQuestion } from "@skillmetry/backend/lib/assessments/grading.server";
 export type DiagnosticQuestion = GradedQuestion & {topicId:string;difficulty:DiagnosticDifficulty;explanation:string};
-const authored: Record<AssessmentId,{map:number[];qs:string[][]}> = {
+const authored: Record<LegacyAssessmentId,{map:number[];qs:string[][]}> = {
   "python-foundations": {
     "map": [
       0,
@@ -190,7 +190,7 @@ const authored: Record<AssessmentId,{map:number[];qs:string[][]}> = {
   }
 };
 /** 10 immutable foundation items + 20 reviewed additions per track. */
-export function buildDiagnosticQuestions(id:AssessmentId,originals:readonly GradedQuestion[]):DiagnosticQuestion[]{
+export function buildDiagnosticQuestions(id:LegacyAssessmentId,originals:readonly GradedQuestion[]):DiagnosticQuestion[]{
   const d=authored[id];
   if(originals.length!==10)throw new Error("Expected 10 foundational questions");
   const base=originals.map((q,i)=>{
