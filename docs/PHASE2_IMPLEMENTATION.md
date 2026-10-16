@@ -12,6 +12,10 @@ This is the first **implemented vertical slice** of the Phase 2 roadmap (P2.1/P2
 - Digital Twin shows a **separate project-evidence journal**; official assessment scores, immutable attempts and career percentages are untouched.
 - No GitHub OAuth repo access, background crawling, AI evidence grading, reviewer approval or project proficiency inference is implemented.
 
+## Private learner export (P2.6/P2.7 partial)
+
+The private Career Passport now offers an authenticated **Download my private learning record** JSON action. `GET /api/account/learning-export` uses Supabase SSR Auth to fetch that student's profile, paginated trusted quiz history, and (when available) self-reported mission submissions. The response uses `Content-Disposition: attachment` and `Cache-Control: private, no-store`. The export includes an explicit completeness flag if the Phase 2 mission migration has not yet run. This is a **learning-record export**, not a full Supabase Auth/Storage GDPR export, public sharing link or verified Career Passport. Real-account email/session testing remains a release gate.
+
 ## Database activation
 
 Migration: `database/supabase/migrations/202610160002_mission_submissions.sql`.
