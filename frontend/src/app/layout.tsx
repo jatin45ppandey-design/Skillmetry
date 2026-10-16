@@ -4,6 +4,7 @@ import "./globals.css";
 import "./studio.css";
 import "./studio-surfaces.css";
 import "./learning-workflows.css";
+import "./passport-workflows.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
 
