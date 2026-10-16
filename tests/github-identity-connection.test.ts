@@ -10,7 +10,7 @@ describe("GitHub link and provenance trust boundaries",()=>{
     expect(route).toContain("identity_data as Record<string,unknown>");
     expect(route).toContain("result.owner.id");
     expect(route).toContain("linkedGitHubOwner");
-    expect(route).toContain("not who wrote the code");
+    expect(route).toContain("does not prove who wrote the code");
   });
   it("does not delete the only connected sign-in method and requires verified owner",()=>{
     expect(status).toContain("authenticatedRequest()");
