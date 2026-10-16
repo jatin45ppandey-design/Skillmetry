@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
+import "./studio.css";
+import "./studio-surfaces.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
 
