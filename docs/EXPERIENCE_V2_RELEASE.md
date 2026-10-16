@@ -26,7 +26,7 @@ Show students one understandable next step instead of 10 disconnected dashboards
 - Keep current production/preview behavior unchanged until verified staging promotion.
 
 ## Quality checks
-- Repo CI: TypeScript, ESLint, Vitest, Next.js production build and static privacy/release checks must all pass on the final commit.
+- Repo CI: TypeScript, ESLint, Vitest, Next.js production build, static privacy/release checks and unauthenticated HTTP smoke of the full public/demo-facing page sequence must pass on the final commit. HTTP 200 smoke does not validate browser interactions or auth flows.
 - Existing disposable database migration/pgTAP CI from backend PR #12 passed; frontend track does not alter those SQL migrations.
 - Complete browser-specific mobile/desktop visual QA, real device keyboard/screen-reader testing, profile and quiz authenticated E2E, staging streak reactivity, timezone continuity and cross-account navigation, and usability sessions with new learners **before a public production claim**.
 - Test that a signed-out demo, an authenticated learner with zero quiz results, a learner with trusted results, and a disconnected/offline session show honest next actions.
