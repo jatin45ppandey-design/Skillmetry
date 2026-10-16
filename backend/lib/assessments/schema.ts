@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
+import type { AssessmentId } from "@skillmetry/shared/types/domain";
 
-const assessmentIds = assessmentCatalog.map(item => item.id) as [string, ...string[]];
+const assessmentIds = assessmentCatalog.map(item => item.id) as [AssessmentId, ...AssessmentId[]];
 
 export const assessmentIdSchema = z.enum(assessmentIds);
 
