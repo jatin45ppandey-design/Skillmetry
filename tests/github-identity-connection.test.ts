@@ -7,7 +7,7 @@ const status=load("../frontend/src/app/api/github/connection/route.ts");
 const panel=load("../frontend/src/components/github-connection-panel.tsx");
 describe("GitHub link and provenance trust boundaries",()=>{
   it("matches provider ID to GitHub repository owner ID, not a user-submitted login",()=>{
-    expect(route).toContain("identity?.provider_id");
+    expect(route).toContain("identity_data as Record<string,unknown>");
     expect(route).toContain("result.owner.id");
     expect(route).toContain("linkedGitHubOwner");
     expect(route).toContain("not who wrote the code");
