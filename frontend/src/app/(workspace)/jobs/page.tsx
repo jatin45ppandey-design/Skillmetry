@@ -6,11 +6,29 @@ import { BriefcaseBusiness, CheckCircle2, Search, ShieldCheck } from "lucide-rea
 import { SectionTitle } from "@/components/section-title";
 import { StatusPill } from "@/components/workspace-ui";
 import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
+import { useAuth } from "@/components/auth-provider";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { matchJobSkillMentions } from "@skillmetry/shared/lib/job-skill-matching";
 
 export default function Jobs() {
   const { scores, illustrative } = useAssessmentProfile();
+  const { user } = useAuth();
+  const [aiPending, setAiPending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiMentions, setAiMentions] = useState<{skillId:string;skillLabel:string;evidenceQuote:string}[] | null>(null);
+
+  async function requestAI() {
+    setAiPending(true); setAiError(null); setAiMentions(null);
+    try {
+      const result = await fetch("/api/ai/jobs", {method:"POST",headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({description:description.trim()})});
+      const response = await result.json() as {error?:string;mentions?:{skillId:string;skillLabel:string;evidenceQuote:string}[]};
+      if (!result.ok || !response.mentions) throw new Error(response.error ?? "AI analysis is unavailable.");
+      setAiMentions(response.mentions);
+    } catch (cause) {
+      setAiError(cause instanceof Error ? cause.message : "AI analysis is unavailable.");
+    } finally { setAiPending(false); }
+  }
   const [description, setDescription] = useState("");
   const [analyzedText, setAnalyzedText] = useState<string | null>(null);
   const matches = useMemo(() =>
@@ -29,13 +47,25 @@ export default function Jobs() {
         <label className="field">Job description
           <textarea className="input" rows={13} maxLength={12000}
             placeholder="Paste a role description mentioning skills such as React, SQL, Docker, unit testing or Python…"
-            value={description} onChange={event => { setDescription(event.target.value); setAnalyzedText(null); }} />
+            value={description} onChange={event => { setDescription(event.target.value); setAnalyzedText(null); setAiMentions(null); setAiError(null); }} />
         </label>
         <p className="note">{description.length.toLocaleString("en-IN")} / 12,000 characters · browser-only matching</p>
         <button type="button" className="btn btn-primary" disabled={description.trim().length < 10}
           onClick={() => setAnalyzedText(description)}>
           <Search aria-hidden="true" /> Match named skills
         </button>
+        <div className="studio-ai-option">
+          <p>Optional AI extraction sends this job description to an external Gemini API. Do not include private details. Requires sign-in, owner enablement and daily request allowance.</p>
+          <button type="button" className="btn btn-outline" disabled={!user || description.trim().length < 30 || description.length > 6000 || aiPending}
+            onClick={() => void requestAI()}>{aiPending ? "Analyzing…" : "Send to AI (optional)"}</button>
+          {!user ? <p>Sign in to enable optional AI requests.</p> : null}
+          {aiError ? <p className="note" role="alert">{aiError}</p> : null}
+          {aiMentions ? <div role="status" className="studio-ai-results"><strong>AI-extracted mentions (grounded quotes only)</strong>
+            {aiMentions.length ? aiMentions.map(item => <p key={item.skillId}><strong>{item.skillLabel}:</strong> “{item.evidenceQuote}” · <Link href={`/resources?skill=${encodeURIComponent(item.skillId)}`}>Resources</Link></p>)
+              : <p>No literal skill evidence validated in this text.</p>}
+            <small>Not an employment probability, skill score or verified job requirement.</small>
+          </div> : null}
+        </div>
       </div>
       <div className="panel studio-job-output">
         <div className="studio-job-output-head"><BriefcaseBusiness aria-hidden="true" />

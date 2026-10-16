@@ -348,3 +348,12 @@
 .studio-app .studio-job-match-actions { display: flex; width: 100%; gap: 12px; flex-wrap: wrap; font-size: .79rem; }
 .studio-app .studio-job-match-actions a { color: #3b7550; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 900px) { .studio-app .studio-job-layout { grid-template-columns: 1fr; } }
+
+/* Explicitly opt-in AI tools—curated deterministic content remains the default. */
+.studio-app .studio-ai-option { margin-top: 18px; display: grid; gap: 11px; padding: 16px; background: #edf2e4; border: 1px solid #c8dbc5; border-radius: 15px 35px 15px 15px; }
+.studio-app .studio-ai-option p, .studio-app .studio-ai-results small { margin: 0; color: #526b57; font-size: .81rem; line-height: 1.6; }
+.studio-app .studio-ai-option .btn { justify-self: start; }
+.studio-app .studio-ai-results { display: grid; gap: 10px; padding: 15px; border-radius: 16px; border: 1px solid #d0dfca; background: #fffdf6; color: #33503b; overflow-wrap: anywhere; }
+.studio-app .studio-ai-results h4 { margin: 0; font-size: 1.12rem; }
+.studio-app .studio-ai-results ol, .studio-app .studio-ai-results ul { padding-left: 22px; margin: 0; display: grid; gap: 8px; }
+@media(max-width:650px) { .studio-app .studio-ai-option .btn { width: 100%; } }

@@ -45,3 +45,11 @@ Migration: `database/supabase/migrations/202610160002_mission_submissions.sql`.
 - Shareable, revocable Career Passport and export (P2.6).
 - Privacy controls, account deletion, production security and public deployment (P2.7–P2.8).
 - Real-user pilot, product analytics/privacy approvals and iterative QA (P2.9).
+
+## Opt-in AI additions (P2.3 and P2.4)
+
+- `POST /api/ai/missions` provides a bounded, JSON-validated draft project plan from a curated mission. No student data is shared, and no grade or project verification is created.
+- `POST /api/ai/jobs` sends **user-consented** job text (max 6000 chars) to the external Gemini provider; all returned skill IDs must be canonical and all extracted evidence quotes must occur in the submitted text. The existing browser-only matcher is the private fallback.
+- Both routes require an authenticated account, `SKILLMETRY_AI_ENABLED=true`, a server-only `GEMINI_API_KEY`, and the approved `202610160003_ai_usage_daily.sql` migration. `consume_ai_usage` enforces 3 requests per feature per user UTC day atomically. Expensive provider calls happen only after quota consumption.
+- Gemini API requests have 12-second timeouts and capped output; responses are validated and never create official proficiency scores. No AI text is saved by this implementation.
+- **No hosted migrations, provider billing setup or AI flag enablement performed.** Real provider integration and moderation/cost evaluation remain staging gates.
