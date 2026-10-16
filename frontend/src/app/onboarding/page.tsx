@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, Info } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LearningGoalEditor } from "@/components/learning-goal-editor";
 import { StepMarker } from "@/components/workspace-ui";
+import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import type { CareerId } from "@skillmetry/shared/types/domain";
@@ -19,6 +20,8 @@ export default function Onboarding() {
   const [localName, setLocalName] = useState(name === "Demo Student" ? "" : name);
   const [selected, setSelected] = useState<CareerId>(careerId);
   const [learningGoals, setLearningGoals] = useState(preferences.learning);
+  const previewCareer = careers.find(career => career.id === learningGoals.primaryCareerId) ?? null;
+  const previewSkills = learningGoals.selectedSkillIds.map(id => skillById[id]?.label ?? id);
 
   function submit() {
     completeOnboarding(localName.trim() || "Student", selected, { ...preferences, learning: learningGoals });
@@ -35,7 +38,18 @@ export default function Onboarding() {
       </aside>
       <section className="onboarding-card" aria-live="polite">
         {step === 1 ? <div><span className="step-kicker">Step 1 of 2</span><h2>What should we call you?</h2><p className="form-lead">We use your first name to personalize your workspace.</p><label className="field">First name<input autoFocus className="input input-large" value={localName} onChange={event => setLocalName(event.target.value)} maxLength={64} placeholder="e.g. Jatin" autoComplete="given-name"/></label><div className="form-actions"><span/><button className="btn btn-primary" type="button" disabled={!localName.trim()} onClick={() => setStep(2)}>Choose a career <ArrowRight aria-hidden="true"/></button></div></div> : null}
-        {step === 2 ? <div><span className="step-kicker">Step 2 of 2</span><h2>Set learning goals</h2><p className="form-lead">A career is optional. Add one or more skills and tools instead, or combine all three. Unassessed skills remain explicitly unknown.</p><LearningGoalEditor value={learningGoals} onChange={value => { setLearningGoals(value); if (value.primaryCareerId) setSelected(value.primaryCareerId); }}/><div className="form-actions"><button className="btn btn-quiet" type="button" onClick={() => setStep(1)}><ArrowLeft aria-hidden="true"/>Back</button><button className="btn btn-primary" type="button" onClick={submit}>Open my workspace <ArrowRight aria-hidden="true"/></button></div></div> : null}
+        {step === 2 ? <div><span className="step-kicker">Step 2 of 2</span><h2>Build your own study kit</h2><p className="form-lead">A career is optional. Add one or more skills and tools instead, or combine all three. Unassessed skills remain explicitly unknown.</p><aside className="onboarding-preview" aria-live="polite" aria-label="Live learning direction preview">
+          <div className="onboarding-preview-head"><Info size={16} aria-hidden="true"/> YOUR LEARNING KIT / LIVE PREVIEW</div>
+          <h3>{previewCareer?.title ?? "A self-directed learning path"}</h3>
+          <p>{previewCareer?.subtitle ?? "Your selected skills and tools shape your personal direction. Choosing a career is optional."}</p>
+          <div className="onboarding-preview-chips">
+            {previewSkills.slice(0, 4).map(label => <span key={label}>{label}</span>)}
+            {previewSkills.length > 4 ? <span>+{previewSkills.length - 4} skills</span> : null}
+            <span>{learningGoals.selectedToolIds.length} tools selected</span>
+          </div>
+          <small className="onboarding-preview-note">This previews your chosen goals, not assessment scores. Your skill record starts unassessed until you complete a supported secure quiz.</small>
+        </aside>
+        <LearningGoalEditor value={learningGoals} onChange={value => { setLearningGoals(value); if (value.primaryCareerId) setSelected(value.primaryCareerId); }}/><div className="form-actions"><button className="btn btn-quiet" type="button" onClick={() => setStep(1)}><ArrowLeft aria-hidden="true"/>Back</button><button className="btn btn-primary" type="button" onClick={submit}>Open my workspace <ArrowRight aria-hidden="true"/></button></div></div> : null}
       </section>
     </div>
   </main>;
