@@ -9,7 +9,7 @@ export const assessmentCatalog = [
     title: "Python foundations",
     description: "Core syntax, data structures, functions, exceptions, and program behavior.",
     questionCount,
-    estimatedMinutes: 12
+    estimatedMinutes: questionCount === 15 ? 18 : 12
   },
   {
     id: "sql-foundations",
@@ -17,7 +17,7 @@ export const assessmentCatalog = [
     title: "SQL foundations",
     description: "Filtering, joins, grouping, null semantics, and safe data modification.",
     questionCount,
-    estimatedMinutes: 12
+    estimatedMinutes: questionCount === 15 ? 18 : 12
   },
   {
     id: "javascript-foundations",
@@ -25,7 +25,7 @@ export const assessmentCatalog = [
     title: "JavaScript foundations",
     description: "Language behavior, scope, arrays, promises, and browser-safe patterns.",
     questionCount,
-    estimatedMinutes: 12
+    estimatedMinutes: questionCount === 15 ? 18 : 12
   },
   {
     id: "html-foundations",
@@ -33,7 +33,7 @@ export const assessmentCatalog = [
     title: "HTML foundations",
     description: "Semantic structure, forms, accessibility, metadata, and resilient markup.",
     questionCount,
-    estimatedMinutes: 10
+    estimatedMinutes: questionCount === 15 ? 18 : 10
   }
 ] as const satisfies readonly AssessmentSummary[];
 

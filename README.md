@@ -18,6 +18,8 @@ npm run dev
 
 Open `http://localhost:3000`. Next.js reads local Supabase settings from `frontend/.env.local` (not a root `.env.local`); restart the dev server after changing it.
 
+**Phase D:** The repository includes expanded 2026.3 diagnostics (30 questions per skill, 15 per attempt), private topic-level answer reviews, five unscored practice questions per topic and an updated Digital Twin insight section. This rollout is **disabled by default**. The additional PostgreSQL migration is not applied to the hosted project. See [Phase D rollout and acceptance plan](docs/PHASE_D_IMPLEMENTATION.md) before enabling `NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED`.
+
 For authenticated assessments, configure the two public Supabase values plus the server-only `SUPABASE_SECRET_KEY` (or legacy `SUPABASE_SERVICE_ROLE_KEY`). Never prefix either elevated variable with `NEXT_PUBLIC_`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
 
 ## Validation
@@ -51,8 +53,8 @@ The end-to-end verification command expects a running app and local Supabase var
 ## Important paths
 
 ```text
-frontend/src/app/api/assessments/          authenticated start, submit, and history routes
-backend/lib/assessments/                   server-only question bank and trusted grading
+frontend/src/app/api/assessments/          authenticated start, submit, private reviews, diagnostics, and unscored practice
+backend/lib/assessments/                   server-only versioned banks, grading and isolated practice questions
 shared/data/assessment-catalog.ts          browser-safe assessment metadata
 shared/lib/assessments/                    browser-safe history and profile selectors
 shared/lib/readiness.ts                    pure profile and hypothetical scenario logic
