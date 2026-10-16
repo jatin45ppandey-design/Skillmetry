@@ -33,7 +33,7 @@ export default function Home() {
             <div className="lc-hero-copy">
               <p className="lc-eyebrow"><span className="lc-eyebrow-dot" /> A LEARNING STUDIO THAT GROWS WITH YOU</p>
               <h1 id="lc-hero-title">Find your <span className="lc-hero-line">direction<span className="lc-swoosh" aria-hidden="true" /></span><span className="lc-hero-last">One skill at a time<span className="lc-period">.</span></span></h1>
-              <p className="lc-hero-intro">Your career journey isn't a checklist. Discover a path, measure what a quiz can tell you, and make sense of what to learn next.</p>
+              <p className="lc-hero-intro">Your career journey isn&apos;t a checklist. Discover a path, measure what a quiz can tell you, and make sense of what to learn next.</p>
               <div className="lc-hero-ctas">
                 <Link href="/onboarding" className="lc-split-cta"><span>Build my learning profile</span><span className="lc-cta-orbit"><ArrowUpRight aria-hidden="true" size={21} /></span></Link>
                 <Link href="/dashboard" className="lc-text-action">Explore a demo <ArrowRight size={17} aria-hidden="true" /></Link>
@@ -46,8 +46,8 @@ export default function Home() {
               <div className="lc-art-sun" aria-hidden="true"><Sparkles size={30} /></div>
               <div className="lc-art-path" aria-hidden="true" />
               <div className="lc-art-note lc-art-note--one"><span>01 / CHOOSE</span><Compass size={30} /><strong>YOUR<br />DIRECTION</strong></div>
-              <div className="lc-art-note lc-art-note--two"><span>02 / MEASURE</span><Fingerprint size={34} /><strong>WHAT'S<br />KNOWN</strong></div>
-              <div className="lc-art-note lc-art-note--three"><span>03 / GROW</span><GitBranch size={33} /><strong>WHAT'S<br />NEXT</strong></div>
+              <div className="lc-art-note lc-art-note--two"><span>02 / MEASURE</span><Fingerprint size={34} /><strong>WHAT&apos;S<br />KNOWN</strong></div>
+              <div className="lc-art-note lc-art-note--three"><span>03 / GROW</span><GitBranch size={33} /><strong>WHAT&apos;S<br />NEXT</strong></div>
               <div className="lc-art-sticker">your path<br />unfolds ↗</div>
               <div className="lc-art-side-note">FIG. 01 / THE LEARNING LOOP</div>
             </div>
@@ -80,12 +80,12 @@ export default function Home() {
 
           <section id="why" className="lc-statement" aria-labelledby="lc-statement-title">
             <div className="lc-statement-mark"><BookOpenText size={27} aria-hidden="true" /><span>OUR POINT OF VIEW / 001</span></div>
-            <h2 id="lc-statement-title">Not assessed <span>doesn't mean</span> not skilled.</h2>
+            <h2 id="lc-statement-title">Not assessed <span>doesn&apos;t mean</span> not skilled.</h2>
             <div className="lc-statement-bottom"><p>Skillmetry separates missing evidence from measured results. Your next move is explained through your selected goals, supported assessments and real skill prerequisites—not imaginary placement probabilities.</p><Link href="/twin">Explore the Skill Twin <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
           </section>
 
           <section className="lc-end" aria-labelledby="lc-end-title">
-            <span className="lc-eyebrow">YOUR STORY ISN'T PREWRITTEN</span>
+            <span className="lc-eyebrow">YOUR STORY ISN&apos;T PREWRITTEN</span>
             <h2 id="lc-end-title">Ready to start a new <em>chapter?</em></h2>
             <Link href="/onboarding" className="lc-split-cta"><span>Find my direction</span><span className="lc-cta-orbit"><ArrowUpRight size={21} aria-hidden="true" /></span></Link>
           </section>
@@ -94,7 +94,7 @@ export default function Home() {
         <footer className="lc-footer">
           <Brand />
           <p>Made for curious people learning real skills.</p>
-          <span>Early MVP · Quiz outcomes aren't professional certifications or hiring predictions.</span>
+          <span>Early MVP · Quiz outcomes aren&apos;t professional certifications or hiring predictions.</span>
           <Link href="/auth/sign-in">Sign in ↗</Link>
         </footer>
       </div>
