@@ -11,6 +11,19 @@ const assessed=[...listed.matchAll(/\bid:\s*"([a-z0-9-]+)",\s*\n\s*skillId:\s*"(
 const active=new Set(assessed.map(x=>x.skill));
 const missing=skills.filter(x=>!active.has(x));
 const duplicate=assessed.length!==new Set(assessed.map(x=>x.id)).size;
+const serverDefinitions = [
+  "backend/lib/assessments/question-bank.server.ts",
+  "backend/lib/assessments/diagnostic-bank.server.ts",
+  "backend/lib/assessments/practice-bank.server.ts",
+  "backend/lib/assessments/practice-extensions.server.ts",
+  "shared/data/diagnostic-taxonomy.ts"
+];
+// A catalog label alone must NEVER count as a working assessment.
+const incompleteSkillBackends = assessed.filter(item => serverDefinitions.some(path => {
+  if (!existsSync(resolve(root,path))) return true;
+  const content=read(path);
+  return !content.includes('"' + item.id + '":');
+})).map(item => item.skill);
 const required=[
   "docs/FINAL_COMPLETION_CONTRACT.md",
   "frontend/src/app/api/auth/password-reset/request/route.ts",
@@ -32,8 +45,10 @@ console.log("Canonical skills:",skills.length,"| Assessable:",active.size,"| Mis
 console.log("Missing assessments:",missing.length?missing.join(", "):"none");
 console.log("Required source paths absent:",absent.length?absent.join(", "):"none");
 console.log("Duplicate assessment IDs:",duplicate?"YES":"no");
+console.log("Catalog entries missing server/question/topic/practice wiring:",
+  incompleteSkillBackends.length ? incompleteSkillBackends.join(", ") : "none");
 console.log("IMPORTANT: passed source precheck alone never certifies hosted staging, educator review or full product release.");
-if(skills.length!==18||active.size!==18||missing.length||duplicate||absent.length){
+if(skills.length!==18||active.size!==18||missing.length||duplicate||absent.length||incompleteSkillBackends.length){
   console.error("NOT COMPLETE — Do not claim Skillmetry's original journey is finished.");
   process.exitCode=1;
 }else{
