@@ -1,4 +1,5 @@
 import { DigitalTwinWorkspace } from "@/components/digital-twin-workspace";
+import { DiagnosticTwinInsights } from "@/components/diagnostic-twin-insights";
 import { SectionTitle } from "@/components/section-title";
 
 export default function Twin() {
@@ -9,5 +10,6 @@ export default function Twin() {
       description="Understand what trusted quizzes measure, what remains unknown, and which valid next step fits your selected learning goals."
     />
     <DigitalTwinWorkspace />
+    <DiagnosticTwinInsights />
   </>;
 }
