@@ -1,4 +1,5 @@
 import { DigitalTwinWorkspace } from "@/components/digital-twin-workspace";
+import { MissionEvidenceJournal } from "@/components/mission-evidence-journal";
 import { DiagnosticTwinInsights } from "@/components/diagnostic-twin-insights";
 import { SectionTitle } from "@/components/section-title";
 
@@ -22,6 +23,7 @@ export default function Twin() {
       </div>
     </section>
     <DigitalTwinWorkspace />
+    <MissionEvidenceJournal />
     <DiagnosticTwinInsights />
   </>;
 }

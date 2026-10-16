@@ -305,3 +305,29 @@
   .studio-roadmap-intro, .studio-evidence-cover { padding: 23px; border-radius: 21px 55px 21px 21px; }
   .studio-roadmap-intro h2, .studio-evidence-cover h2 { font-size: 2.3rem; }
 }
+
+/* Phase 2: private, unverified project evidence, visually separate from trusted quiz results. */
+.studio-app .mission-evidence { margin-top: 20px; padding: 18px; border: 1px solid #cddcc8; background: #fffaf0; border-radius: 15px 35px 15px 15px; }
+.studio-app .mission-evidence-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.studio-app .mission-evidence-heading h3 { margin: 0; color: #2a4933; font: 700 1.15rem var(--font-display),sans-serif; }
+.studio-app .mission-evidence p, .studio-app .mission-evidence small { line-height: 1.55; color: #5c715f; }
+.studio-app .mission-evidence a, .studio-app .mission-journal-list a { color: #2f6b49; text-decoration: underline; text-underline-offset: 3px; }
+.studio-app .mission-evidence-editor { display: grid; gap: 13px; }
+.studio-app .mission-evidence-editor fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+.studio-app .mission-evidence-editor legend { margin-bottom: 8px; font-weight: 700; color: #304c39; }
+.studio-app .mission-evidence-editor label:not(.mission-evidence-check) { display: grid; gap: 7px; font-size: .86rem; font-weight: 650; color: #395741; }
+.studio-app .mission-evidence-check { display: flex; align-items: flex-start; gap: 9px; font-size: .85rem; line-height: 1.5; color: #38513f; }
+.studio-app .mission-evidence-check input { flex: none; margin-top: 4px; accent-color: #376b48; }
+.studio-app .mission-evidence-editor .input { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.studio-app .mission-evidence-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.studio-app .mission-evidence-actions .btn { min-height: 42px; }
+.studio-app .mission-evidence-submitted { display: grid; gap: 9px; }
+.studio-app .mission-evidence-submitted p { margin: 0; overflow-wrap: anywhere; }
+.studio-app .mission-evidence-journal { margin: 30px 0; padding: clamp(20px,3vw,35px); border-radius: 22px 66px 22px 22px; background: #fff7e8; border: 1px solid #d3dccb; }
+.studio-app .mission-evidence-journal .note { margin: 10px 0 18px; max-width: 760px; }
+.studio-app .mission-journal-list { display: grid; gap: 12px; }
+.studio-app .mission-journal-list article { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 17px; border-radius: 15px; background: #fffdf8; border: 1px solid #dbe2d5; }
+.studio-app .mission-journal-list strong { color: #294834; }
+.studio-app .mission-journal-list p { margin: 6px 0; color: #5a735e; font-size: .83rem; }
+.studio-app .mission-journal-list small { display: block; color: #526d56; max-width: 68ch; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .studio-app .mission-evidence-actions { flex-direction: column; } .studio-app .mission-evidence-actions .btn { width: 100%; } }
