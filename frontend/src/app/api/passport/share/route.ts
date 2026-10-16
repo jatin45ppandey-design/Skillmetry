@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { authenticatedRequest } from "@skillmetry/backend/lib/supabase/request-auth";
+import { hasSupabaseServerCredentials } from "@skillmetry/backend/lib/supabase/config.server";
+import { createAdminClient } from "@skillmetry/backend/lib/supabase/admin";
 
 export const runtime = "nodejs";
 const headers = { "Cache-Control": "private, no-store" };
@@ -59,11 +61,12 @@ export async function POST(request: Request) {
     }));
   }
 
+  if (!hasSupabaseServerCredentials()) return NextResponse.json({ error: "Secure sharing is not configured." }, { status: 503 });
   const token = randomBytes(32).toString("hex");
   const hash = createHash("sha256").update(token).digest("hex");
   const expiresAt = new Date(Date.now() + 30 * 86400000).toISOString();
   // Each student has one active link; rotating replaces the old hash/snapshot.
-  const saved = await auth.supabase.from("passport_shares").upsert({
+  const saved = await createAdminClient().from("passport_shares").upsert({
     user_id: auth.userId, token_hash: hash, snapshot, expires_at: expiresAt,
     created_at: new Date().toISOString(), revoked_at: null
   }, { onConflict: "user_id" }).select("user_id").single();
@@ -77,7 +80,8 @@ export async function POST(request: Request) {
 export async function DELETE() {
   const auth = await authenticatedRequest();
   if (auth.status !== "authenticated") return NextResponse.json({ error: "Sign in to revoke sharing." }, { status: 401 });
-  const result = await auth.supabase.from("passport_shares")
+  if (!hasSupabaseServerCredentials()) return NextResponse.json({ error: "Secure sharing is not configured." }, { status: 503 });
+  const result = await createAdminClient().from("passport_shares")
     .update({ revoked_at: new Date().toISOString() }).eq("user_id", auth.userId);
   if (result.error) return NextResponse.json({ error: "Share could not be revoked." }, { status: 503 });
   return NextResponse.json({ revoked: true }, { headers });

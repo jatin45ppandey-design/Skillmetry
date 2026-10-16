@@ -15,16 +15,12 @@ create index passport_shares_expiration_idx on public.passport_shares(expires_at
 alter table public.passport_shares enable row level security;
 alter table public.passport_shares force row level security;
 revoke all on public.passport_shares from public, anon, authenticated;
-grant select, insert, update on public.passport_shares to authenticated;
+-- Trusted quiz snapshots are constructed by the server; learners cannot directly forge them.
+grant select on public.passport_shares to authenticated;
 grant select, insert, update on public.passport_shares to service_role;
 create policy "Owners see own share settings" on public.passport_shares for select
   to authenticated using (user_id = (select auth.uid()));
-create policy "Owners create own share" on public.passport_shares for insert
-  to authenticated with check (user_id = (select auth.uid()));
-create policy "Owners rotate or revoke own share" on public.passport_shares for update
-  to authenticated using (user_id = (select auth.uid()))
-  with check (user_id = (select auth.uid()));
-
+-- No authenticated write RLS policy; server elevated client writes after verified Auth.
 -- Public access is only to the pre-approved snapshot for an unexpired token.
 -- Raw user profiles, private quiz attempts, projects, emails, and tokens are NOT exposed.
 create function public.read_public_passport(p_token_hash text)

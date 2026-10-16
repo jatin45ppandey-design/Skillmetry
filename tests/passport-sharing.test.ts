@@ -24,7 +24,9 @@ describe("revocable opt-in passport sharing",()=>{
   it("only shares whitelisted summaries, never emails, private attempts or project notes",()=>{
     expect(management).not.toContain("email:");
     expect(management).not.toContain("reflection");
-    expect(management).not.toContain("service_role");
+    expect(management).toContain("createAdminClient");
+    expect(schema).not.toContain("grant select, insert, update on public.passport_shares to authenticated");
+    expect(schema).toContain("grant select on public.passport_shares to authenticated");
     expect(management).toContain("server_quiz");
   });
 });
