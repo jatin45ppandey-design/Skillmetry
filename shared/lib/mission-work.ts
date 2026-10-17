@@ -29,11 +29,13 @@ function checkedUrl(input:string,kind:"repository"|"demo"):string|null {
 }
 
 /** Validates learner-submitted work, not professional project verification. */
-export function normalizeMissionWork(input:unknown):MissionWork {
+export function normalizeMissionWork(input:unknown,publishedMission?:{id:string;deliverables:string[]}):MissionWork {
   const parsed=missionWorkInputSchema.safeParse(input);
   if(!parsed.success)throw new Error("Invalid mission work submission");
   const data=parsed.data;
-  const mission=missions.find(item=>item.id===data.missionId);
+  const mission=missions.find(item=>item.id===data.missionId)??(
+    publishedMission?.id===data.missionId?publishedMission:undefined
+  );
   if(!mission)throw new Error("Unknown curated mission");
   if(new Set(data.completedIndices).size!==data.completedIndices.length||
      data.completedIndices.some(index=>index>=mission.deliverables.length))
