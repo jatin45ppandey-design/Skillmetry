@@ -5,6 +5,10 @@ on:
     paths:
       - "database/supabase/migrations/**"
       - "database/supabase/tests/**"
+      - "scripts/verify-assessment-flow.mjs"
+      - "scripts/run-local-auth-e2e.sh"
+      - "frontend/src/app/api/**"
+      - "backend/lib/supabase/**"
       - ".github/workflows/database-integration.yml"
   workflow_dispatch:
 
@@ -28,6 +32,8 @@ jobs:
         run: npx supabase start --workdir database
       - name: Run pgTAP tenant isolation and migration tests
         run: npm run test:rls
+      - name: Authenticated two-user API E2E on disposable Supabase
+        run: bash scripts/run-local-auth-e2e.sh
       - name: Stop disposable local Supabase
         if: always()
         run: npx supabase stop --workdir database --no-backup || true

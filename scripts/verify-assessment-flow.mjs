@@ -91,11 +91,14 @@ async function run() {
     displayName: "Assessment E2E Student",
     careerId: "frontend-developer",
     onboardingCompleted: true,
-    preferences: { hoursPerWeek: 6, roadmapView: "graph" }
+    preferences: { hoursPerWeek: 6, roadmapView: "graph", learning: { primaryCareerId: "frontend-developer", selectedSkillIds: [], selectedToolIds: [] } }
   };
   await alice.expectStatus("/api/profile", { method: "PUT", body: JSON.stringify(profileInput) }, 200);
   const storedProfile = await alice.expectStatus("/api/profile", { method: "GET" }, 200);
   assert(storedProfile.profile?.displayName === profileInput.displayName, "Profile did not persist through the API.");
+  assert(storedProfile.profile?.preferences?.learning?.primaryCareerId === "frontend-developer", "Onboarding goal did not persist.");
+  const nextAction = await alice.expectStatus("/api/learning/overview", {method: "GET"}, 200);
+  assert(nextAction.state === "ready" && nextAction.trustedEvidenceOnly === true, "Next action did not use the verified profile.");
 
   const startRequest = () => alice.expectStatus("/api/assessments/start", {
       method: "POST",
@@ -153,6 +156,15 @@ async function run() {
   assert(historyBeforeSignOut.attempts.length === 6, "Immediate retakes did not preserve all six completed attempts.");
   assert(historyBeforeSignOut.attempts[0].id === completedAttemptIds.at(-1), "The newest valid attempt was not current.");
   assert(historyBeforeSignOut.attempts.some(attempt => attempt.id === firstSubmission.attempt.id), "The earliest attempt was not preserved.");
+  if (process.env.SKILLMETRY_STREAKS_ENABLED === "true") {
+    const streak = await alice.expectStatus("/api/learning/streak?timeZone=Asia/Kolkata", {method: "GET"}, 200);
+    assert(streak.activeToday === true && streak.currentStreak >= 1, "Real graded attempts did not count toward today's streak.");
+    assert(streak.totalActiveDays === 1, "Multiple same-day assessments counted as multiple active days.");
+    assert(streak.last7Days.length === 7, "Streak calendar did not include seven local days.");
+    const otherStreak = await bob.expectStatus("/api/learning/streak?timeZone=Asia/Kolkata", {method: "GET"}, 200);
+    assert(otherStreak.totalActiveDays === 0 && otherStreak.currentStreak === 0, "Student B inherited student A's streak.");
+  }
+
 
   await alice.expectStatus("/api/auth/sign-out", { method: "POST" }, 204);
   const signedOutProfile = await alice.request("/api/profile", { method: "GET" });
@@ -166,8 +178,11 @@ async function run() {
   const restoredHistory = await alice.expectStatus("/api/assessments/history", { method: "GET" }, 200);
   assert(restoredProfile.profile?.displayName === profileInput.displayName, "Profile was not restored after sign-in.");
   assert(restoredHistory.attempts.length === 6, "Assessment history was not restored after sign-in.");
+  const noLeak = await bob.expectStatus("/api/learning/overview", {method: "GET"}, 200);
+  assert(noLeak.state === "onboarding-required", "Student B inherited student A's private profile.");
 
-  console.log("Concurrent start, concurrent idempotent submit, cross-user isolation, genuine 0%, six immediate retakes, and sign-in restoration passed.");
+
+  console.log("Authenticated E2E: profile and goals, next action, concurrent assessment, idempotent result, cross-user isolation, genuine zero, six retakes, streak isolation and session restoration passed.");
 }
 
 try {
