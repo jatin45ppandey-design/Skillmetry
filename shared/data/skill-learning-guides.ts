@@ -54,7 +54,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "Statistics for data science with Python",
-      "url": "https://www.freecodecamp.org/news/python-data-science-course-matplotlib-pandas-numpy",
+      "url": "https://www.freecodecamp.org/news/learn-pandas-for-data-science/",
       "format": "course-with-video"
     },
     "notes": [
@@ -90,7 +90,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "Machine learning concepts and generative AI introduction",
-      "url": "https://www.freecodecamp.org/news/learn-machine-learning-concepts-plus-generative-ai",
+      "url": "https://www.freecodecamp.org/news/learn-machine-learning-in-2024",
       "format": "course-with-video"
     },
     "notes": [
@@ -126,7 +126,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "APIs for beginners — video course",
-      "url": "https://www.freecodecamp.org/news/apis-for-beginners/",
+      "url": "https://www.freecodecamp.org/news/learn-to-code-rest-apis-using-nextjs-14",
       "format": "course-with-video"
     },
     "notes": [
@@ -216,7 +216,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "JavaScript for beginners with exercises",
-      "url": "https://www.youtube.com/watch?v=Zi-Q0t4gMC8",
+      "url": "https://www.youtube.com/watch?v=PkZNo7MFNFg",
       "format": "video"
     },
     "notes": [
@@ -234,7 +234,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "TypeScript full course for beginners",
-      "url": "https://www.youtube.com/watch?v=SpwzRDUQ1GI",
+      "url": "https://www.freecodecamp.org/news/learn-typescript-with-interactive-lessons",
       "format": "video"
     },
     "notes": [
@@ -269,8 +269,8 @@ const guides: SkillLearningGuide[] = [
       "url": "https://web.dev/learn/accessibility"
     },
     "lecture": {
-      "title": "Accessible web development — coding challenges",
-      "url": "https://www.youtube.com/watch?v=e2nkq3h1P68",
+      "title": "Accessibility guided curriculum",
+      "url": "https://web.dev/learn/accessibility",
       "format": "video"
     },
     "notes": [
@@ -288,7 +288,7 @@ const guides: SkillLearningGuide[] = [
     },
     "lecture": {
       "title": "JavaScript unit testing with Jest",
-      "url": "https://www.youtube.com/watch?v=IPiUDhwnZxA",
+      "url": "https://www.freecodecamp.org/news/how-to-test-javascript-code-with-jest",
       "format": "course-with-video"
     },
     "notes": [
