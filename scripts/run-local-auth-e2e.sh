@@ -25,7 +25,9 @@ export SKILLMETRY_APP_URL=http://127.0.0.1:3210
 export SKILLMETRY_DB_RATE_LIMITING_ENABLED=true
 export SKILLMETRY_STREAKS_ENABLED=true
 export NEXT_PUBLIC_EXPANDED_ASSESSMENTS_ENABLED=true
-export NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=true
+export NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=false
+# Ten-item baseline flow tests zero-grade/retake semantics. Run advanced 15-item
+# diagnostic separately with explicit version-aware expectations.
 export NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=true
 # No external AI / mail / public share provider calls.
 export SKILLMETRY_AI_TUTOR_ENABLED=false
