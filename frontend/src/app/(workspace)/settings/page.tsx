@@ -35,7 +35,7 @@ export default function Settings(){
    setPreferences({...preferences,learning:draft});
  }
  function updateDraft(value:typeof draft){setDraft(value);setApplied(false);setObservedSync(false);}
- let saveStatus=changed?"Unsaved changes · Apply your selections":
+ const saveStatus=changed?"Unsaved changes · Apply your selections":
    !verifiedProfile?"Demo/local selections · Complete profile setup to save to your account":
    isBusy?"Checking or syncing your cloud profile…":
    syncFailed?"Cloud sync unavailable · Your local selections remain":
