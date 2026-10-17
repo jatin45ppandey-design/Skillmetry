@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
 
 import { gradeAnswers } from "@skillmetry/backend/lib/assessments/grading.server";
-import { getAssessmentDefinition, orderedGradedQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import { orderedGradedQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import {resolveAssessmentForSession} from "@skillmetry/backend/lib/assessments/admin-bank.server";
 import { DIAGNOSTIC_VERSION } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import { submitAssessmentSchema } from "@skillmetry/backend/lib/assessments/schema";
 import { createAdminClient } from "@skillmetry/backend/lib/supabase/admin";
@@ -75,7 +76,9 @@ export async function POST(request: Request) {
   if (Date.parse(session.expires_at) <= Date.now()) return NextResponse.json({ error: "This assessment session expired. Start a new attempt." }, { status: 410 });
 
   const assessmentId = session.assessment_id as AssessmentId;
-  const definition = getAssessmentDefinition(assessmentId, session.assessment_version);
+  let definition;
+  try {definition = await resolveAssessmentForSession(assessmentId,session.assessment_version);}
+  catch {return NextResponse.json({error:"This saved assessment version is temporarily unavailable. No result was changed."},{status:503});}
   if (definition.version !== session.assessment_version) {
     return NextResponse.json({ error: "This assessment version is no longer available. Start a new attempt." }, { status: 409 });
   }
