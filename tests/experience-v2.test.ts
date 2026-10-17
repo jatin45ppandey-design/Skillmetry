@@ -35,6 +35,7 @@ describe("Connected learning experience source contracts", () => {
     expect(streak).not.toContain("localStorage.setItem");
     expect(streak).not.toContain("localStorage.getItem");
     expect(streak).toContain("Demo quiz results never count");
+    expect(streak).toContain("result?.ownerId === ownerId");
   });
   it("connects assessments, roadmap, resources and practice without altering scoring", () => {
     const assessment = read("../frontend/src/app/(workspace)/assessments/page.tsx");
