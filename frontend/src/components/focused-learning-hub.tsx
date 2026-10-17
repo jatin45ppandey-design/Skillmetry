@@ -7,6 +7,7 @@ import {BookOpen, CircleHelp, ExternalLink, FileText, PlayCircle, ArrowRight, Ch
 import {skills,careers} from "@skillmetry/shared/data/catalog";
 import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
 import {skillLearningGuides} from "@skillmetry/shared/data/skill-learning-guides";
+import {adminGuidePayloadSchema,type AdminGuidePayload} from "@skillmetry/shared/lib/admin-content";
 import {useSkillmetry} from "@/store/use-skillmetry";
 
 type Mode = "docs"|"lectures"|"notes";
@@ -27,8 +28,29 @@ export function FocusedLearningHub(){
  const [skillId,setSkillId]=useState(querySkill && skillLearningGuides[querySkill]?querySkill:preferred);
  const [mode,setMode]=useState<Mode>("docs");
  const [reviewed,setReviewed]=useState<Record<string,readonly number[]>>({});
+ const [publishedOverride,setPublishedOverride]=useState<{skillId:string;content:AdminGuidePayload}|null>(null);
+ const [checkingPublished,setCheckingPublished]=useState(false);
  useEffect(()=>{if(querySkill && skillLearningGuides[querySkill])setSkillId(querySkill);},[querySkill]);
- const guide=skillLearningGuides[skillId]??skillLearningGuides.javascript;
+ const baseGuide=skillLearningGuides[skillId]??skillLearningGuides.javascript;
+ const guide={...baseGuide,...(publishedOverride?.skillId===baseGuide.skillId?publishedOverride.content:{})};
+ useEffect(()=>{
+   const controller=new AbortController();
+   // The original curated content remains a complete offline fallback.
+   setCheckingPublished(true);
+   void (async()=>{
+     try{
+       const response=await fetch("/api/content/skill-guides?skill="+encodeURIComponent(baseGuide.skillId),{
+         cache:"no-store",signal:controller.signal});
+       if(!response.ok)return;
+       const result=await response.json() as {guide:unknown;source:string};
+       const parsed=adminGuidePayloadSchema.safeParse(result.guide);
+       if(!controller.signal.aborted)
+         setPublishedOverride(parsed.success?{skillId:baseGuide.skillId,content:parsed.data}:null);
+     }catch{if(!controller.signal.aborted)setPublishedOverride(null);}
+     finally{if(!controller.signal.aborted)setCheckingPublished(false);}
+   })();
+   return()=>controller.abort();
+ },[baseGuide.skillId]);
  const skill=skills.find(item=>item.id===guide.skillId);
  const quiz=assessmentCatalog.find(item=>item.skillId===guide.skillId);
  const fallback=useMemo(()=>selectedCareer?.skills.slice(0,5).map(s=>s.skillId)??[],[selectedCareer]);
@@ -62,6 +84,7 @@ export function FocusedLearningHub(){
      </nav>
      <div className="v3-learning-detail" aria-live="polite" key={guide.skillId+"-"+mode}>
        <span className="v3-kicker">{skill?.label??guide.skillId} / {modes.find(item=>item.key===mode)?.label}</span>
+       {checkingPublished?<span className="v3-session-hint" role="status">Checking published learning updates…</span>:null}
        {mode==="docs"?<>
          <h2>Understand the fundamentals.</h2>
          <p>Start with authoritative documentation. Read one section, try its example and come back for practice.</p>
