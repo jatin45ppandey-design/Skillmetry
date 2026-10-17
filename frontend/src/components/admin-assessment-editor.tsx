@@ -136,7 +136,7 @@ export function AdminAssessmentEditor({role,onDirtyChange}:{role:Role;onDirtyCha
        <small>Draft revision {current?.revision??0} · Published {current?.published_version??"none"}</small>
        <small>{draft.questions.length}/10 questions · {target.skillId}</small>
      </div>
-     <div className="admin-history"><h3>Version history</h3>
+     <div className="admin-history" hidden={!history.length}><h3>Version history</h3>
        {history.length?history.map(item=><p key={item.revision}>v{item.revision} · {item.action} · {new Date(item.created_at).toLocaleString()}</p>):
          <p>No saved revisions yet.</p>}
      </div>
@@ -192,20 +192,20 @@ export function AdminAssessmentEditor({role,onDirtyChange}:{role:Role;onDirtyCha
          <Plus size={16}/> Add question ({draft.questions.length}/10)
        </button>
      </fieldset>
-     <div className="admin-editor-preview">
-       <span className="admin-eyebrow">LEARNER PREVIEW / PRIVATE UNTIL OWNER PUBLISHES</span>
+     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
+       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{target.title}</h3>
        <ol>{draft.questions.map((q,i)=><li key={q.id+"-"+i}>
          <strong>{q.prompt}</strong>
          <span> · {q.choices.join(" / ")}</span>
        </li>)}</ol>
-     </div>
+     </div></details>
      {!validation.success?<p className="auth-error" role="alert">
        {validation.error.issues[0]?.message??"Bank draft is invalid."}</p>:null}
      {error?<p className="auth-error" role="alert">{error}</p>:null}
      {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
      <div className="admin-editor-actions">
-       <span>{changed?"Unsaved changes":"Saved or unchanged"} · {full?"10 questions ready":"Complete ten questions to publish"}</span>
+       <span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {full?"10 questions ready":"Complete ten questions to publish"}</span>
        <button type="button" className="btn btn-outline" disabled={disabled||!validation.success}
          onClick={()=>void save(false)}><Save size={16}/>{saving==="draft"?"Saving…":"Save draft"}</button>
        <button type="button" className="btn btn-primary"
