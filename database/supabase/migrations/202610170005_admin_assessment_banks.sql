@@ -46,6 +46,19 @@ grant select,insert on public.admin_assessment_revisions to service_role;
 revoke all on sequence public.admin_assessment_revisions_id_seq from public,anon,authenticated;
 grant usage,select on sequence public.admin_assessment_revisions_id_seq to service_role;
 
+-- Even a trusted server cannot silently rewrite a published answer-key snapshot.
+create or replace function public.block_admin_assessment_snapshot_mutation()
+returns trigger language plpgsql set search_path=''
+as $immutability$
+begin
+ raise exception using errcode='42501',message='published_assessment_snapshot_immutable';
+end;
+$immutability$;
+revoke all on function public.block_admin_assessment_snapshot_mutation() from public,anon,authenticated;
+create trigger admin_assessment_snapshot_immutable
+ before update or delete on public.admin_assessment_versions
+ for each row execute function public.block_admin_assessment_snapshot_mutation();
+
 create or replace function public.save_admin_assessment_bank(
  p_actor uuid,p_assessment_id text,p_draft jsonb,p_expected_revision integer,p_publish boolean default false
 ) returns jsonb
