@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {authenticatedRequest} from "@skillmetry/backend/lib/supabase/request-auth";
-import {normalizeMissionWork} from "@skillmetry/shared/lib/mission-work";
+import {normalizeMissionWork,missionWorkInputSchema} from "@skillmetry/shared/lib/mission-work";
+import {adminMissionPayloadSchema} from "@skillmetry/shared/lib/admin-missions";
 import {hasSupabaseServerCredentials} from "@skillmetry/backend/lib/supabase/config.server";
 import {createAdminClient} from "@skillmetry/backend/lib/supabase/admin";
 
@@ -29,8 +30,24 @@ export async function GET(){
 }
 export async function PUT(request:Request){
   const {auth,error}=await session();if(error||!auth)return error;
+  const input=await request.json().catch(()=>null);
+  const parsed=missionWorkInputSchema.safeParse(input);
+  let publishedMission:{id:string;deliverables:string[]}|undefined;
+  if(parsed.success&&parsed.data.missionId.startsWith("cms-")){
+    if(process.env.SKILLMETRY_ADMIN_MISSIONS_ENABLED!=="true"||
+       process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED!=="true")
+      return NextResponse.json({error:"This mission is not available yet."},{status:400});
+    if(!hasSupabaseServerCredentials())
+      return NextResponse.json({error:"Mission database is not configured."},{status:503});
+    const {data,error:missionError}=await createAdminClient().from("admin_missions")
+      .select("published").eq("id",parsed.data.missionId)
+      .not("published","is",null).maybeSingle();
+    if(missionError)return NextResponse.json({error:"Mission catalog unavailable."},{status:503});
+    const mission=adminMissionPayloadSchema.safeParse(data?.published);
+    if(mission.success)publishedMission={id:parsed.data.missionId,deliverables:mission.data.deliverables};
+  }
   let work;
-  try{work=normalizeMissionWork(await request.json().catch(()=>null));}
+  try{work=normalizeMissionWork(input,publishedMission);}
   catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Invalid submission"},{status:400});}
   if(!hasSupabaseServerCredentials())return NextResponse.json({error:"Secure mission storage is not configured."},{status:503});
   const {data,error:writeError}=await createAdminClient().from("mission_work").upsert({

@@ -295,6 +295,48 @@ async function run() {
       {method:"GET"},200);
     assert(courseHistory.history?.length===2,"Course revision history incomplete.");
 
+    if(process.env.SKILLMETRY_ADMIN_MISSIONS_ENABLED==="true"){
+      const missionContent={
+        title:"Create an accessible React task board",
+        description:"Implement a responsive React task board with real keyboard controls and document its integration tests.",
+        estimatedHours:6,
+        deliverables:["Working accessible task board","Recorded keyboard audit","Documented UI integration tests"]
+      };
+      const missionData={id:"cms-e2e-react-taskboard",careerId:"frontend-developer",
+        skillId:"react",expectedRevision:0,draft:missionContent,publish:false};
+      const blockedMission=await bob.request("/api/admin/missions",{method:"GET"});
+      assert(blockedMission.response.status===403,"Learner could inspect private mission drafts.");
+      const savedMission=await alice.expectStatus("/api/admin/missions",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify(missionData)},200);
+      assert(savedMission.result.revision===1,"Owner mission draft did not save.");
+      const hiddenMission=await bob.expectStatus("/api/content/missions",{method:"GET"},200);
+      assert(!hiddenMission.missions.some(m=>m.id===missionData.id),"Private mission leaked to students.");
+      const publishedMission=await alice.expectStatus("/api/admin/missions",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify({...missionData,expectedRevision:1,publish:true})},200);
+      assert(publishedMission.result.publishedRevision===2,"Owner mission was not published.");
+      const catalogMission=await bob.expectStatus("/api/content/missions",{method:"GET"},200);
+      assert(catalogMission.missions.some(m=>m.id===missionData.id&&m.deliverables.length===3),
+        "Published mission did not reach student catalog.");
+      const learnerWork=await alice.expectStatus("/api/learning/missions",{method:"PUT",
+        body:JSON.stringify({missionId:missionData.id,status:"in_progress",completedIndices:[0],
+          repositoryUrl:"",demoUrl:"",notes:"Private task-board learning progress"})},200);
+      assert(learnerWork.work.missionId===missionData.id,"Published mission could not save private learner work.");
+      const otherLearner=await bob.expectStatus("/api/learning/missions",{method:"GET"},200);
+      assert(!otherLearner.work.some(item=>item.missionId===missionData.id),
+        "Other student could read a published mission's private progress.");
+      const rejectedChecklist=await alice.request("/api/admin/missions",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify({...missionData,expectedRevision:2,
+          draft:{...missionContent,deliverables:["Another task","Recorded keyboard audit"]}})});
+      assert(rejectedChecklist.response.status===400,"Published mission checklist changed under saved learner progress.");
+      const staleMission=await alice.request("/api/admin/missions",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify(missionData)});
+      assert(staleMission.response.status===409,"Stale mission draft replaced publication.");
+      const missionHistory=await alice.expectStatus("/api/admin/missions/history?id="+missionData.id,
+        {method:"GET"},200);
+      assert(missionHistory.history.length===2,"Published mission history is incomplete.");
+    }
+
+
 
   }
 

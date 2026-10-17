@@ -12,6 +12,7 @@ import {useAssessmentProfile} from "@/hooks/use-assessment-profile";
 import {getNextSkills,selectCareer} from "@skillmetry/shared/lib/readiness";
 import {useSkillmetry} from "@/store/use-skillmetry";
 import type {MissionWork,MissionWorkStatus} from "@skillmetry/shared/lib/mission-work";
+import type {PublishedAdminMission} from "@skillmetry/shared/lib/admin-missions";
 
 const enabled=process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
 const draft=(missionId:string):MissionWork=>({missionId,status:"in_progress",completedIndices:[],
@@ -23,6 +24,7 @@ export default function Missions(){
   const career=selectCareer(careerId);
   const roleMissions=missions.filter(mission=>mission.roleId===careerId);
   const priority=new Set(getNextSkills(career,scores,3).map(item=>item.skillId));
+  const [publishedMissions,setPublishedMissions]=useState<PublishedAdminMission[]>([]);
   const [work,setWork]=useState<Record<string,MissionWork>>({});
   const [dirty,setDirty]=useState<string[]>([]);
   const [pending,setPending]=useState<string|null>(null);
@@ -30,6 +32,17 @@ export default function Missions(){
   const [error,setError]=useState<string|null>(null);
   const [notice,setNotice]=useState<string|null>(null);
   const canSave=Boolean(user&&enabled);
+
+  useEffect(()=>{
+    const controller=new AbortController();
+    void fetch("/api/content/missions",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        if(!response.ok)throw new Error("Published mission feed unavailable");
+        const body=await response.json() as {missions?:PublishedAdminMission[]};
+        if(!controller.signal.aborted)setPublishedMissions(body.missions??[]);
+      }).catch(()=>{/* Preserve curated missions if content publishing is unavailable. */});
+    return()=>controller.abort();
+  },[]);
 
   useEffect(()=>{
     setWork({});setDirty([]);setError(null);setNotice(null);
@@ -89,7 +102,8 @@ export default function Missions(){
     {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
     {pending?<div className="motion-action-status"><ActivityIndicator compact label="Saving your private project submission…" detail="Submitted projects remain learner-reported, not verified proficiency."/></div>:null}
     <div className="mission-grid">
-      {roleMissions.map((mission,index)=>{
+      {[...roleMissions,...publishedMissions.filter(m=>m.roleId===careerId&&
+        !roleMissions.some(existing=>existing.id===m.id))].map((mission,index)=>{
         const item=work[mission.id]??draft(mission.id);
         const complete=mission.deliverables.every((_,i)=>item.completedIndices.includes(i));
         const hasEvidence=Boolean(item.repositoryUrl||item.demoUrl);
