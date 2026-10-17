@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {skills} from "@skillmetry/shared/data/catalog";
 import {saveAdminGuideSchema} from "@skillmetry/shared/lib/admin-content";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
+import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -27,7 +28,8 @@ export async function PUT(request:Request){
  // Same-origin browser mutation: cookie-authenticated cross-origin requests
  // without a matching Origin must never be accepted.
  const origin=request.headers.get("origin");
- if(!origin||origin!==new URL(request.url).origin)
+ const expected=trustedSiteOrigin(request)?.origin;
+ if(!origin||!expected||origin!==expected)
    return NextResponse.json({error:"Same-origin update required."},{status:403,headers});
  const input=saveAdminGuideSchema.safeParse(await request.json().catch(()=>null));
  if(!input.success||!skills.some(skill=>skill.id===input.data.skillId))

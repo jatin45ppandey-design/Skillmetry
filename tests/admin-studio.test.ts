@@ -37,7 +37,8 @@ describe("Admin Studio editorial contracts",()=>{
    expect(auth).toContain(".from(\"admin_members\")");
    expect(auth).toContain("SKILLMETRY_ADMIN_STUDIO_ENABLED");
    expect(route).toContain('session.role!=="owner"');
-   expect(route).toContain("origin!==new URL(request.url).origin");
+   expect(route).toContain("origin!==expected");
+   expect(route).toContain("trustedSiteOrigin(request)");
  });
  it("only serves published content and preserves curated fallback",()=>{
    const route=read("../frontend/src/app/api/content/skill-guides/route.ts");
