@@ -62,6 +62,6 @@ describe("Five-phase product journey: only published, trustworthy evidence",()=>
    expect(reviewApi).toContain('session.role!=="reviewer"');
    expect(reviewApi).toContain("You cannot approve your own request.");
    const feedback=source("frontend/src/app/(workspace)/feedback/page.tsx");
-   expect(feedback).toContain("No feedback is sent");
+   expect(feedback).toContain("This form sends no analytics or responses");
  });
 });
