@@ -1,3 +1,4 @@
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 "use client";
 import {useEffect,useState} from "react";
 import {ArrowDown,ArrowUp,BookOpenCheck,Plus,Save,Send,Trash2} from "lucide-react";
@@ -192,6 +193,7 @@ export function AdminAssessmentEditor({role,onDirtyChange}:{role:Role;onDirtyCha
          <Plus size={16}/> Add question ({draft.questions.length}/10)
        </button>
      </fieldset>
+     <AdminReviewRequest module="assessments" contentId={assessmentId} revision={current?.revision??0} changed={changed} role={role}/>
      <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published_version)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
        <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published_version)?"A published version also exists":"Not yet published"}</span>
