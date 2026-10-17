@@ -243,7 +243,7 @@ function AssessmentExperience() {
           <div className="sx-result-next-links">
             <Link className="btn btn-primary" href={"/resources?skill=" + encodeURIComponent(safeResult.attempt.skillId)}>
               Learn this topic <ArrowRight size={16} aria-hidden="true"/></Link>
-            <Link className="btn btn-outline" href="/lab">Try guided practice</Link>
+            <Link className="btn btn-outline" href={"/lab?skill="+encodeURIComponent(safeResult.attempt.skillId)}>Practice this assessed skill</Link>
             <Link className="btn btn-quiet" href="/twin">View my progress</Link><Link className="btn btn-quiet" href={"/tutor?skill="+encodeURIComponent(safeResult.attempt.skillId)}>Ask about this skill</Link>
           </div>
         </section> : null}
