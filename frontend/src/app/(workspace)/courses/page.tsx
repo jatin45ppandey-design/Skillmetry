@@ -54,9 +54,10 @@ export default function CoursesPage(){
    if(!user)return;
    void fetch("/api/learning/course-progress",{cache:"no-store",signal:controller.signal})
      .then(async response=>{
-       const body=await response.json() as {enabled?:boolean;progress?:CourseCompletion[];error?:string};
+       const body=await response.json() as {enabled?:boolean;progress?:CourseCompletion[];truncated?:boolean;error?:string};
        if(!response.ok)throw new Error(body.error??"Course activity unavailable.");
-       if(!controller.signal.aborted){setProgressEnabled(Boolean(body.enabled));setProgress(body.progress??[]);}
+       if(!controller.signal.aborted){setProgressEnabled(Boolean(body.enabled));setProgress(body.progress??[]);
+         if(body.truncated)setProgressError("Only the 500 most recent saved lesson entries are shown. Older activity is not counted here.");}
      }).catch(()=>{if(!controller.signal.aborted)setProgressError("Saved lesson activity could not be loaded. Try refreshing.");});
    return()=>controller.abort();
  },[user?.id]);
