@@ -6,16 +6,16 @@
 - Source-only fourth Admin Studio tab, mission draft/publish, student published-only catalog, private evidence storage.
 - Host and data changes **not performed**.
 
-## Completed automatically (before last unsaved-navigation fix)
+## Completed automated QA
 - [x] Validate starter: typecheck, lint, Vitest, Next.js build, release/security and public HTTP smoke — [run 39028910229](https://github.com/jatin45ppandey-design/Skillmetry/actions/runs/39028910229) passed on `51eb602b`.
 - [x] Disposable Supabase: migrations, pgTAP RLS, owner/student two-user publish and evidence E2E — [run 39028910173](https://github.com/jatin45ppandey-design/Skillmetry/actions/runs/39028910173) passed on `51eb602b`.
 - [x] Code review found an unsaved-draft loss risk when switching Admin Studio tabs or career. Navigation guard, reload warning and regression source checks committed after that run.
-- [ ] Both workflows must pass again on the final source head before merge.
+- [x] Both workflows passed again on final feature head `a8275a17`: [Validate starter](https://github.com/jatin45ppandey-design/Skillmetry/actions/runs/39029347127) and [Isolated Supabase](https://github.com/jatin45ppandey-design/Skillmetry/actions/runs/39029347123).
 
 ## Explicit infrastructure blocker
 On the connected accounts at the time of this review:
 - Vercel: the connected Hobby team has **zero linked Git projects**.
-- Supabase: the only visible project is **SafeRelay-Dev**, which is not a Skillmetry staging environment.
+- Supabase: separate **Skilllmetry Free** project `qepaepqrhgrejzarqlrd` is now accessible read-only; it contains 7 baseline migrations and existing user/quiz records. It is not yet approved for staging changes.
 
 Do **not** run Skillmetry migrations or tests against SafeRelay-Dev. Do not create a billable Supabase project/branch or link Vercel to a production repo without a dedicated environment choice, any required cost approval and the project owner's decision.
 
@@ -33,4 +33,4 @@ Run only after a dedicated Skillmetry staging URL, isolated database, existing v
 - [ ] Production flags remain OFF until explicit hosted release approval.
 
 ## Merge decision
-**HOLD: manual staging/browser QA not performed; no Skillmetry staging environment is connected.** Current GitHub automated results are not a substitute for operator account verification or real-device QA. Keep PR #21 as draft and `main` unchanged. Once an authorized staging target exists, perform and record the above checks, rerun the latest-head CI, review, then merge.
+**Source-only merge may proceed after source CI and code review, with all feature flags off.** Manual browser/hosted staging QA remains an explicit prerequisite for *activation*, not a claim of live functionality. Do not apply hosted migrations, enable flags or deploy through this documentation change. Existing Skillmetry user/quiz data must be preserved, and SafeRelay is excluded.
