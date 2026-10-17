@@ -84,7 +84,7 @@ export default function Dashboard() {
           <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
         </div>
         <p>{evidenceUnavailable ? "Assessment history is unavailable right now." :
-          lastAttempt && !loading ? "Latest: " + (skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId) + " · " + lastAttempt.score + "/100" :
+          lastAttempt && !loading ? "Verified attempts help prioritize learning without guessing your readiness." :
           loading ? "Checking your trusted assessment history…" : "Your first quiz will create a measured baseline."}</p>
         <Link href="/twin" className="sx-next-evidence-link">View progress <ArrowRight size={16} aria-hidden="true"/></Link>
       </aside>
@@ -110,9 +110,8 @@ export default function Dashboard() {
         <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU HAVE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
         <h2 id="sx-evidence-heading">Latest quiz result</h2>
         <div className="sx-latest-score" role="status"><strong>{lastAttempt&&!loading&&!evidenceUnavailable?lastAttempt.score+"/100":"—"}</strong><span>{lastAttempt&&!loading&&!evidenceUnavailable?(skillById[lastAttempt.skillId]?.label??lastAttempt.skillId):"No trusted quiz loaded"}</span></div>
-        <p>{lastAttempt && !loading ?
-          "Last quiz: " + (skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId) +
-          " · " + lastAttempt.score + "/100" :
+        <p>{lastAttempt && !loading && !evidenceUnavailable ?
+          "Your latest server-graded result. Open progress to review your actual assessment history." :
           evidenceUnavailable ? "Trusted history could not be loaded. Please try again when online." : "Your first quiz will give you a real baseline. No scores are guessed."}</p>
         <Link href="/twin" className="sx-inline-link">See my progress <ArrowRight size={17} aria-hidden="true"/></Link>
       </section>
