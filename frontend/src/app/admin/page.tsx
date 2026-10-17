@@ -6,8 +6,8 @@ export default async function AdminStudio(){
  const session=await adminSession();
  if(session.status==="ready")return <main className="admin-studio-shell">
    <header className="admin-studio-top"><div><span className="admin-eyebrow">SKILLMETRY / ADMIN STUDIO</span>
-     <h1>Learning Content Studio</h1><p>Manage guides, roadmaps, courses, missions and assessment banks without editing source code.</p></div>
-     <Link href="/resources" className="btn btn-outline">View student resources ↗</Link>
+     <h1>Content Studio</h1><p>Choose a workspace to edit drafts, review changes and publish approved learning material.</p></div>
+     <div className="sx-admin-top-actions"><span className="sx-admin-role">{session.role.toUpperCase()} ACCESS</span><Link href="/dashboard" className="btn btn-outline">Student workspace ↗</Link></div>
    </header><AdminStudioWorkspace role={session.role}/></main>;
  return <main className="admin-studio-shell">
    <section className="admin-gate"><span className="admin-eyebrow">SKILLMETRY / RESTRICTED</span>
