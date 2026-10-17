@@ -189,3 +189,21 @@ body { overflow-x: clip; }
 .studio-app .studio-roadmap-intro,.studio-app .studio-evidence-cover{margin-top:0;}
 @media(max-width:900px){.studio-app .sx-tutor-layout.has-answer{grid-template-columns:1fr;}}
 @media(max-width:520px){.studio-app .workflow-inline-actions>.btn{width:100%;justify-content:center;}}
+
+
+/* Skill path inspector: show "Now" fully; make "Next/Later" compact but expandable. */
+.studio-app .sx-recommendation-details { min-width:0;padding:0!important;border-radius:12px; }
+.studio-app .sx-recommendation-details summary { cursor:pointer;display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:12px 14px;min-height:54px;list-style:none; }
+.studio-app .sx-recommendation-details summary::-webkit-details-marker { display:none; }
+.studio-app .sx-recommendation-details summary::after { content:"+";font-size:1.1rem;color:#477451; }
+.studio-app .sx-recommendation-details[open] summary::after { content:"−"; }
+.studio-app .sx-recommendation-details summary>span { text-transform:uppercase;font-size:.68rem;font-weight:750;color:#4d7753; }
+.studio-app .sx-recommendation-details summary>strong { font-size:.84rem;line-height:1.2; }
+.studio-app .sx-recommendation-details summary>small { font-size:.69rem;color:#617767;max-width:130px;text-align:right; }
+.studio-app .sx-recommendation-content { padding:0 14px 13px;display:grid;gap:9px; }
+.studio-app .sx-recommendation-content p { margin:0;font-size:.76rem;line-height:1.48; }
+.studio-app .sx-recommendation-details:focus-within { outline-offset:2px; }
+@media(max-width:640px){
+ .studio-app .sx-recommendation-details summary { grid-template-columns:37px minmax(0,1fr) auto; }
+ .studio-app .sx-recommendation-details summary>small { display:none; }
+}
