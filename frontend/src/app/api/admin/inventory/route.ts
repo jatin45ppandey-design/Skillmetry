@@ -18,14 +18,15 @@ export async function GET(){
  const outcomes=await Promise.all(specs.map(async spec=>{
    const {data,error}=await session.admin.from(spec.table)
      .select([spec.id,"revision",spec.published,"updated_at"].join(","))
-     .order("updated_at",{ascending:false}).limit(250);
+     .order("updated_at",{ascending:false}).range(0,250);
    if(error)return {key:spec.key,error:true};
-   const rows=(data??[]) as unknown as Record<string,unknown>[];
+   const allRows=(data??[]) as unknown as Record<string,unknown>[];
+   const rows=allRows.slice(0,250);
    const latest=rows[0]?.updated_at;
    const states=rows.map(row=>editorialInventoryState(spec.key,row));
    return {key:spec.key,total:rows.length,published:states.filter(x=>x.published).length,
      drafts:states.filter(x=>x.needsReview).length,
-     lastUpdated:typeof latest==="string"?latest:null,truncated:rows.length===250};
+     lastUpdated:typeof latest==="string"?latest:null,truncated:allRows.length>250};
  }));
  if(outcomes.some(x=>"error" in x))return NextResponse.json({
    error:"Editorial inventory is temporarily unavailable. No content was changed."
