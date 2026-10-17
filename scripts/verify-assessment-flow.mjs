@@ -264,6 +264,38 @@ async function run() {
       {method:"GET"},200);
     assert(roadmapAudit.history?.length===2,"Roadmap edit audit history is incomplete.");
 
+    const content={title:"JavaScript Foundations Course",summary:
+      "A practical beginner-friendly course with a video, short notes and a coding assignment.",
+      modules:[{id:"getting-started",title:"JavaScript basics",
+        lessons:[{id:"first-video",title:"A beginner JavaScript video",
+          summary:"Learn the most important basics and implement an interactive example.",
+          kind:"video",url:"https://www.youtube.com/watch?v=Zi-Q0t4gMC8",
+          notes:["Functions organize reusable behavior.","Promises represent asynchronous tasks."],
+          task:"Build a working interactive task list and test its sorting.",
+          estimatedMinutes:30}]}]};
+    const courseData={slug:"javascript-foundations",skillId:"javascript",
+      expectedRevision:0,draft:content,publish:false};
+    const bobCourseAdmin=await bob.request("/api/admin/courses",{method:"GET"});
+    assert(bobCourseAdmin.response.status===403,"Student B could read private course drafts.");
+    const courseSave=await alice.expectStatus("/api/admin/courses",{method:"PUT",
+      headers:{origin:appUrl},body:JSON.stringify(courseData)},200);
+    assert(courseSave.result.revision===1,"Owner could not save a private course.");
+    const hiddenCourse=await bob.expectStatus("/api/content/courses",{method:"GET"},200);
+    assert(!hiddenCourse.courses.some(c=>c.slug===courseData.slug),"Private course leaked.");
+    const coursePublish=await alice.expectStatus("/api/admin/courses",{method:"PUT",
+      headers:{origin:appUrl},body:JSON.stringify({...courseData,expectedRevision:1,publish:true})},200);
+    assert(coursePublish.result.publishedRevision===2,"Owner could not publish the course.");
+    const studentCourses=await bob.expectStatus("/api/content/courses?skill=javascript",{method:"GET"},200);
+    assert(studentCourses.courses.some(c=>c.slug===courseData.slug && c.modules.length===1),
+      "Published course and lessons did not reach students.");
+    const staleCourse=await alice.request("/api/admin/courses",{method:"PUT",
+      headers:{origin:appUrl},body:JSON.stringify(courseData)});
+    assert(staleCourse.response.status===409,"Outdated course edit incorrectly overwrote publication.");
+    const courseHistory=await alice.expectStatus("/api/admin/courses/history?slug=javascript-foundations",
+      {method:"GET"},200);
+    assert(courseHistory.history?.length===2,"Course revision history incomplete.");
+
+
   }
 
   const description="We need a frontend developer with React, TypeScript, JavaScript, CSS, HTML, REST API integration and unit testing experience.";
