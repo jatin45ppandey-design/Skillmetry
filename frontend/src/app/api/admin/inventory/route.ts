@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
+import {editorialInventoryState} from "@skillmetry/shared/lib/editorial-inventory";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 const headers={"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"};
@@ -21,8 +22,9 @@ export async function GET(){
    if(error)return {key:spec.key,error:true};
    const rows=(data??[]) as unknown as Record<string,unknown>[];
    const latest=rows[0]?.updated_at;
-   return {key:spec.key,total:rows.length,published:rows.filter(x=>Boolean(x[spec.published])).length,
-     drafts:rows.filter(x=>!x[spec.published]||Number(x.revision??0)>Number(x[spec.revision]??0)).length,
+   const states=rows.map(row=>editorialInventoryState(spec.key,row));
+   return {key:spec.key,total:rows.length,published:states.filter(x=>x.published).length,
+     drafts:states.filter(x=>x.needsReview).length,
      lastUpdated:typeof latest==="string"?latest:null,truncated:rows.length===250};
  }));
  if(outcomes.some(x=>"error" in x))return NextResponse.json({
