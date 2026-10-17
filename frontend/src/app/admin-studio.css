@@ -98,3 +98,33 @@
  .admin-editor-main,.admin-skill-panel{padding:15px;}
  .admin-editor-actions{gap:9px;}
 }
+
+
+/* Phase 0 admin usability: functional editor density and action reachability. */
+.sx-admin-top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.sx-admin-role{font:700 .68rem var(--font-technical),monospace;letter-spacing:.06em;background:#e4efdd;color:#315b3e;border:1px solid #c6d7c1;border-radius:99px;padding:9px 11px;white-space:nowrap;}
+.admin-editor-main{position:relative;}
+.admin-editor-actions{position:sticky;bottom:0;z-index:8;padding:12px;background:rgba(255,253,245,.97);border:1px solid #d9e3d3;border-radius:12px;box-shadow:0 -7px 24px #243c2614;margin-top:18px;backdrop-filter:blur(8px);}
+.admin-editor-heading{display:grid;gap:4px;}
+.admin-editor-heading h2{margin:2px 0;}
+.admin-editor-heading p{margin:3px 0 0;}
+.admin-guide-state{padding:11px;}
+.admin-history{margin-top:12px;}
+.admin-history p{overflow-wrap:anywhere;}
+.admin-form-stack{gap:12px;}
+.admin-course-modules{gap:12px;margin:14px 0;}
+.admin-course-module{gap:10px;padding:13px;}
+.admin-course-lesson{gap:9px;padding:12px;}
+.admin-editor-preview{margin:15px 0 10px;padding:14px;}
+.admin-roadmap-steps{gap:9px;margin-top:13px;}
+.admin-roadmap-step{padding:13px;}
+.admin-editor-main :is(input,textarea,select){min-width:0;}
+@media(max-width:760px){
+ .admin-studio-shell{padding:12px;}
+ .sx-admin-top-actions{justify-content:space-between;width:100%;}
+ .admin-editor-actions{position:static;box-shadow:none;backdrop-filter:none;padding:11px;}
+ .admin-history{max-height:none;}
+}
+@media(prefers-reduced-motion:reduce){
+ .admin-workspace *{scroll-behavior:auto!important;}
+}
