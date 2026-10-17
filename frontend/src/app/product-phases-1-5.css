@@ -48,3 +48,30 @@
 @media(max-width:760px){.admin-studio-shell .sx-admin-inventory-grid{grid-template-columns:1fr}.studio-app .sx-product-feedback-cta .btn{width:100%;justify-content:center}}
 @media(max-width:460px){.studio-app .sx-feedback-task-head{flex-direction:column}.studio-app .sx-feedback-finish>.btn{width:100%}}
 @media(prefers-reduced-motion:reduce){.studio-app .sx-lesson-completion,.admin-studio-shell .sx-admin-inventory-card{transition:none!important;animation:none!important}}
+
+
+/* Opt-in editorial approval queue and per-editor revision state. */
+.admin-studio-shell .sx-admin-review-request{display:flex;flex-direction:column;gap:9px;margin-top:15px;padding:13px;border:1px solid #cbddc4;border-radius:11px;background:#eef6e8;}
+.admin-studio-shell .sx-admin-review-request>div:first-child{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:.82rem;color:#315941;}
+.admin-studio-shell .sx-admin-review-request>div:first-child>span{display:inline-flex;align-items:center;gap:5px;color:#57745c;font-size:.76rem;}
+.admin-studio-shell .sx-admin-review-request .btn{align-self:flex-start;}
+.admin-studio-shell .sx-admin-review-request p,.admin-studio-shell .sx-admin-review-request small{margin:0;font-size:.73rem;color:#547359;line-height:1.45;}
+.admin-studio-shell .sx-admin-review-queue{border-top:1px solid #d4e0cf;margin-top:19px;padding-top:16px;}
+.admin-studio-shell .sx-admin-review-queue-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px;}
+.admin-studio-shell .sx-admin-review-queue-head h3{margin:6px 0;font-size:1.14rem;}
+.admin-studio-shell .sx-admin-review-row{display:flex;gap:15px;flex-wrap:wrap;justify-content:space-between;align-items:start;padding:14px;border:1px solid #d8e4d4;border-radius:11px;margin:9px 0;background:#f4f8f0;}
+.admin-studio-shell .sx-admin-review-row>div:first-child{display:grid;gap:5px;}
+.admin-studio-shell .sx-admin-review-row small,.admin-studio-shell .sx-admin-review-waiting{font-size:.72rem;color:#617c65;}
+.admin-studio-shell .sx-admin-review-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;}
+.admin-studio-shell .sx-admin-review-controls label{display:grid;gap:5px;flex:1 1 185px;font-size:.73rem;}
+.admin-studio-shell .sx-admin-review-controls textarea{width:100%;min-width:180px;border:1px solid #bed3ba;border-radius:8px;background:#fffdf5;padding:8px;color:#244a35;}
+@media(max-width:680px){
+ .admin-studio-shell .sx-admin-review-queue-head{flex-wrap:wrap;}
+ .admin-studio-shell .sx-admin-review-controls{width:100%}
+ .admin-studio-shell .sx-admin-review-controls label{flex-basis:100%;}
+ .admin-studio-shell .sx-admin-review-controls textarea{min-width:0}
+ .admin-studio-shell .sx-admin-review-controls .btn{flex:1}
+}
+@media(prefers-reduced-motion:reduce){
+ .admin-studio-shell .sx-admin-review-request,.admin-studio-shell .sx-admin-review-row{animation:none!important;transition:none!important;}
+}
