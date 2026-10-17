@@ -9,6 +9,16 @@ import {useAuth} from "@/components/auth-provider";
 import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
 type Published=CoursePayload&{slug:string;skillId:string;version:number};
 type CourseCompletion={courseSlug:string;lessonId:string;publishedRevision:number;completed:boolean};
+function parsePublishedCourses(rows:unknown[]):Published[]{
+ return rows.flatMap(item=>{
+   if(typeof item!=="object"||!item)return [];
+   const raw=item as Record<string,unknown>;
+   const check=coursePayloadSchema.safeParse(raw);
+   if(!check.success||typeof raw.slug!=="string"||typeof raw.skillId!=="string")return [];
+   return [{...check.data,slug:raw.slug,skillId:raw.skillId,
+     version:typeof raw.version==="number"?raw.version:0}];
+ });
+}
 export default function CoursesPage(){
  const {user}=useAuth();
  const [items,setItems]=useState<Published[]>([]);
@@ -21,6 +31,8 @@ export default function CoursesPage(){
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState("");
  const [openCourse,setOpenCourse]=useState<string|null>(null);
+ const [nextPage,setNextPage]=useState<number|null>(null);
+ const [loadingMore,setLoadingMore]=useState(false);
  useEffect(()=>{
    // Only a matching published course is opened; an arbitrary query parameter never creates content.
    const wanted=new URLSearchParams(window.location.search).get("course");
@@ -33,16 +45,11 @@ export default function CoursesPage(){
      try{
        const response=await fetch("/api/content/courses",{cache:"no-store",signal:controller.signal});
        if(!response.ok)throw new Error();
-       const body=await response.json() as {courses:unknown[]};
-       const parsed=(body.courses??[]).flatMap(item=>{
-         if(typeof item!=="object"||!item)return [];
-         const raw=item as Record<string,unknown>;
-         const check=coursePayloadSchema.safeParse(raw);
-         if(!check.success||typeof raw.slug!=="string"||typeof raw.skillId!=="string")return [];
-         return [{...check.data,slug:raw.slug,skillId:raw.skillId,
-           version:typeof raw.version==="number"?raw.version:0}];
-       });
-       if(!controller.signal.aborted)setItems(parsed);
+       const body=await response.json() as {courses:unknown[];nextPage?:number|null};
+       if(!controller.signal.aborted){
+         setItems(parsePublishedCourses(body.courses??[]));
+         setNextPage(Number.isSafeInteger(body.nextPage)?body.nextPage!:null);
+       }
      }catch{if(!controller.signal.aborted)setError("Published courses are temporarily unavailable. Learning resources still work.");}
      finally{if(!controller.signal.aborted)setLoading(false);}
    })();
@@ -77,6 +84,21 @@ export default function CoursesPage(){
    }catch(e){setProgressError(e instanceof Error?e.message:"Lesson progress could not be saved.");}
    finally{setProgressPending(null);}
  }
+ async function loadMoreCourses(){
+   if(nextPage===null||loadingMore)return;
+   setLoadingMore(true);setError("");
+   try{
+     const response=await fetch("/api/content/courses?page="+nextPage,{cache:"no-store"});
+     const body=await response.json() as {courses?:unknown[];nextPage?:number|null;error?:string};
+     if(!response.ok)throw new Error(body.error??"More courses could not be loaded.");
+     setItems(current=>{
+       const known=new Set(current.map(item=>item.slug));
+       return [...current,...parsePublishedCourses(body.courses??[]).filter(item=>!known.has(item.slug))];
+     });
+     setNextPage(typeof body.nextPage==="number"&&body.nextPage>nextPage?body.nextPage:null);
+   }catch(e){setError(e instanceof Error?e.message:"More courses could not be loaded.");}
+   finally{setLoadingMore(false);}
+ }
  const filtered=useMemo(()=>items.filter(item=>(selected==="all"||item.skillId===selected)&&
    (item.title+" "+item.summary+" "+(skillById[item.skillId]?.label??"")).toLowerCase().includes(query.trim().toLowerCase())),[items,selected,query]);
  return <div className="course-student-page">
@@ -91,13 +113,13 @@ export default function CoursesPage(){
      </select>
      <label className="sx-course-search" htmlFor="course-search">Search courses
        <input id="course-search" type="search" placeholder="Search title, skill…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
-     <span>{filtered.length} published {filtered.length===1?"course":"courses"}</span>
+     <span>{filtered.length} published {filtered.length===1?"course":"courses"} {nextPage!==null?"(loaded so far)":""}</span>
    </div>
    {loading?<ActivityIndicator compact label="Loading published lessons…"/>:null}
    {error?<p role="alert" className="course-note">{error}</p>:null}
    {progressError?<p role="alert" className="course-note">{progressError}</p>:null}
    {user&&!progressEnabled?<p className="course-note" role="status">Lesson completion tracking is staged on this deployment. You can still study lessons; no saved progress is claimed.</p>:null}
-   {!loading&&!filtered.length?<section className="course-empty" role="status">
+   {!loading&&!filtered.length&&nextPage===null?<section className="course-empty" role="status">
      <BookOpen size={27} aria-hidden="true"/>
      <h2>No published course for this filter yet.</h2>
      <p>Explore our existing documentation, video lectures and short notes while the course library grows.</p>
@@ -147,6 +169,12 @@ export default function CoursesPage(){
        </div>
      </article>;})}
    </div>
+   {nextPage!==null?<div className="sx-course-pagination">
+     <p className="course-note">Search and skill filters apply to loaded courses. Load more to explore older published courses.</p>
+     <button className="btn btn-outline" type="button" disabled={loadingMore} onClick={()=>void loadMoreCourses()}>
+       {loadingMore?"Loading more courses…":"Load more published courses"}
+     </button>
+   </div>:null}
    <p className="course-note">Course reading and videos do not automatically change verified quiz scores, learning streaks or assessed readiness.</p>
  </div>;
 }
