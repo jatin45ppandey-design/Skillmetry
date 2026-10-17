@@ -47,6 +47,7 @@ export default function Lab(){
   const visible=exercises.filter(x=>(filter==="all"||x.skillId===filter)&&
     (x.title+" "+x.skillId+" "+x.difficulty).toLowerCase().includes(query.trim().toLowerCase()));
   const current=visible.find(x=>x.id===active)??visible[0];
+  const matchingAssessment=current?assessmentCatalog.find(a=>a.skillId===current.skillId):null;
   function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);}
   async function submit(){
     if(!current||pending||feedback)return;
