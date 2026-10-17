@@ -1,21 +1,74 @@
 "use client";
 
+import {useState} from "react";
 import Link from "next/link";
-import { ArrowRight, BrainCircuit, Check, GitBranch, Layers3, LayoutPanelTop, ServerCog } from "lucide-react";
-import { SectionTitle } from "@/components/section-title";
-import { StatusPill } from "@/components/workspace-ui";
-import { careers, skillById } from "@skillmetry/shared/data/catalog";
-import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
-import { assessmentSnapshot } from "@skillmetry/shared/lib/assessments/grading";
-import { useSkillmetry } from "@/store/use-skillmetry";
+import {ArrowRight,BrainCircuit,Check,GitBranch,Layers3,LayoutPanelTop,ServerCog} from "lucide-react";
+import {SectionTitle} from "@/components/section-title";
+import {StatusPill} from "@/components/workspace-ui";
+import {careers,skillById} from "@skillmetry/shared/data/catalog";
+import {useAssessmentProfile} from "@/hooks/use-assessment-profile";
+import {assessmentSnapshot} from "@skillmetry/shared/lib/assessments/grading";
+import {useSkillmetry} from "@/store/use-skillmetry";
 
-const careerIcons = { "ml-engineer": BrainCircuit, "frontend-developer": LayoutPanelTop, "backend-developer": ServerCog, "full-stack-developer": Layers3 };
+const careerIcons={"ml-engineer":BrainCircuit,"frontend-developer":LayoutPanelTop,
+ "backend-developer":ServerCog,"full-stack-developer":Layers3};
 
-export default function Careers() {
-  const { preferences, setCareer } = useSkillmetry();
-  const { attempts, scores } = useAssessmentProfile();
-  const careerId = preferences.learning.primaryCareerId ?? "no-primary-career";
-  const currentCareer = careers.find(career => career.id === careerId) ?? { title: "No primary career direction" };
-
-  return <><SectionTitle eyebrow="Career explorer" title="Compare paths using measured results" description="Coverage shows how much of each curated role has been assessed. Performance uses only available quiz results—not missing-skill zeroes, fit, salary, or hiring probability."/><div className="career-explorer-grid">{careers.map(career => { const Icon = careerIcons[career.id]; const current = career.id === careerId; const snapshot = assessmentSnapshot(career,attempts); const strongest = career.skills.filter(item => Object.hasOwn(scores,item.skillId)).sort((a,b) => scores[b.skillId]-scores[a.skillId]).slice(0,2); return <article key={career.id} className={`career-explorer-card motion-stage ${current ? "selected" : ""}`}><div className="career-card-head"><span className="career-icon"><Icon aria-hidden="true"/></span>{current ? <StatusPill tone="accent"><Check aria-hidden="true"/>Current goal</StatusPill> : <StatusPill tone="neutral">Compare</StatusPill>}</div><h2>{career.title}</h2><p>{career.subtitle}</p><div className="career-coverage"><div><span>Assessment coverage</span><strong>{snapshot.coveragePercent}<small>%</small></strong></div><div className="progress-track"><div className="progress-fill" style={{width:`${snapshot.coveragePercent}%`}}/></div></div><div className="career-skill-preview"><span>Measured strengths</span>{strongest.length ? strongest.map(item => <span key={item.skillId}><strong>{skillById[item.skillId].label}</strong><small>{scores[item.skillId]}/100</small></span>) : <span><strong>Not assessed</strong><small>No overlap measured yet</small></span>}</div><div className="career-card-actions">{current ? <Link href="/roadmap" className="btn btn-primary">View current roadmap <ArrowRight aria-hidden="true"/></Link> : <button className="btn btn-quiet" type="button" onClick={() => setCareer(career.id)}>Set as target</button>}</div></article>; })}</div><section className="career-selection-summary motion-stage" key={careerId}><GitBranch aria-hidden="true"/><div><span>Current pathway</span><h2>{currentCareer.title}</h2><p>Changing the target role updates the roadmap and missions. It never changes or fabricates assessment scores.</p></div><Link href="/roadmap" className="text-link">Open adaptive roadmap <ArrowRight aria-hidden="true"/></Link></section></>;
+export default function Careers(){
+ const {preferences,setCareer,onboardingCompleted}=useSkillmetry();
+ const {attempts,scores,illustrative,status}=useAssessmentProfile();
+ const careerId=onboardingCompleted?preferences.learning.primaryCareerId:null;
+ const [previewId,setPreviewId]=useState<string|null>(null);
+ const preview=careers.find(c=>c.id===(previewId??careerId))??careers[0];
+ const previewSnapshot=assessmentSnapshot(preview,attempts);
+ const highlights=preview.skills.filter(skill=>Object.hasOwn(scores,skill.skillId))
+  .sort((a,b)=>scores[b.skillId]-scores[a.skillId]).slice(0,3);
+ const isCurrent=preview.id===careerId;
+ return <div className="sx-career-page">
+  <SectionTitle eyebrow="Career explorer" title="Explore career paths" description="Compare what each role teaches and the quiz evidence you actually have. Coverage is not a hiring or suitability score."/>
+  {illustrative?<p className="sx-career-demo">Example quiz evidence only. Sign in to start your own measured learning path.</p>:status==="error"||status==="offline"?<p className="sx-career-demo" role="status">Verified results are unavailable. Career information remains available without estimated scores.</p>:null}
+  <div className="sx-career-workspace">
+   <section className="sx-career-options" aria-label="Choose a career to preview">
+    <div className="sx-career-options-header"><h2>Career directions</h2><span>{careers.length} pathways</span></div>
+    {careers.map(career=>{
+     const Icon=careerIcons[career.id];
+     const current=career.id===careerId;
+     const selected=career.id===preview.id;
+     const snapshot=assessmentSnapshot(career,attempts);
+     return <button key={career.id} className={"sx-career-option"+(selected?" selected":"")} type="button"
+       aria-pressed={selected} onClick={()=>setPreviewId(career.id)}>
+       <span className="sx-career-option-icon"><Icon size={20} aria-hidden="true"/></span>
+       <span className="sx-career-option-copy"><strong>{career.title}</strong><small>{career.subtitle}</small></span>
+       <span className="sx-career-option-status">{current?<Check size={16} aria-label="Current goal"/>:<span>{snapshot.coveragePercent}%<small> assessed</small></span>}</span>
+     </button>;
+    })}
+   </section>
+   <section className="sx-career-inspector" aria-live="polite" aria-label="Selected career details">
+    <div className="sx-career-inspector-head">
+     <div><span className="eyebrow">SELECTED PATHWAY</span><h2>{preview.title}</h2><p>{preview.subtitle}</p></div>
+     <StatusPill tone={isCurrent?"success":"neutral"}>{isCurrent?"Current goal":"Preview"}</StatusPill>
+    </div>
+    <div className="sx-career-inspector-metrics">
+      <div><strong>{preview.skills.length}</strong><small>Core pathway skills</small></div>
+      <div><strong>{status==="loading"?"—":previewSnapshot.coveragePercent+"%"}</strong><small>Assessment coverage</small></div>
+      <div><strong>{highlights.length}</strong><small>Skills measured here</small></div>
+    </div>
+    <h3>Skills in this pathway</h3>
+    <div className="sx-career-skill-list">
+      {preview.skills.slice(0,8).map(item=><div key={item.skillId}>
+       <span>{skillById[item.skillId]?.label??item.skillId}</span>
+       <small>{Object.hasOwn(scores,item.skillId)?scores[item.skillId]+"/100":"Not assessed"}</small>
+      </div>)}
+    </div>
+    <p className="sx-career-evidence-note">{highlights.length?
+      "Only completed quizzes contribute to the measured values above.":
+      "No overlapping skill assessment results yet; this is not a negative career verdict."}</p>
+    <div className="sx-career-inspector-actions">
+      {isCurrent?<Link className="btn btn-primary" href="/roadmap">Open my roadmap <ArrowRight aria-hidden="true"/></Link>:
+        <button className="btn btn-primary" type="button" onClick={()=>setCareer(preview.id)}>Set as my goal <Check size={17} aria-hidden="true"/></button>}
+      <Link className="btn btn-outline" href="/resources">Explore learning resources <ArrowRight size={17} aria-hidden="true"/></Link>
+    </div>
+   </section>
+  </div>
+  <p className="sx-career-footer"><GitBranch size={16} aria-hidden="true"/>Switching careers changes your learning direction, never your existing quiz evidence. Save your full learning profile in <Link href="/onboarding">onboarding</Link>.</p>
+ </div>;
 }
