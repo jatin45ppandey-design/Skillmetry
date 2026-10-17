@@ -59,7 +59,7 @@ describe("Product roadmap staged source contracts",()=>{
    expect(feedback).toContain("URL.createObjectURL");
    expect(feedback).toContain("setConsent");
    expect(feedback).toContain("Download my feedback");
-   expect(feedback).toContain("No background");
+   expect(feedback).toContain("NO BACKGROUND COLLECTION");
    expect(feedback).not.toContain('fetch(');
    expect(feedback).not.toContain("localStorage");
    expect(feedback).not.toContain('navigator.sendBeacon');
