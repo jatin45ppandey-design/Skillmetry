@@ -9,9 +9,12 @@ const headers={"Cache-Control":"public, max-age=0, must-revalidate","X-Content-T
 export async function GET(request:Request){
  const params=new URL(request.url).searchParams;
  const skill=params.get("skill");
+ const course=params.get("course");
  const pageText=params.get("page")??"0";
  const page=/^(0|[1-9][0-9]{0,2})$/.test(pageText)?Number(pageText):NaN;
- if([...params.keys()].some(k=>!["skill","page"].includes(k))||params.getAll("skill").length>1 ||
+ if([...params.keys()].some(k=>!["skill","page","course"].includes(k))||params.getAll("skill").length>1 ||
+   params.getAll("course").length>1||(course&&!/^[a-z][a-z0-9-]{3,49}$/.test(course))||
+   (course&&(skill!==null||page!==0))||
    params.getAll("page").length>1||!Number.isSafeInteger(page)||page>99||
    (skill&&!skills.some(s=>s.id===skill)))return NextResponse.json({error:"Unknown skill."},{status:400,headers});
  if(process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED!=="true"||!hasSupabaseServerCredentials())
@@ -22,6 +25,7 @@ export async function GET(request:Request){
      .order("updated_at",{ascending:false}).order("slug",{ascending:true})
      .range(page*50,page*50+50);
    if(skill)query=query.eq("skill_id",skill);
+   if(course)query=query.eq("slug",course);
    const {data,error}=await query;
    if(error)return NextResponse.json({courses:[],source:"unavailable",nextPage:null},{status:503,headers});
    const rows=(data??[]);
