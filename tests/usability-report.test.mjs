@@ -13,7 +13,8 @@ describe("Local opt-in student research summaries",()=>{
      response("no",4,"private message"),
      response("partly",3)
    ]);
-   expect(result.participants).toBe(3);
+   expect(result.exportsAnalyzed).toBe(3);
+   expect(result.uniqueParticipantsNotVerifiable).toBe(true);
    const item=result.summary.find(x=>x.task==="dashboard");
    expect(item).toMatchObject({tested:3,completed:1,failed:1,partly:1,
      completionRate:33,meanDifficulty:3});
@@ -26,7 +27,7 @@ describe("Local opt-in student research summaries",()=>{
      {study:"other",answers:[{taskId:"admin",complete:"yes",difficulty:3}]},
      {study:"skillmetry-usability-v1",answers:[{taskId:"course",complete:"yes",difficulty:8}]}
    ]);
-   expect(result.participants).toBe(1);
+   expect(result.exportsAnalyzed).toBe(1);
    const course=result.summary.find(x=>x.task==="course");
    expect(course.tested).toBe(1);
    expect(course.meanDifficulty).toBeNull();
