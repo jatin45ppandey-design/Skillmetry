@@ -2,7 +2,7 @@
 import {ActivityIndicator} from "@/components/motion-ui";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect,useMemo,useState } from "react";
 import { ArrowRight, ArrowUpRight, BookOpenCheck, Compass, Fingerprint, GitBranch,
   LibraryBig, ShieldCheck, Sparkles, Target } from "lucide-react";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
@@ -13,9 +13,24 @@ import { useSkillmetry } from "@/store/use-skillmetry";
 import { LearningStreakCard } from "@/components/learning-streak-card";
 import {useAuth} from "@/components/auth-provider";
 
+type TrustedNextAction={kind:"assessment"|"learning"|"choose-goals";title:string;label:string;href:string;explanation:string};
 export default function Dashboard() {
   const { name, preferences, onboardingCompleted, profileSource, cloudOwnerId } = useSkillmetry();
   const {user}=useAuth();
+  const [cloudNext,setCloudNext]=useState<TrustedNextAction|null>(null);
+  const [cloudNextStatus,setCloudNextStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
+  useEffect(()=>{
+    const controller=new AbortController();setCloudNext(null);
+    if(!user){setCloudNextStatus("idle");return;}
+    setCloudNextStatus("loading");
+    void fetch("/api/learning/overview",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        const body=await response.json() as {nextAction?:TrustedNextAction;error?:string};
+        if(!response.ok||!body.nextAction)throw new Error(body.error??"Learning overview unavailable");
+        if(!controller.signal.aborted){setCloudNext(body.nextAction);setCloudNextStatus("ready");}
+      }).catch(()=>{if(!controller.signal.aborted)setCloudNextStatus("unavailable");});
+    return()=>controller.abort();
+  },[user?.id]);
   const profileReady=onboardingCompleted && (!user || (profileSource==="student" && cloudOwnerId===user.id));
   const { attempts, scores, illustrative, status } = useAssessmentProfile();
   const learning = preferences.learning;
@@ -31,19 +46,20 @@ export default function Dashboard() {
   })[0], [learning, scores]);
   const focus = hasFocus ? twin.insights.find(item=>item.priority==="now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
-  const nextHref = !profileReady || !hasFocus ? "/onboarding" :
-    focus?.action.href ?? "/roadmap";
-  const nextLabel = !profileReady || !hasFocus ? "Find my starting point" :
+  const groundedCloudAction=profileReady&&hasFocus&&!loading&&cloudNextStatus==="ready"?cloudNext:null;
+  const nextHref = groundedCloudAction?.href ?? (!profileReady || !hasFocus ? "/onboarding" :
+    focus?.action.href ?? "/roadmap");
+  const nextLabel = groundedCloudAction?.label ?? (!profileReady || !hasFocus ? "Find my starting point" :
     focus?.action.kind === "assessment" ? "Take a foundational quiz" :
-    focus?.action.kind === "resources" ? "Explore a learning resource" : "Open my pathway";
-  const nextTitle = !profileReady || !hasFocus ? "Choose what you want to learn." :
+    focus?.action.kind === "resources" ? "Explore a learning resource" : "Open my pathway");
+  const nextTitle = groundedCloudAction?.title ?? (!profileReady || !hasFocus ? "Choose what you want to learn." :
     loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ?
     "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
-    "Check how far you've come." : detail ? "Let's work on " + detail + "." : "Make one useful move today.";
-  const nextExplanation = !profileReady || !hasFocus ?
+    "Check how far you've come." : detail ? "Let's work on " + detail + "." : "Make one useful move today.");
+  const nextExplanation = groundedCloudAction?.explanation ?? (!profileReady || !hasFocus ?
     "Select a career or one skill you care about. We will show you an understandable place to begin." :
     loading ? "Your trusted quiz results are loading. We won't guess your next action." :
-    focus?.explanation ?? "Explore your pathway and choose a practical next step.";
+    focus?.explanation ?? "Explore your pathway and choose a practical next step.");
   const attemptCount = attempts.length;
   const careerSkills = career?.skills.slice(0,5) ?? [];
   const lastAttempt = [...attempts].sort((a,b)=>Date.parse(b.completedAt)-Date.parse(a.completedAt))[0];
@@ -73,7 +89,7 @@ export default function Dashboard() {
           tabIndex={loading ? -1 : undefined} onClick={loading ? event => event.preventDefault() : undefined}>
           {loading ? "Loading your learning plan" : nextLabel}<ArrowUpRight size={20} aria-hidden="true"/>
         </Link>
-        <small>{!hasFocus ? "Career selection is flexible. Change your mind anytime." :
+        <small>{cloudNextStatus==="unavailable"&&user?"Live recommendation unavailable; showing the available local evidence. " : ""}{!hasFocus ? "Career selection is flexible. Change your mind anytime." :
           illustrative ? "Suggestions are based on illustrative demo data." :
           "Based on your stated goals and available trusted quiz evidence."}</small>
       </div>
