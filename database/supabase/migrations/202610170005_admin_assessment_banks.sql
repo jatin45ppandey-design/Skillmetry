@@ -19,7 +19,6 @@ create table if not exists public.admin_assessment_versions(
  version text not null check(version ~ '^cms\.[1-9][0-9]{0,7}$'),
  snapshot jsonb not null check(pg_catalog.jsonb_typeof(snapshot)='object' and pg_catalog.octet_length(snapshot::text)<=30000),
  created_at timestamptz not null default now(),
- created_by uuid references auth.users(id) on delete set null,
  primary key(assessment_id,version)
 );
 create table if not exists public.admin_assessment_revisions(
@@ -133,8 +132,8 @@ begin
  where assessment_id=p_assessment_id;
  if p_publish then
    v_version:='cms.'||v_revision::text;
-   insert into public.admin_assessment_versions(assessment_id,version,snapshot,created_by)
-   values(p_assessment_id,v_version,p_draft,p_actor);
+   insert into public.admin_assessment_versions(assessment_id,version,snapshot)
+   values(p_assessment_id,v_version,p_draft);
  else
    v_version:=v_bank.published_version;
  end if;
