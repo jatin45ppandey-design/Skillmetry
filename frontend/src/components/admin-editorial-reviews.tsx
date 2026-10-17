@@ -2,7 +2,7 @@
 import {useCallback,useEffect,useState} from "react";
 import {ActivityIndicator} from "@/components/motion-ui";
 import {CheckCircle2,Clock3,ShieldCheck} from "lucide-react";
-import type {EditorialModule} from "@skillmetry/backend/lib/admin/editorial-review.server";
+type EditorialModule="guides"|"roadmaps"|"courses"|"missions"|"assessments";
 
 type Review={id:string;module:EditorialModule;content_id:string;requested_revision:number;
  status:"pending"|"approved"|"changes_requested";requested_at:string;review_note:string|null;requested_by:string};
