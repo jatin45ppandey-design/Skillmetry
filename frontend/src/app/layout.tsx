@@ -11,6 +11,7 @@ import "./motion-system.css";
 import "./admin-studio.css";
 import "./phase0-layout.css";
 import "./phase1-4-ux.css";
+import "./phase5-7-ux.css";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
