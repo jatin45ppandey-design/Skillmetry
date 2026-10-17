@@ -110,11 +110,11 @@ export function AdminGuideEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:
        <small>Revision {revision} · Published revision {current?.published_revision??0}</small>
        {lastUpdated?<small>Updated {lastUpdated}</small>:null}
      </div>
-     <div className="admin-history" hidden={!history.length}><h3><History size={16}/> Recent changes</h3>
+     <details className="admin-history" hidden={!history.length}><summary>Revision history · {history.length} entries</summary><h3><History size={16}/> Recent changes</h3>
        {history.length?history.map(item=><p key={item.revision}>
          <strong>v{item.revision}</strong> {item.action} · {new Date(item.created_at).toLocaleString()}
        </p>):<p>No saved versions for this skill yet.</p>}
-     </div>
+     </details>
    </aside>
    <section className="admin-editor-main" aria-labelledby="admin-edit-heading">
      <div className="admin-editor-heading">
@@ -155,6 +155,7 @@ export function AdminGuideEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:
            onChange={e=>setDraft(old=>({...old,challenge:e.target.value}))}/></label>
        </div>}
      </fieldset>
+     <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
        <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{skills.find(s=>s.id===selected)?.label}</h3>
@@ -165,7 +166,7 @@ export function AdminGuideEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:
      </div></details>
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
-     <div className="admin-editor-actions">
+     <div id="admin-save-actions" className="admin-editor-actions">
        <span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid?"Ready for review":"Complete required fields"}</span>
        <button className="btn btn-outline" type="button" disabled={loading||Boolean(saving)||role==="reviewer"||!valid}
          onClick={()=>void save(false)}><Save size={17}/>{saving==="draft"?"Saving…":"Save draft"}</button>
