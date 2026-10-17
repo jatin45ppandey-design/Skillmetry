@@ -166,3 +166,26 @@ body { overflow-x: clip; }
 @media(prefers-reduced-motion:reduce){
  .studio-app .sx-career-option,.studio-app .sx-twin-filters button { transition:none; }
 }
+
+
+/* Other learning pages share the same density/viewport contract. */
+.studio-app .sx-tutor-layout{display:grid;grid-template-columns:1fr;gap:13px;max-width:100%;}
+.studio-app .sx-tutor-layout:not(.has-answer){max-width:920px;}
+.studio-app .sx-tutor-layout.has-answer{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+.studio-app .sx-tutor-form,.studio-app .sx-tutor-answer{min-width:0;padding:clamp(17px,2vw,24px);}
+.studio-app .sx-tutor-form textarea{min-height:110px;resize:vertical;}
+.studio-app .sx-tutor-layout .note{font-size:.76rem;line-height:1.5;}
+.studio-app .workflow-panel{padding:clamp(17px,2vw,24px);border-radius:16px;}
+.studio-app .workflow-lab-grid{gap:13px;}
+.studio-app .workflow-task-list{gap:8px;}
+.studio-app .workflow-inline-actions{gap:9px;flex-wrap:wrap;}
+.studio-app .mission-grid{gap:13px;}
+.studio-app .mission-card{min-width:0;}
+.studio-app .settings-stack{gap:15px;}
+.studio-app .course-student-head{padding:7px 0;}
+.studio-app .course-student-page{gap:13px;}
+.studio-app .course-card-grid{gap:13px;}
+.studio-app .course-card{border-radius:15px;}
+.studio-app .studio-roadmap-intro,.studio-app .studio-evidence-cover{margin-top:0;}
+@media(max-width:900px){.studio-app .sx-tutor-layout.has-answer{grid-template-columns:1fr;}}
+@media(max-width:520px){.studio-app .workflow-inline-actions>.btn{width:100%;justify-content:center;}}
