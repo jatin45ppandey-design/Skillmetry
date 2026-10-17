@@ -233,6 +233,37 @@ async function run() {
     assert(outdated.response.status===409,"A stale editor unexpectedly overwrote the current draft.");
     const history=await alice.expectStatus("/api/admin/guides/history?skill=javascript",{method:"GET"},200);
     assert(history.history?.length===2,"A guide revision was not audit logged.");
+
+    const canonical=["html","css","javascript","typescript","react","accessibility","testing","deployment"];
+    const roadmap={headline:"Frontend learning pathway",introduction:
+      "Learn front-end technologies in prerequisite order, with short practice challenges.",
+      steps:canonical.map(skillId=>({skillId,
+        explanation:"Learn the fundamentals of "+skillId+" with real-life examples.",
+        task:"Build a small interactive example using "+skillId+" knowledge."}))};
+    const privateRoadmap=await alice.expectStatus("/api/admin/roadmaps",{method:"GET"},200);
+    assert(privateRoadmap.role==="owner","Roadmap admin did not verify owner.");
+    const bobRoadmapPrivate=await bob.request("/api/admin/roadmaps",{method:"GET"});
+    assert(bobRoadmapPrivate.response.status===403,"Non-admin could read private career roadmaps.");
+    const input={careerId:"frontend-developer",expectedRevision:0,draft:roadmap,publish:false};
+    const savedRoadmap=await alice.expectStatus("/api/admin/roadmaps",{
+      method:"PUT",headers:{origin:appUrl},body:JSON.stringify(input)},200);
+    assert(savedRoadmap.result.revision===1,"Roadmap draft revision not saved.");
+    const publicUnpublished=await bob.expectStatus("/api/content/career-roadmaps?career=frontend-developer",
+      {method:"GET"},200);
+    assert(publicUnpublished.roadmap===null,"Unpublished roadmap leaked to students.");
+    const publishedRoadmap=await alice.expectStatus("/api/admin/roadmaps",{method:"PUT",
+      headers:{origin:appUrl},body:JSON.stringify({...input,expectedRevision:1,publish:true})},200);
+    assert(publishedRoadmap.result.publishedRevision===2,"Owner failed to publish study roadmap.");
+    const studentRoadmap=await bob.expectStatus("/api/content/career-roadmaps?career=frontend-developer",
+      {method:"GET"},200);
+    assert(studentRoadmap.roadmap?.headline===roadmap.headline,"Published career plan not available to students.");
+    const staleRoadmap=await alice.request("/api/admin/roadmaps",{
+      method:"PUT",headers:{origin:appUrl},body:JSON.stringify(input)});
+    assert(staleRoadmap.response.status===409,"Stale roadmap revision overwrote recent editor.");
+    const roadmapAudit=await alice.expectStatus("/api/admin/roadmaps/history?career=frontend-developer",
+      {method:"GET"},200);
+    assert(roadmapAudit.history?.length===2,"Roadmap edit audit history is incomplete.");
+
   }
 
   const description="We need a frontend developer with React, TypeScript, JavaScript, CSS, HTML, REST API integration and unit testing experience.";
