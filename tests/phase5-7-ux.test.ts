@@ -17,7 +17,7 @@ describe("UI/UX phases 5–7 structural regression gates",()=>{
    const lab=read("frontend/src/app/(workspace)/lab/page.tsx");
    expect(lab).toContain('const current=visible.find(');
    expect(lab).toContain('type="search"');
-   expect(lab).toContain('aria-pressed={active===exercise.id}');
+   expect(lab).toContain('aria-pressed={current?.id===exercise.id}');
    expect(lab).toContain("No matching exercises");
    expect(lab).toContain('role="status"');
  });
