@@ -22,6 +22,12 @@ export default function CoursesPage(){
  const [error,setError]=useState("");
  const [openCourse,setOpenCourse]=useState<string|null>(null);
  useEffect(()=>{
+   // Only a matching published course is opened; an arbitrary query parameter never creates content.
+   const wanted=new URLSearchParams(window.location.search).get("course");
+   if(!wanted||!items.some(item=>item.slug===wanted))return;
+   setSelected("all");setQuery("");setOpenCourse(wanted);
+ },[items]);
+ useEffect(()=>{
    const controller=new AbortController();
    void (async()=>{
      try{
@@ -102,7 +108,7 @@ export default function CoursesPage(){
        const totalLessons=course.modules.reduce((n,m)=>n+m.lessons.length,0);
        const finished=new Set(progress.filter(row=>row.courseSlug===course.slug&&row.publishedRevision===course.version&&row.completed).map(row=>row.lessonId));
        const assessment=assessmentCatalog.find(a=>a.skillId===course.skillId);
-       return <article className="course-card" key={course.slug}>
+       return <article className="course-card" id={"course-"+course.slug} key={course.slug}>
        <header><span className="v3-kicker">{skillById[course.skillId]?.label??course.skillId} · VERSION {course.version}</span>
          <h2>{course.title}</h2><p>{course.summary}</p></header>
        <div className="course-card-count"><BookOpen size={17}/> {course.modules.length} modules · {totalLessons} lessons
@@ -134,7 +140,7 @@ export default function CoursesPage(){
          </details>)}
        </div>:null}
        <div className="sx-course-next-actions">
-         <Link href="/lab" className="btn btn-outline">Practice the concepts</Link>
+         <Link href={"/lab?skill="+encodeURIComponent(course.skillId)} className="btn btn-outline">Practice this skill</Link>
          {assessment?<Link className="btn btn-outline" href={`/assessments?assessment=${encodeURIComponent(assessment.id)}`}>
            {finished.size===totalLessons&&totalLessons>0?"Reassess when ready":"Check my baseline"}</Link>:null}
        </div>
