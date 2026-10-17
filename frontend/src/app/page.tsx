@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowDownRight, ArrowRight, ArrowUpRight, BookOpenText, Compass, Fingerprint, GitBranch, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, BookOpenText, Compass, Fingerprint, GitBranch, ShieldCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { CareerChapterGallery } from "@/components/career-chapter-gallery";
+import { LandingJourneyPreview } from "@/components/landing-journey-preview";
 import "./chapter-landing.css";
 
 const chapters = [
@@ -41,16 +42,7 @@ export default function Home() {
               <p className="lc-hero-note"><ShieldCheck size={15} aria-hidden="true" /> Explore without an account. Quiz scores are saved securely only after sign-in.</p>
               <div className="lc-hero-stamp"><span>EXPLORE</span><ArrowDownRight size={22} aria-hidden="true" /><span>01—03</span></div>
             </div>
-            <div className="lc-hero-art" aria-label="Illustration of learning notes connected along a curved path">
-              <div className="lc-art-paper lc-art-paper--back"><span>NOTES / 001</span><span className="lc-handdrawn">Curiosity<br />is a start.</span></div>
-              <div className="lc-art-sun" aria-hidden="true"><Sparkles size={30} /></div>
-              <div className="lc-art-path" aria-hidden="true" />
-              <div className="lc-art-note lc-art-note--one"><span>01 / CHOOSE</span><Compass size={30} /><strong>YOUR<br />DIRECTION</strong></div>
-              <div className="lc-art-note lc-art-note--two"><span>02 / MEASURE</span><Fingerprint size={34} /><strong>WHAT&apos;S<br />KNOWN</strong></div>
-              <div className="lc-art-note lc-art-note--three"><span>03 / GROW</span><GitBranch size={33} /><strong>WHAT&apos;S<br />NEXT</strong></div>
-              <div className="lc-art-sticker">your path<br />unfolds ↗</div>
-              <div className="lc-art-side-note">FIG. 01 / THE LEARNING LOOP</div>
-            </div>
+            <LandingJourneyPreview/>
           </section>
 
           <section id="explore" className="lc-discovery" aria-labelledby="lc-discovery-title">
