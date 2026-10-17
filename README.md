@@ -14,6 +14,14 @@ Skillmetry is a responsive career digital twin for students. A student chooses a
 
 **Connected Learning Experience v2 (source branch):** clearer landing and onboarding, next-action student home, contextual skill pathways, guided practice continuation, readable navigation and gated verified-streak calendar. All changes preserve the core trusted assessment system. The streak calendar needs owner-approved database rollout before it can display real data. See [experience release plan](docs/EXPERIENCE_V2_RELEASE.md). No hosted migration or production deployment performed.
 
+## Deployment handoff (Vercel + Supabase)
+
+Skillmetry is a Next.js monorepo, **not** a static-only website. Import this GitHub repository into Vercel with **Root Directory = `frontend`** and source files outside the root enabled. Do not use the repository root as a static hosting project.
+
+Before enabling all features: consult [Vercel deployment guide](docs/VERCEL_DEPLOYMENT.md), run `npm run release:preflight` with your deployment environment, rehearse database migrations in staging and verify authenticated sessions. [Production go-live checklist](docs/GO_LIVE_CHECKLIST.md) keeps remaining external setup separate from completed code changes.
+
+No production Supabase schema, provider secrets, Vercel settings or public deployment is modified by repository commits.
+
 ## Getting started
 
 Prerequisites: Node.js 22, npm, Git, and optionally Docker for local Supabase.
