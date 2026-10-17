@@ -193,8 +193,8 @@ export function AdminAssessmentEditor({role,onDirtyChange}:{role:Role;onDirtyCha
        </button>
      </fieldset>
      <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
-     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
-       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
+     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{((current?.published_revision??0)>0)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
+       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {((current?.published_revision??0)>0)?"A published version also exists":"Not yet published"}</span>
        <h3>{target.title}</h3>
        <ol>{draft.questions.map((q,i)=><li key={q.id+"-"+i}>
          <strong>{q.prompt}</strong>
