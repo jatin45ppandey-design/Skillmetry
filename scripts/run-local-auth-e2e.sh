@@ -31,7 +31,8 @@ export NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED=false
 export NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=true
 # No external AI / mail / public share provider calls.
 export SKILLMETRY_AI_TUTOR_ENABLED=false
-export SKILLMETRY_PASSPORT_SHARING_ENABLED=false
+export SKILLMETRY_PASSPORT_SHARING_ENABLED=true
+export NEXT_PUBLIC_PASSPORT_SHARING_ENABLED=true
 npm --prefix frontend run dev -- -H 127.0.0.1 -p 3210 > /tmp/skillmetry-auth-e2e-next.log 2>&1 &
 app_pid=$!
 trap 'kill "$app_pid" 2>/dev/null || true' EXIT
