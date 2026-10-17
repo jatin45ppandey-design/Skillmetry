@@ -31,3 +31,17 @@
 .admin-editor-actions button{display:inline-flex;align-items:center;gap:8px;min-height:45px}
 @media(max-width:850px){.admin-editor-grid{grid-template-columns:1fr}.admin-studio-top{align-items:flex-start;flex-direction:column}.admin-skill-panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}.admin-history{margin-top:0}}
 @media(max-width:520px){.admin-skill-panel{grid-template-columns:1fr}.admin-editor-tabs{display:grid;grid-template-columns:1fr}.admin-editor-actions button{flex:1;justify-content:center}}
+
+.admin-manager-tabs{display:flex;gap:8px;max-width:1300px;margin:0 auto 18px;flex-wrap:wrap}
+.admin-manager-tabs button{display:flex;align-items:center;gap:8px;background:#eef5e7;color:#355b3e;border:1px solid #cbdac7;border-radius:12px;min-height:45px;padding:9px 16px;font-weight:700}
+.admin-manager-tabs button[aria-pressed="true"]{background:#315e41;color:white}
+.admin-roadmap-fields{margin-top:21px}
+.admin-roadmap-steps{display:grid;gap:11px;margin-top:20px}
+.admin-roadmap-step{padding:18px;border-radius:14px;background:#f6f8f1;border:1px solid #dce5d6;display:grid;gap:10px}
+.admin-roadmap-step header{display:flex;align-items:center;justify-content:space-between;gap:15px;color:#335943}
+.admin-roadmap-step label{display:grid;gap:5px;font-size:.78rem;font-weight:650;color:#46674f}
+.admin-roadmap-step textarea{border:1px solid #cbd9c6;border-radius:10px;min-height:64px;padding:10px;background:white;color:#254c34;width:100%;font:inherit}
+.admin-step-order{display:flex;gap:5px}
+.admin-step-order button{min-width:36px;min-height:36px;border-radius:8px;border:1px solid #ccdacb;display:grid;place-items:center;background:#fff}
+.admin-step-order button:disabled{opacity:.34}
+.admin-editor-preview ol{padding-left:20px}

@@ -1,14 +1,14 @@
 import Link from "next/link";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
-import {AdminGuideEditor} from "@/components/admin-guide-editor";
+import {AdminStudioWorkspace} from "@/components/admin-studio-workspace";
 export const dynamic="force-dynamic";
 export default async function AdminStudio(){
  const session=await adminSession();
  if(session.status==="ready")return <main className="admin-studio-shell">
    <header className="admin-studio-top"><div><span className="admin-eyebrow">SKILLMETRY / ADMIN STUDIO</span>
-     <h1>Learning Content Studio</h1><p>Manage student-facing docs, lectures, notes and practice next steps.</p></div>
+     <h1>Learning Content Studio</h1><p>Manage docs, lectures, notes and career roadmaps without code changes.</p></div>
      <Link href="/resources" className="btn btn-outline">View student resources ↗</Link>
-   </header><AdminGuideEditor role={session.role}/></main>;
+   </header><AdminStudioWorkspace role={session.role}/></main>;
  return <main className="admin-studio-shell">
    <section className="admin-gate"><span className="admin-eyebrow">SKILLMETRY / RESTRICTED</span>
      <h1>Content Studio is not available.</h1>
