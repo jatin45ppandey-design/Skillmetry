@@ -1,5 +1,5 @@
-import {ActivityIndicator,ActionSpinner} from "@/components/motion-ui";
 "use client";
+import {ActivityIndicator,ActionSpinner} from "@/components/motion-ui";
 import {Suspense,useEffect,useState,type FormEvent} from "react";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";

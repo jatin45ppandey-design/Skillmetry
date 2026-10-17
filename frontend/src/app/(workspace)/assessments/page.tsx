@@ -1,5 +1,5 @@
-import {ActivityIndicator,ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
 "use client";
+import {ActivityIndicator,ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";

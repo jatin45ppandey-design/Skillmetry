@@ -1,5 +1,5 @@
-import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 "use client";
+import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 import Link from "next/link";
 import {useEffect,useState} from "react";
 import {ArrowRight,Clock3,FileCheck2,Target} from "lucide-react";

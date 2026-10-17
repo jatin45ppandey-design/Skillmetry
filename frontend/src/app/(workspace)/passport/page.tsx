@@ -1,5 +1,5 @@
-import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 "use client";
+import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 import {useEffect,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";

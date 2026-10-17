@@ -1,5 +1,5 @@
-import {ActivityIndicator} from "@/components/motion-ui";
 "use client";
+import {ActivityIndicator} from "@/components/motion-ui";
 
 import Link from "next/link";
 import { useMemo } from "react";
