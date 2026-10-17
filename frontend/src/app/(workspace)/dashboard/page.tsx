@@ -12,12 +12,14 @@ import { getPersonalizedResources } from "@skillmetry/shared/lib/resource-intell
 import { useSkillmetry } from "@/store/use-skillmetry";
 import { LearningStreakCard } from "@/components/learning-streak-card";
 import {useAuth} from "@/components/auth-provider";
+import {selectCourseContinuation,type ContinueLearning,type ResumeCourse,type SavedLessonActivity} from "@skillmetry/shared/lib/learning-continuation";
 
 type TrustedNextAction={kind:"assessment"|"learning"|"choose-goals";title:string;label:string;href:string;explanation:string};
 export default function Dashboard() {
   const { name, preferences, onboardingCompleted, profileSource, cloudOwnerId } = useSkillmetry();
   const {user}=useAuth();
   const [cloudNext,setCloudNext]=useState<TrustedNextAction|null>(null);
+  const [resume,setResume]=useState<ContinueLearning|null>(null);
   const [cloudNextStatus,setCloudNextStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
   useEffect(()=>{
     const controller=new AbortController();setCloudNext(null);
@@ -29,6 +31,24 @@ export default function Dashboard() {
         if(!response.ok||!body.nextAction)throw new Error(body.error??"Learning overview unavailable");
         if(!controller.signal.aborted){setCloudNext(body.nextAction);setCloudNextStatus("ready");}
       }).catch(()=>{if(!controller.signal.aborted)setCloudNextStatus("unavailable");});
+    return()=>controller.abort();
+  },[user?.id]);
+  useEffect(()=>{
+    const controller=new AbortController();
+    setResume(null);
+    if(!user)return;
+    void Promise.all([
+      fetch("/api/content/courses",{cache:"no-store",signal:controller.signal}),
+      fetch("/api/learning/course-progress",{cache:"no-store",signal:controller.signal})
+    ]).then(async([catalog,activity])=>{
+      if(!catalog.ok||!activity.ok)return null;
+      const a=await catalog.json() as {courses?:ResumeCourse[]};
+      const b=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[]};
+      if(!b.enabled)return null;
+      return selectCourseContinuation(a.courses??[],b.progress??[]);
+    }).then(next=>{if(!controller.signal.aborted)setResume(next);}).catch(()=>{
+      // Resume is optional: do not hide verified assessment recommendations on failure.
+    });
     return()=>controller.abort();
   },[user?.id]);
   const profileReady=onboardingCompleted && (!user || (profileSource==="student" && cloudOwnerId===user.id));
@@ -133,6 +153,14 @@ export default function Dashboard() {
       </section>
     </div>
 
+    {resume&&profileReady&&!illustrative?<aside className="sx-resume-learning" aria-label="Resume saved course activity">
+      <div><span className="sx-eyebrow">RESUME YOUR SAVED COURSE</span>
+        <h2>{resume.courseTitle}</h2>
+        <p>Next lesson: {resume.lessonTitle} · {resume.complete}/{resume.total} lessons marked studied.</p>
+        <small>Lesson activity is self-reported. Your quiz evidence is separate.</small>
+      </div>
+      <Link className="sx-main-action" href={resume.href}>Resume course <ArrowRight size={17} aria-hidden="true"/></Link>
+    </aside>:null}
     <section className="sx-continue" aria-labelledby="sx-continue-title">
       <div className="sx-section-heading"><div><span className="sx-eyebrow">KEEP MOVING</span>
         <h2 id="sx-continue-title">How would you like to learn?</h2></div>
