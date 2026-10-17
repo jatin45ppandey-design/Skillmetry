@@ -109,3 +109,9 @@
 .studio-app .studio-evidence-cover{grid-template-columns:minmax(0,1.75fr) minmax(130px,.25fr);}
 .studio-app .studio-evidence-cover h2{margin:6px 0;font-size:clamp(1.4rem,2.2vw,2.3rem);}
 @media(max-width:760px){.studio-app .section-head{flex-direction:column;align-items:flex-start;gap:8px}.studio-app .section-head h1{font-size:1.55rem}.studio-app .studio-evidence-cover{grid-template-columns:1fr}.studio-app .studio-evidence-cover-art{display:none}.studio-app .section-action{width:100%}}
+
+/* Fewer introduction blocks before actual graph and learning evidence. */
+.studio-app .v3-context-details{margin:0 0 12px;padding:9px 13px;background:#f0f5e8;border:1px solid #d6e1d0;border-radius:12px;color:#48644c;}
+.studio-app .v3-context-details summary{font-size:.77rem;font-weight:700;cursor:pointer;min-height:25px;}
+.studio-app .v3-context-details p{margin:7px 0 0;font-size:.79rem;line-height:1.5;color:#65786b;}
+@media(min-width:1300px){.studio-app .career-explorer-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
