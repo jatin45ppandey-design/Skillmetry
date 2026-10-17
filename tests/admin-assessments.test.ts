@@ -61,6 +61,10 @@ describe("Phase 5 Assessment Bank Editor",()=>{
    expect(route).toContain("origin!==trusted");
    expect(migration).toContain("force row level security");
    expect(migration).toContain("admin_assessment_versions");
+   // Immutable answer snapshots must not have an ON DELETE SET NULL FK to auth.users:
+   // deleting an account must never attempt to rewrite a published answer key.
+   expect(migration).not.toContain("created_by uuid references auth.users");
+   expect(migration).toContain("admin_assessment_snapshot_immutable");
    expect(migration).toContain("revision_conflict");
    expect(migration).toContain("from public,anon,authenticated");
    expect(read("../frontend/src/components/admin-studio-workspace.tsx")).toContain("Assessment Bank");
