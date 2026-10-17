@@ -6,7 +6,7 @@ import {coursePayloadSchema,courseSlugSchema,startingCourse,type CoursePayload,t
 import {ActionSuccess,ActivityIndicator} from "@/components/motion-ui";
 type Role="owner"|"editor"|"reviewer";
 type Lesson=CoursePayload["modules"][number]["lessons"][number];
-export function AdminCourseEditor({role}:{role:Role}){
+export function AdminCourseEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:(dirty:boolean)=>void}){
  const [rows,setRows]=useState<CourseRow[]>([]);
  const [slug,setSlug]=useState("javascript-foundations");
  const [skillId,setSkillId]=useState("javascript");
@@ -19,6 +19,7 @@ export function AdminCourseEditor({role}:{role:Role}){
  const original=rows.find(row=>row.slug===slug);
  const changed=JSON.stringify(draft)!==JSON.stringify(original?.draft??original?.published??startingCourse(skillById[skillId]?.label??skillId));
  const valid=coursePayloadSchema.safeParse(draft);
+ useEffect(()=>{onDirtyChange?.(changed);},[changed,onDirtyChange]);
  const totalLessons=draft.modules.reduce((n,m)=>n+m.lessons.length,0);
  useEffect(()=>{
    const controller=new AbortController();
