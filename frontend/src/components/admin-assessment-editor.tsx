@@ -2,7 +2,7 @@
 import {useEffect,useState} from "react";
 import {ArrowDown,ArrowUp,BookOpenCheck,Plus,Save,Send,Trash2} from "lucide-react";
 import {
- authoredBankSchema,editableAssessments,initialAuthoredBank,nextAuthoredQuestion,
+ editableAssessments,initialAuthoredBank,nextAuthoredQuestion,
  saveAuthoredBankSchema,type AdminBankRow,type AuthoredBank,type AuthoredQuestion
 } from "@skillmetry/shared/lib/admin-assessments";
 import {ActivityIndicator,ActionSuccess} from "@/components/motion-ui";
@@ -200,8 +200,8 @@ export function AdminAssessmentEditor({role,onDirtyChange}:{role:Role;onDirtyCha
          <span> · {q.choices.join(" / ")}</span>
        </li>)}</ol>
      </div>
-     {!authoredBankSchema.safeParse(draft).success?<p className="auth-error" role="alert">
-       {authoredBankSchema.safeParse(draft).error?.issues[0]?.message??"Bank draft is invalid."}</p>:null}
+     {!validation.success?<p className="auth-error" role="alert">
+       {validation.error.issues[0]?.message??"Bank draft is invalid."}</p>:null}
      {error?<p className="auth-error" role="alert">{error}</p>:null}
      {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
      <div className="admin-editor-actions">
