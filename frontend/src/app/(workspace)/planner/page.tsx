@@ -83,6 +83,7 @@ export default function Planner() {
           aria-pressed={view===value} onClick={()=>setView(value)}>{value==="all"?"All tasks":value==="pending"?"To do":"Completed"}</button>)}
        <span>{shownTasks.length} shown</span>
       </div>
+      {!shownTasks.length && visible.length ? <p className="workflow-notice" role="status">No tasks match this view. Choose another status to continue.</p> : null}
       <ol className="workflow-task-list sx-planner-tasks">
       {shownTasks.map(task=><li key={task.taskKey}>
         <div><strong>{task.title}</strong><small>{task.plannedDate} · {task.estimatedMinutes} min · {task.kind}</small>
