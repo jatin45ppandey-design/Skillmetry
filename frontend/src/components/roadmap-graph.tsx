@@ -77,12 +77,16 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
       columns.set(depth, [...(columns.get(depth) ?? []), id]);
     });
     const nodes: Node<SkillNodeData>[] = [];
-    for (const [level, ids] of [...columns].sort(([a], [b]) => a - b)) {
+    // Keep prerequisite tiers in a readable three-column layout. An initial
+    // "fit everything" zoom made nine-skill roadmaps illegibly small on laptops.
+    let verticalOffset = 0;
+    for (const [, ids] of [...columns].sort(([a], [b]) => a - b)) {
       ids.forEach((id, index) => {
         const skill = skillById[id];
         const score = Object.hasOwn(proficiency, id) ? clamp(proficiency[id]) : null;
-        nodes.push({ id, type: "skill", position: { x: index * 244 - level * 10, y: level * 176 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id), learningState: learningActivity?.[id], related: !selectedId || related.has(id) } });
+        nodes.push({ id, type: "skill", position: { x: (index % 3) * 262, y: verticalOffset + Math.floor(index / 3) * 165 }, data: { title: skill.label, score, typeLabel: skill.group, status: getSkillState(id, proficiency), selected: selectedId === id, recommended: recommendedIds.has(id), learningState: learningActivity?.[id], related: !selectedId || related.has(id) } });
       });
+      verticalOffset += Math.ceil(ids.length / 3) * 165 + 65;
     }
     const edges: Edge[] = [];
     shown.forEach(id => skillById[id].prerequisites.forEach(prerequisite => {
@@ -91,5 +95,5 @@ export function RoadmapGraph({ skillIds, proficiency, selectedId, onSelect, visi
     return { nodes, edges };
   }, [proficiency, recommendedIds, selectedId, skillIds, visibleIds, learningActivity]);
 
-  return <div className="flow-wrap"><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodeClick={(_, node) => onSelect?.(node.id)} fitView fitViewOptions={{ padding: .2 }} minZoom={.25} maxZoom={1.35} nodesDraggable={false} nodesConnectable={false} nodesFocusable proOptions={{ hideAttribution: false }}><Background color="#d0dccb" gap={24} size={1}/><MiniMap zoomable pannable nodeColor={node => node.id === selectedId ? "#356343" : "#bbd4b8"} maskColor="#faf7eece"/><Controls showInteractive={false}/></ReactFlow></div>;
+  return <div className="flow-wrap"><ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodeClick={(_, node) => onSelect?.(node.id)} defaultViewport={{x:32,y:28,zoom:.9}} minZoom={.4} maxZoom={1.5} nodesDraggable={false} nodesConnectable={false} nodesFocusable proOptions={{ hideAttribution: false }}><Background color="#d0dccb" gap={24} size={1}/><MiniMap zoomable pannable nodeColor={node => node.id === selectedId ? "#356343" : "#bbd4b8"} maskColor="#faf7eece"/><Controls showInteractive={false}/></ReactFlow></div>;
 }

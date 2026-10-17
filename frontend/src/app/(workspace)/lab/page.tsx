@@ -21,6 +21,7 @@ export default function Lab(){
   const [error,setError]=useState<string|null>(null);
   const [saved,setSaved]=useState(false);
   const [filter,setFilter]=useState("all");
+  const [query,setQuery]=useState("");
   const load=useCallback(async()=>{
     try{
       const response=await fetch("/api/learning/lab",{cache:"no-store"});
@@ -32,8 +33,9 @@ export default function Lab(){
     finally{setLoading(false);}
   },[]);
   useEffect(()=>{void load();},[load]);
-  const current=exercises.find(x=>x.id===active);
-  const visible=exercises.filter(x=>filter==="all"||x.skillId===filter);
+  const visible=exercises.filter(x=>(filter==="all"||x.skillId===filter)&&
+    (x.title+" "+x.skillId+" "+x.difficulty).toLowerCase().includes(query.trim().toLowerCase()));
+  const current=visible.find(x=>x.id===active)??visible[0];
   function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);}
   async function submit(){
     if(!current)return;
@@ -64,13 +66,15 @@ export default function Lab(){
         <option value="all">All skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{id}</option>)}
       </select></label><span className="note">{history.length} recent saved attempts (unscored)</span></div>
     {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
-    <div className="workflow-lab-grid">
-      <section className="panel" aria-label="Challenge library"><h2>Challenge library</h2>
-        {visible.map(exercise=><button className={"btn "+(active===exercise.id?"btn-primary":"btn-outline")}
+    <div className="workflow-lab-grid sx-lab-workspace">
+      <section className="panel sx-lab-library" aria-label="Challenge library"><h2>Challenge library <small>{visible.length} available</small></h2>
+        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>setQuery(e.target.value)}/></label>
+        {visible.length===0?<p role="status">No matching exercises. <button type="button" className="text-button" onClick={()=>{setQuery("");setFilter("all");}}>Reset filters</button></p>:null}
+        {visible.map(exercise=><button aria-pressed={active===exercise.id} className={"btn "+(active===exercise.id?"btn-primary":"btn-outline")}
           type="button" key={exercise.id} style={{display:"block",width:"100%",textAlign:"left",margin:"9px 0"}}
           onClick={()=>choose(exercise.id)}>{exercise.title} · {exercise.skillId}</button>)}
       </section>
-      <section className="panel" aria-label="Guided code exercise">
+      <section className="panel sx-lab-stage" aria-label="Guided code exercise">
         {current?<><span className="eyebrow">{current.skillId} / {current.difficulty}</span>
           <h2>{current.title}</h2><p>{current.prompt}</p>
           <pre className="workflow-code"><code>{current.snippet}</code></pre>

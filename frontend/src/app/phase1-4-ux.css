@@ -1,0 +1,149 @@
+/* UI/UX delivery phases 1–4: coherent density, responsive interaction and accessible motion.
+   The existing Skillmetry palette and every data/auth workflow remain authoritative. */
+:root{
+  --ui-forest:#254b34; --ui-cream:#fcf8ef; --ui-sage:#e5eedf;
+  --ui-radius:14px; --ui-ease:cubic-bezier(.2,.7,.2,1);
+  --ui-fast:130ms; --ui-normal:210ms; --ui-panel:290ms;
+}
+body{overflow-x:clip}
+:where(a,button,[role="button"],summary,select,input,textarea):focus-visible{
+  outline:3px solid #ac744a;outline-offset:3px;
+}
+:where(a,button):active:not(:disabled){transform:scale(.984)}
+:where(.btn,.studio-nav-link,.learning-choice,.sx-career-option,.sx-journey-tab,.sx-journey-stage-link){
+  transition:background-color var(--ui-normal) var(--ui-ease),border-color var(--ui-normal) var(--ui-ease),
+    color var(--ui-fast) ease,box-shadow var(--ui-normal) ease,transform var(--ui-fast) ease;
+}
+:where(.studio-app,.account-shell,.admin-studio-shell) .btn-primary:not(:disabled),
+:where(.studio-app,.account-shell,.admin-studio-shell) a.btn-primary{
+ background:#285a39!important;border-color:#285a39!important;color:#fffdf5!important;
+}
+:where(.studio-app,.account-shell,.admin-studio-shell) .btn-primary:not(:disabled):hover,
+:where(.studio-app,.account-shell,.admin-studio-shell) a.btn-primary:hover{
+ background:#1c452b!important;border-color:#1c452b!important;color:#fffdf5!important;box-shadow:0 4px 12px #193d2929;
+}
+:where(.studio-app,.account-shell,.admin-studio-shell) .btn-primary:disabled{
+ background:#e8ece4!important;border-color:#d3ddd0!important;color:#526756!important;opacity:1;cursor:not-allowed;
+}
+.admin-studio-shell .sx-admin-top-actions .btn-outline{color:#254b34!important;border-color:#acc4ac!important;background:#fffdf5!important}
+.admin-studio-shell .sx-admin-top-actions .btn-outline:hover{background:#e5eee1!important;color:#183923!important}
+.studio-app .studio-content{animation:ui-page-arrive var(--ui-panel) var(--ui-ease) both}
+@keyframes ui-page-arrive{from{opacity:.48;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.motion-route-progress{height:4px;background:#e0ecd8;box-shadow:0 2px 9px #294c2f25}
+.motion-route-progress-track{background:linear-gradient(90deg,#bfd897,#3f7951,#a4cc84)!important}
+:where(.studio-app,.account-shell,.auth-shell) .panel{transition:border-color var(--ui-normal) ease,box-shadow var(--ui-normal) ease}
+:where(.studio-app,.account-shell) .btn-outline:hover{background:#e9f1e4;color:#24482f}
+
+/* Landing: one meaningful product preview replaces disconnected decorative art. */
+.lc-site .lc-frame{width:min(1490px,calc(100% - 72px))}
+.lc-site .lc-hero{min-height:0;padding:48px 0 58px;gap:clamp(22px,3.6vw,56px);align-items:center;grid-template-columns:minmax(0,1fr) minmax(440px,.93fr)}
+.lc-site .lc-hero-copy{align-self:auto;justify-content:center}
+.lc-site .lc-hero h1{font:760 clamp(3.45rem,5.1vw,5.8rem)/1.03 var(--font-display),sans-serif!important;letter-spacing:-.068em!important;margin:15px 0 20px!important;max-width:780px!important;}
+.lc-site .lc-hero-intro{font-size:clamp(.95rem,1.25vw,1.1rem);line-height:1.58;max-width:540px}
+.lc-site .lc-hero-ctas{margin-top:23px;gap:16px}
+.lc-site .lc-hero-stamp{margin-top:26px}
+.lc-site .lc-hero-note{margin-top:14px}
+.lc-site .lc-hero .lc-eyebrow{font-size:.72rem;line-height:1.5}
+.lc-site .lc-split-cta{min-height:50px}
+.lc-site .lc-split-cta>span:first-child{min-height:49px;padding:12px 18px}
+.sx-journey-preview{min-width:0;width:100%;background:#f8f5e9;border:1px solid #c9d6c3;border-radius:24px;padding:clamp(14px,2vw,24px);box-shadow:0 22px 55px #2c45321c;display:grid;gap:14px}
+.sx-journey-preview-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;color:#45644c;font:700 .66rem/1.5 var(--font-technical),monospace;letter-spacing:.065em}
+.sx-journey-preview-top>span:last-child{font:500 .69rem/1.4 var(--font-ui),sans-serif;letter-spacing:0;color:#647965}
+.sx-journey-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sx-journey-tab{display:flex;gap:7px;align-items:center;justify-content:center;min-height:48px;min-width:0;padding:9px 7px;background:#eef0e6;color:#44634b;border:1px solid #d7e1d1;border-radius:12px;cursor:pointer;font-size:.79rem}
+.sx-journey-tab strong{font-weight:740}
+.sx-journey-tab-number{font:600 .63rem var(--font-technical),monospace;opacity:.75}
+.sx-journey-tab.is-active{background:#28563b;color:#fffef5;border-color:#28563b;box-shadow:0 4px 10px #28563b2c}
+.sx-journey-tab:not(.is-active):hover{background:#dce9d3;border-color:#99ba91;transform:translateY(-2px)}
+.sx-journey-stage{display:flex;flex-direction:column;align-items:flex-start;gap:11px;min-height:300px;padding:clamp(18px,2.2vw,29px);background:#e2ecd9;border:1px solid #cadbc3;border-radius:18px;animation:ui-journey-enter var(--ui-panel) var(--ui-ease) both}
+@keyframes ui-journey-enter{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sx-journey-stage-icon{width:46px;height:46px;background:#fffdf4;border:1px solid #c4d3bc;color:#315c3d;border-radius:13px;display:grid;place-items:center}
+.sx-journey-stage-eyebrow{font:700 .65rem var(--font-technical),monospace;letter-spacing:.1em;color:#5a7b61}
+.sx-journey-stage h2{font:750 clamp(1.7rem,2.65vw,2.55rem)/1.08 var(--font-display),sans-serif;letter-spacing:-.052em;margin:0;color:#224933}
+.sx-journey-stage p{margin:0;font-size:.83rem;line-height:1.48;color:#56705c}
+.sx-journey-stage .sx-journey-stage-support{display:flex;align-items:center;gap:7px;color:#346444;font-weight:650}
+.sx-journey-stage-divider{height:1px;background:#bdd1b4;width:100%;margin:3px 0}
+.sx-journey-stage-title{font-size:.92rem;color:#244a32}
+.sx-journey-stage-link{display:inline-flex;align-items:center;gap:6px;margin-top:auto;color:#24553b;text-decoration:underline;text-underline-offset:4px;font-weight:750;font-size:.8rem;min-height:32px}
+.sx-journey-stage-link:hover{color:#193e29;gap:10px}
+.sx-journey-preview-foot{display:flex;gap:9px;align-items:center;font-size:.73rem;color:#607763}
+.sx-journey-counter{margin-left:auto;white-space:nowrap;font:650 .7rem var(--font-technical),monospace}
+.lc-site #explore,.lc-site #chapters,.lc-site #why{scroll-margin-top:75px}
+
+/* Learning Goals: one meaningful two-column opening, compact editable sections and clear save semantics. */
+.studio-app .sx-settings-page{width:100%;max-width:var(--sx-page-max);display:grid;gap:14px}
+.studio-app .sx-settings-overview{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:13px;align-items:stretch}
+.studio-app .sx-settings-overview>.panel{min-width:0;margin:0;padding:17px 21px;border-radius:15px}
+.studio-app .sx-settings-overview h2{margin:5px 0 10px;font-size:1.18rem}
+.studio-app .sx-settings-overview p{font-size:.8rem;line-height:1.43;margin:6px 0}
+.studio-app .sx-settings-source{color:#5e7461;font-size:.74rem}
+.studio-app .sx-settings-goals{background:#e6eee0;border:1px solid #cadbc3;border-radius:15px;padding:17px 20px;display:grid;align-content:center;gap:7px}
+.studio-app .sx-settings-goals h2{font-size:clamp(1.2rem,1.7vw,1.5rem);margin:0}
+.studio-app .sx-settings-goals>p{margin:0}
+.studio-app .sx-settings-goals-counts{display:flex;gap:7px;flex-wrap:wrap}
+.studio-app .sx-settings-goals-counts span{padding:7px 9px;border-radius:100px;background:#f8fbf4;border:1px solid #c7d9c0;font-size:.72rem;font-weight:670}
+.studio-app .sx-goal-editor-panel{padding:clamp(15px,1.8vw,24px);border-radius:16px}
+.studio-app .sx-goal-editor-panel .learning-goals-panel-head{margin:0 0 12px;align-items:start}
+.studio-app .sx-goal-editor-panel .learning-goals-panel-head h2{margin:2px 0 4px;font-size:1.35rem}
+.studio-app .sx-goal-editor-panel .learning-goals-panel-head p{margin:0;font-size:.8rem;line-height:1.42}
+.studio-app .sx-goal-editor-panel .learning-goal-editor{gap:14px}
+.studio-app .sx-goal-editor-panel .learning-goal-group{padding-top:13px}
+.studio-app .sx-goal-editor-panel .learning-choice{min-height:0;padding:10px 12px;border-radius:10px;color:#274832}
+.studio-app .sx-goal-editor-panel .learning-career-grid{gap:8px}
+.studio-app .sx-goal-editor-panel .learning-choice.selected{border-color:#4b8255;box-shadow:inset 3px 0 #397347;background:#e0edda;color:#204a2e}
+.studio-app .sx-goal-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:15px;padding:12px;background:#f1f6eb;border:1px solid #d1dfcc;border-radius:11px;position:sticky;bottom:12px;z-index:6;box-shadow:0 8px 24px #244d2b0e}
+.studio-app .sx-goal-actions p{margin:0;font-size:.77rem;color:#526b58;line-height:1.4}
+.studio-app .sx-goal-actions .btn{min-height:42px;flex:none}
+.studio-app .sx-goal-search{display:grid;gap:6px;margin:10px 0}
+.studio-app .sx-goal-search input{width:100%;min-height:40px;border:1px solid #bbd0b5;border-radius:10px;background:#fffef9;color:#23422d;padding:8px 12px}
+.studio-app .sx-goal-empty{color:#5b725f;font-size:.8rem;padding:10px 0}
+
+/* Ensure controls visibly acknowledge hover/focus without relying on decorative motion. */
+.studio-app .sx-quick-card:hover,.studio-app .twin-skill-card:hover,.studio-app .assessment-picker button:hover{
+ transform:translateY(-2px);box-shadow:0 8px 19px #2a4e3520;
+}
+.studio-app .sx-quick-card:active,.studio-app .twin-skill-card:active{transform:translateY(0) scale(.987)}
+@media(max-width:1100px){
+ .lc-site .lc-hero{grid-template-columns:minmax(0,1fr) minmax(385px,1fr);gap:25px}
+ .lc-site .lc-hero h1{font-size:clamp(3.1rem,4.7vw,4.5rem)!important}
+}
+@media(max-width:900px){
+ .lc-site .lc-hero{grid-template-columns:1fr;gap:24px;padding:30px 0 45px}
+ .lc-site .lc-frame{width:calc(100% - 40px)}
+ .lc-site .lc-hero h1{font-size:clamp(3rem,8vw,4.8rem)!important}
+ .sx-journey-preview{max-width:670px;margin-inline:auto}
+ .studio-app .sx-settings-overview{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+ .lc-site .lc-frame{width:calc(100% - 28px)}
+ .lc-site .lc-hero{padding:20px 0 35px}
+ .lc-site .lc-hero h1{font-size:clamp(2.65rem,11vw,3.6rem)!important}
+ .lc-site .lc-hero-ctas{gap:12px}
+ .sx-journey-preview{padding:12px;border-radius:17px}
+ .sx-journey-tabs{gap:4px}
+ .sx-journey-tab{gap:4px;flex-wrap:wrap;min-height:48px;font-size:.73rem;padding:8px 3px}
+ .sx-journey-tab-number{display:none}
+ .sx-journey-stage{min-height:280px;padding:16px}
+ .studio-app .sx-goal-actions{bottom:calc(70px + env(safe-area-inset-bottom));padding:10px}
+ .studio-app .sx-goal-actions .btn{width:100%;justify-content:center}
+ .studio-app .sx-goal-editor-panel .learning-goals-panel-head{flex-direction:column}
+ .studio-app .sx-goal-editor-panel .learning-career-grid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ .studio-app .studio-content,.sx-journey-stage{animation:none!important}
+ :where(a,button,.sx-journey-tab){transition:none!important}
+ :where(a,button):active:not(:disabled){transform:none!important}
+}
+
+
+/* Scroll reveals never hide content before hydration; progressive motion only. */
+.lc-site [data-reveal].sx-reveal-active{animation:ui-section-reveal 440ms var(--ui-ease) both}
+@keyframes ui-section-reveal{from{opacity:.75;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.lc-site .sx-journey-preview{animation:ui-section-reveal 500ms var(--ui-ease) both}
+.auth-shell .auth-social-btn:active,.auth-shell .auth-submit:active{transform:scale(.985)}
+.auth-shell .auth-social-btn[aria-disabled="true"]{cursor:progress;opacity:.75}
+.auth-shell .auth-submit[aria-busy="true"]{cursor:progress}
+@media(prefers-reduced-motion:reduce){
+ .lc-site [data-reveal].sx-reveal-active,.lc-site .sx-journey-preview{animation:none!important}
+ .auth-shell .auth-social-btn:active,.auth-shell .auth-submit:active{transform:none!important}
+}

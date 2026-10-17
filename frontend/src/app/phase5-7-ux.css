@@ -1,0 +1,177 @@
+/* Final student surfaces + Admin Studio, responsive source-only visual redesign.
+   Brand palette unchanged; no backend or authenticated grade data modified. */
+
+/* Shared accessibility/readability */
+.studio-app :is(.workflow-panel,.workflow-lab-grid>.panel,.course-card,.mission-work-card,.workflow-passport-print){min-width:0;border-radius:var(--ui-radius,14px);}
+.studio-app :is(.workflow-panel,.workflow-lab-grid>.panel,.course-card){padding:clamp(15px,1.7vw,23px)}
+.studio-app :is(.course-student-head,.workflow-top,.resource-section-head){gap:14px;align-items:center;}
+.studio-app :is(.course-student-head h1,.workflow-top h2){font-size:clamp(1.5rem,2.5vw,2.35rem);line-height:1.12;}
+.studio-app .workflow-task-list{display:grid;gap:9px;}
+.studio-app .workflow-task-list>li{margin:0;min-width:0;}
+.studio-app .workflow-task-list a{overflow-wrap:anywhere;}
+.studio-app .workflow-code{overflow:auto;max-width:100%;font-size:.84rem;}
+.studio-app :is(.workflow-result,.resource-card,.mission-work-card){overflow-wrap:anywhere;}
+.studio-app .course-note{font-size:.76rem;line-height:1.4;}
+.studio-app .course-card-grid{gap:12px;}
+
+/* Phase 5 — course discovery and compact lessons */
+.studio-app .course-student-head{padding:0 0 11px;margin:0;}
+.studio-app .course-student-head p{font-size:.84rem;line-height:1.45;}
+.studio-app .course-student-filter{display:flex;gap:11px;flex-wrap:wrap;align-items:end;padding:10px 13px;background:#e8f0e3;border-radius:13px;margin-bottom:13px;}
+.studio-app .course-student-filter>label:not(.sx-course-search){min-width:165px}
+.studio-app .sx-course-search{display:grid;gap:5px;flex:1;min-width:175px;font-size:.73rem;font-weight:700;color:#466749;}
+.studio-app .sx-course-search input{width:100%;border:1px solid #b8cdb3;border-radius:9px;min-height:43px;padding:9px 12px;background:#fffcf5;color:#294936;}
+.studio-app .course-student-filter>span{font-size:.74rem;color:#526b55;white-space:nowrap;}
+.studio-app .course-card{padding:17px;min-height:0;display:flex;flex-direction:column;gap:11px;}
+.studio-app .course-card header{min-height:0;}
+.studio-app .course-card h2{font-size:clamp(1.1rem,1.6vw,1.4rem);line-height:1.15;margin:7px 0;}
+.studio-app .course-card p{font-size:.8rem;line-height:1.42;}
+.studio-app .sx-course-module{border:1px solid #d4dfcf;border-radius:11px;margin:9px 0;background:#f4f8ee;overflow:clip;}
+.studio-app .sx-course-module summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;cursor:pointer;min-height:46px;list-style:none;color:#345641;}
+.studio-app .sx-course-module summary::-webkit-details-marker{display:none}
+.studio-app .sx-course-module summary>strong{font-size:.83rem;}
+.studio-app .sx-course-module summary>span{font-size:.7rem;color:#617d66;white-space:nowrap;}
+.studio-app .sx-course-module[open] summary{border-bottom:1px solid #d5e2d0;}
+.studio-app .sx-course-module ol{padding:8px 16px 10px 31px;}
+
+/* Weekly planner: filter activities, never fake completion */
+.studio-app .sx-planner-view{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:8px 0 12px;}
+.studio-app .sx-planner-view button{min-height:40px;border:1px solid #cbdac5;border-radius:9px;padding:7px 11px;font-size:.76rem;background:#f7f9ef;color:#40674b;}
+.studio-app .sx-planner-view button[aria-pressed="true"]{background:#315b40;border-color:#315b40;color:#fffdf4;}
+.studio-app .sx-planner-view>span{font-size:.74rem;color:#5b7561;margin-left:auto;}
+.studio-app .sx-planner-tasks>li{border-radius:11px;padding:13px;}
+
+/* Guided practice: a practical two-pane challenge/workbench */
+.studio-app .sx-lab-workspace{grid-template-columns:minmax(240px,.34fr) minmax(0,.66fr);align-items:start;gap:14px;}
+.studio-app .sx-lab-library{display:grid;gap:7px;align-content:start;}
+.studio-app .sx-lab-library h2{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 0 6px;font-size:1.15rem;}
+.studio-app .sx-lab-library h2 small{font-size:.66rem;color:#667b68;font-weight:500;}
+.studio-app .sx-lab-search{display:grid;gap:6px;font-size:.76rem;font-weight:730;color:#426647;}
+.studio-app .sx-lab-search input{width:100%;min-height:42px;padding:9px 11px;border:1px solid #c5d7be;border-radius:9px;background:#fffcf5;color:#284b36;}
+.studio-app .sx-lab-library>button{min-height:48px!important;padding:10px 12px!important;white-space:normal;line-height:1.35;}
+.studio-app .sx-lab-stage h2{font-size:clamp(1.25rem,2vw,1.7rem);margin:9px 0;}
+.studio-app .sx-lab-stage fieldset{min-width:0;}
+.studio-app .sx-lab-stage .workflow-code{border-radius:11px;padding:13px;}
+
+/* Mission showcase: overview first, checklist/evidence when asked */
+.studio-app .sx-mission-toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#e7eee1;border:1px solid #d2dfcd;border-radius:12px;padding:12px 14px;margin:13px 0;}
+.studio-app .sx-mission-toolbar strong{font-size:.85rem;}
+.studio-app .sx-mission-toolbar label{display:inline-flex;gap:8px;align-items:center;font-size:.77rem;cursor:pointer;}
+.studio-app .sx-mission-details{margin:10px 0;border:1px solid #d4e2d0;border-radius:12px;background:#f6f9f2;overflow:clip;}
+.studio-app .sx-mission-details summary{display:flex;gap:9px;align-items:center;min-height:49px;padding:10px 13px;cursor:pointer;font-size:.81rem;font-weight:750;color:#345c41;}
+.studio-app .sx-mission-details summary>span{margin-left:auto;font-size:.73rem;color:#627966;}
+.studio-app .sx-mission-details[open] summary{border-bottom:1px solid #d8e3d3;}
+.studio-app .sx-mission-details>.mission-deliverables,.studio-app .sx-mission-details>.workflow-mission-fields{padding:12px;margin:0;}
+
+/* Resource catalog: the key resource, trust & CTA stay visible; metadata optional */
+.studio-app .resource-grid{gap:13px;}
+.studio-app .resource-card{padding:15px;border-radius:14px;}
+.studio-app .resource-card h2{font-size:clamp(1.05rem,1.55vw,1.3rem);margin:7px 0 4px;}
+.studio-app .resource-description{font-size:.78rem;line-height:1.46;}
+.studio-app .resource-meta{gap:6px;}
+.studio-app .sx-resource-details{border-top:1px solid #dce6d6;margin-top:8px;padding-top:8px;}
+.studio-app .sx-resource-details summary{cursor:pointer;min-height:35px;font-size:.74rem;color:#426a49;font-weight:750;}
+.studio-app .sx-resource-details .resource-topic{margin:6px 0;padding:7px 0;}
+
+/* Keep simulator and Passport evidence readable and the long controls secondary */
+.studio-app .simulator-layout{gap:13px;}
+.studio-app .scenario-options{gap:9px;}
+.studio-app .scenario-option{padding:12px;border-radius:12px;}
+.studio-app .scenario-result{min-width:0;border-radius:15px;}
+.studio-app .workflow-passport-print{max-width:none!important;}
+.studio-app .workflow-passport-print>.grid-2{gap:12px;}
+.studio-app .workflow-passport-print .workflow-result{padding:11px;border-radius:11px;}
+
+/* Phase 6 — integrated professional Admin Studio */
+.admin-studio-shell{background:#f5f4eb;}
+.admin-studio-shell .admin-studio-top{max-width:1480px;margin:0 auto 12px;}
+.admin-studio-shell .admin-studio-top h1{font-size:clamp(1.6rem,2.3vw,2.25rem);margin:3px 0;}
+.admin-studio-shell .admin-workspace{max-width:1480px;grid-template-columns:185px minmax(0,1fr);gap:12px;}
+.admin-studio-shell .admin-manager-tabs{background:#e7eee1;border:1px solid #d0ddca;box-shadow:none;border-radius:13px;padding:9px;top:12px;}
+.admin-studio-shell .admin-manager-tabs button{padding:10px 11px;min-height:45px;border-radius:9px;line-height:1.32;}
+.admin-studio-shell .admin-editor-grid{grid-template-columns:minmax(215px,.28fr) minmax(0,.72fr);gap:12px;}
+.admin-studio-shell .admin-skill-panel,.admin-studio-shell .admin-editor-main{border-radius:14px;padding:clamp(15px,1.5vw,23px);box-shadow:none;}
+.admin-studio-shell .admin-skill-panel{background:#f2f5ed;display:flex;flex-direction:column;gap:11px;}
+.admin-studio-shell .admin-skill-panel>label{font-size:.76rem;}
+.admin-studio-shell .admin-skill-panel>select{margin:0 0 5px;}
+.admin-studio-shell .admin-skill-panel .admin-guide-state{margin:0;padding:11px;background:#e6eedf;border-radius:10px;display:grid;gap:4px;}
+.admin-studio-shell .admin-skill-panel .admin-guide-state strong{font-size:.85rem;}
+.admin-studio-shell .admin-skill-panel .admin-guide-state small{font-size:.72rem;}
+.admin-studio-shell .admin-history[hidden]{display:none!important;}
+.admin-studio-shell .admin-history{border-top:1px solid #d6e0d2;margin-top:8px;padding-top:9px;}
+.admin-studio-shell .admin-editor-heading{gap:5px;padding-bottom:13px;border-bottom:1px solid #e0e7db;margin-bottom:14px;}
+.admin-studio-shell .admin-editor-heading h2{font-size:clamp(1.32rem,1.9vw,1.75rem);}
+.admin-studio-shell .admin-editor-heading p{font-size:.78rem;line-height:1.43;}
+.admin-studio-shell .admin-form-stack{gap:12px;}
+.admin-studio-shell :is(.admin-editor-fields label,.admin-form-stack label){font-size:.77rem;}
+.admin-studio-shell :is(.admin-editor-fields input,.admin-editor-fields textarea,.admin-editor-fields select){border-radius:9px;min-height:42px;}
+.admin-studio-shell .admin-editor-fields textarea{line-height:1.5;}
+.admin-studio-shell .sx-admin-preview{margin:14px 0 6px;border:1px solid #cbdac6;border-radius:12px;overflow:clip;background:#edf4e8;}
+.admin-studio-shell .sx-admin-preview summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;min-height:49px;padding:11px 14px;color:#375e40;font-size:.83rem;font-weight:730;}
+.admin-studio-shell .sx-admin-preview summary>small{font-size:.69rem;color:#5a785f;font-weight:550;}
+.admin-studio-shell .sx-admin-preview[open] summary{border-bottom:1px solid #d2dfce;}
+.admin-studio-shell .sx-admin-preview .admin-editor-preview{margin:0;background:#f8fbf5;border:0;border-radius:0;padding:15px;}
+.admin-studio-shell .admin-editor-preview h3{font-size:1.2rem;}
+.admin-studio-shell .admin-editor-actions{position:static;margin-top:14px;border:1px solid #d2e0ce;padding:12px;border-radius:11px;background:#eef4ea;box-shadow:none;backdrop-filter:none;gap:8px;}
+.admin-studio-shell .admin-editor-actions>span{flex:1 1 210px;color:#416747;font-weight:650;font-size:.73rem;}
+.admin-studio-shell .admin-editor-actions button{min-height:42px;}
+.admin-studio-shell .admin-editor-actions .btn-primary:not(:disabled){background:#275837;color:#fffdf4;border-color:#275837;}
+.admin-studio-shell .admin-editor-actions .btn-outline{color:#2c5a3b;background:#fffef8;border-color:#9db99e;}
+.admin-studio-shell .admin-editor-actions button:disabled{opacity:1;background:#e5ebe2;color:#627665;border-color:#d1dccd;cursor:not-allowed;}
+
+/* Responsive editor navigation must not require separate page scroll regions */
+@media(max-width:1180px){
+ .admin-studio-shell .admin-workspace{grid-template-columns:1fr;gap:12px}
+ .admin-studio-shell .admin-manager-tabs{position:static;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;}
+ .admin-studio-shell .admin-manager-tabs::before{display:none;}
+ .admin-studio-shell .admin-manager-tabs button{display:flex;flex-direction:column;text-align:center;justify-content:center;gap:5px;font-size:.72rem;min-height:62px;padding:6px;}
+}
+@media(max-width:880px){
+ .studio-app .sx-lab-workspace{grid-template-columns:1fr}
+ .studio-app .sx-lab-library{display:flex;flex-wrap:wrap;align-items:center;}
+ .studio-app .sx-lab-library h2,.studio-app .sx-lab-search{flex:1 1 100%;}
+ .studio-app .sx-lab-library>button{width:auto!important;flex:1 1 170px;}
+ .admin-studio-shell .admin-editor-grid{grid-template-columns:1fr;}
+ .admin-studio-shell .admin-skill-panel{display:flex;flex-wrap:wrap;}
+}
+@media(max-width:760px){
+ .admin-studio-shell .admin-manager-tabs{display:none;}
+ .admin-studio-shell .admin-mobile-module-select{display:grid;}
+ .admin-studio-shell .admin-editor-grid{grid-template-columns:1fr;}
+ .admin-studio-shell .admin-editor-actions{flex-direction:column;align-items:stretch}
+ .admin-studio-shell .admin-editor-actions button{width:100%;justify-content:center}
+ .admin-studio-shell .sx-admin-preview summary{flex-direction:column;align-items:flex-start}
+ .studio-app .sx-mission-toolbar{align-items:flex-start}
+ .studio-app .course-student-filter{flex-direction:column;align-items:stretch}
+ .studio-app .course-student-filter>span{margin-top:1px}
+}
+@media(max-width:520px){
+ .studio-app .course-card-grid{grid-template-columns:1fr;}
+ .studio-app .course-card{padding:14px}
+ .studio-app .sx-planner-view button{flex:1}
+ .studio-app .sx-planner-view>span{width:100%;margin:0}
+ .studio-app .sx-mission-toolbar label{min-height:40px}
+ .studio-app .scenario-result{padding:14px}
+ .admin-studio-shell .admin-skill-panel,.admin-studio-shell .admin-editor-main{padding:14px;}
+ .studio-app .sx-lab-library>button{flex-basis:100%;}
+}
+@media(prefers-reduced-motion:reduce){
+ .studio-app :is(.course-card,.mission-work-card,.scenario-option),.admin-studio-shell :is(button,summary){animation:none!important;transition:none!important;transform:none!important;}
+}
+
+
+/* Collapsible revision index and first-class save navigation in every editor. */
+.admin-studio-shell .admin-history{border:1px solid #d2dfcc;border-radius:11px;padding:0;background:#edf4e8;overflow:clip;}
+.admin-studio-shell .admin-history summary{list-style:none;cursor:pointer;padding:11px 12px;min-height:44px;font-size:.75rem;font-weight:750;color:#3e6448;}
+.admin-studio-shell .admin-history summary::-webkit-details-marker{display:none;}
+.admin-studio-shell .admin-history[open]>h3{padding:8px 12px 0;}
+.admin-studio-shell .admin-history p{padding:9px 12px;margin:0;}
+.admin-studio-shell .sx-admin-anchor{text-align:right;padding:7px 0 0;}
+.admin-studio-shell .sx-admin-anchor a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;color:#315c40;font-size:.77rem;font-weight:740;text-decoration:underline;text-underline-offset:3px;}
+.admin-studio-shell .sx-admin-anchor a:hover{color:#1a412b;}
+.admin-studio-shell #admin-save-actions{scroll-margin-top:85px;}
+.admin-studio-shell #admin-save-actions:target{outline:2px solid #8aaf83;outline-offset:4px;}
+@media(max-width:760px){
+ .admin-studio-shell #admin-save-actions{scroll-margin-top:30px}
+ .admin-studio-shell .sx-admin-anchor{text-align:left}
+}

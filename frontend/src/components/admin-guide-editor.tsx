@@ -15,7 +15,7 @@ function originalPayload(skillId:string,rows:EditorialRow[]):AdminGuidePayload{
    notes:[...original.notes],challenge:original.challenge
  };
 }
-export function AdminGuideEditor({role}:{role:Role}){
+export function AdminGuideEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:(dirty:boolean)=>void}){
  const [selected,setSelected]=useState("javascript");
  const [rows,setRows]=useState<EditorialRow[]>([]);
  const [draft,setDraft]=useState<AdminGuidePayload>(()=>originalPayload("javascript",[]));
@@ -29,6 +29,7 @@ export function AdminGuideEditor({role}:{role:Role}){
  const revision=current?.revision??0;
  const changed=JSON.stringify(draft)!==JSON.stringify(originalPayload(selected,rows));
  const valid=adminGuidePayloadSchema.safeParse(draft).success;
+ useEffect(()=>{onDirtyChange?.(changed);},[changed,onDirtyChange]);
  const publishReady=role==="owner"&&valid&&!saving;
  const lastUpdated=useMemo(()=>current?.updated_at?new Date(current.updated_at).toLocaleString():null,[current?.updated_at]);
 
@@ -109,17 +110,17 @@ export function AdminGuideEditor({role}:{role:Role}){
        <small>Revision {revision} · Published revision {current?.published_revision??0}</small>
        {lastUpdated?<small>Updated {lastUpdated}</small>:null}
      </div>
-     <div className="admin-history"><h3><History size={16}/> Recent changes</h3>
+     <details className="admin-history" hidden={!history.length}><summary>Revision history · {history.length} entries</summary><h3><History size={16}/> Recent changes</h3>
        {history.length?history.map(item=><p key={item.revision}>
          <strong>v{item.revision}</strong> {item.action} · {new Date(item.created_at).toLocaleString()}
        </p>):<p>No saved versions for this skill yet.</p>}
-     </div>
+     </details>
    </aside>
    <section className="admin-editor-main" aria-labelledby="admin-edit-heading">
      <div className="admin-editor-heading">
        <div><span className="admin-eyebrow">ONE SKILL / THREE LEARNING FORMATS</span>
          <h2 id="admin-edit-heading">Edit {skills.find(s=>s.id===selected)?.label} content</h2>
-         <p>Draft first. Only an owner can publish a version to the student learning desk.</p></div>
+         <p>Save a private draft for review, or publish a valid version directly as an owner.</p></div>
      </div>
      {loading?<ActivityIndicator label="Loading private admin content…"/>:null}
      <div className="admin-editor-tabs" role="group" aria-label="Content type">
@@ -154,18 +155,19 @@ export function AdminGuideEditor({role}:{role:Role}){
            onChange={e=>setDraft(old=>({...old,challenge:e.target.value}))}/></label>
        </div>}
      </fieldset>
-     <div className="admin-editor-preview">
-       <span className="admin-eyebrow">STUDENT PREVIEW · NOT YET PUBLISHED</span>
+     <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
+     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
+       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{skills.find(s=>s.id===selected)?.label}</h3>
        <p><strong>Docs:</strong> {draft.documentation.title}</p>
        <p><strong>Lecture:</strong> {draft.lecture.title}</p>
        <ul>{draft.notes.filter(Boolean).slice(0,4).map(note=><li key={note}>{note}</li>)}</ul>
        <p><strong>Try this:</strong> {draft.challenge}</p>
-     </div>
+     </div></details>
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
-     <div className="admin-editor-actions">
-       <span>{changed?"Unsaved changes":"All edits saved or original content"} · {valid?"Ready for review":"Complete required fields"}</span>
+     <div id="admin-save-actions" className="admin-editor-actions">
+       <span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid?"Ready for review":"Complete required fields"}</span>
        <button className="btn btn-outline" type="button" disabled={loading||Boolean(saving)||role==="reviewer"||!valid}
          onClick={()=>void save(false)}><Save size={17}/>{saving==="draft"?"Saving…":"Save draft"}</button>
        <button className="btn btn-primary" type="button" disabled={!publishReady}

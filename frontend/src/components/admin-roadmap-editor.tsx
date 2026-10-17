@@ -10,7 +10,7 @@ function currentPayload(id:string,rows:EditorialRoadmapRow[]){
  const row=rows.find(r=>r.career_id===id);
  return row?.draft??row?.published??defaultEditorialRoadmap(id);
 }
-export function AdminRoadmapEditor({role}:{role:Role}){
+export function AdminRoadmapEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:(dirty:boolean)=>void}){
  const [careerId,setCareerId]=useState<string>(careers[0].id);
  const [rows,setRows]=useState<EditorialRoadmapRow[]>([]);
  const [draft,setDraft]=useState<EditorialRoadmapPayload>(()=>defaultEditorialRoadmap(careers[0].id));
@@ -24,6 +24,7 @@ export function AdminRoadmapEditor({role}:{role:Role}){
  const revision=stored?.revision??0;
  const changed=JSON.stringify(draft)!==JSON.stringify(currentPayload(careerId,rows));
  const valid=saveEditorialRoadmapSchema.safeParse({careerId,draft,expectedRevision:revision,publish:false});
+ useEffect(()=>{onDirtyChange?.(changed);},[changed,onDirtyChange]);
  useEffect(()=>{
    const controller=new AbortController();
    void (async()=>{
@@ -97,10 +98,10 @@ export function AdminRoadmapEditor({role}:{role:Role}){
        <small>Revision {revision} · Published {stored?.published_revision??0}</small>
        <small>Skill weights, quiz scores and prerequisite graph stay unchanged.</small>
      </div>
-     <div className="admin-history"><h3><History size={16}/> Roadmap history</h3>
+     <details className="admin-history" hidden={!history.length}><summary>Revision history · {history.length} entries</summary><h3><History size={16}/> Roadmap history</h3>
        {history.map(x=><p key={x.revision}>v{x.revision} · {x.action} · {new Date(x.created_at).toLocaleString()}</p>)}
        {!history.length?<p>No published or saved roadmap versions yet.</p>:null}
-     </div>
+     </details>
    </aside>
    <section className="admin-editor-main">
      <div className="admin-editor-heading"><span className="admin-eyebrow">CAREER / STUDY SEQUENCE</span>
@@ -132,16 +133,17 @@ export function AdminRoadmapEditor({role}:{role:Role}){
          </article>)}
        </div>
      </fieldset>
-     <div className="admin-editor-preview">
-       <span className="admin-eyebrow">STUDENT PREVIEW · PUBLISH REQUIRED</span>
+     <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
+     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(stored?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
+       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(stored?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{draft.headline}</h3><p>{draft.introduction}</p>
        <ol>{draft.steps.slice(0,4).map(s=><li key={s.skillId}><strong>{skillById[s.skillId].label}:</strong> {s.task}</li>)}</ol>
-     </div>
+     </div></details>
      {!valid.success?<p role="alert" className="auth-error">
        {valid.error.issues[0]?.message??"Please check the roadmap structure."}</p>:null}
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
-     <div className="admin-editor-actions"><span>{changed?"Unsaved changes":"All changes saved"} · {valid.success?"Sequence valid":"Fix prerequisite order"}</span>
+     <div id="admin-save-actions" className="admin-editor-actions"><span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid.success?"Sequence valid":"Fix prerequisite order"}</span>
        <button type="button" className="btn btn-outline" disabled={loading||!!saving||role==="reviewer"||!valid.success}
          onClick={()=>void save(false)}><Save size={16}/>{saving==="save"?"Saving…":"Save draft"}</button>
        <button type="button" className="btn btn-primary" disabled={loading||!!saving||role!=="owner"||!valid.success}

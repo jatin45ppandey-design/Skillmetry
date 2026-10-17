@@ -31,6 +31,7 @@ export default function Missions(){
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState<string|null>(null);
   const [notice,setNotice]=useState<string|null>(null);
+  const [showPriorityOnly,setShowPriorityOnly]=useState(false);
   const canSave=Boolean(user&&enabled);
 
   useEffect(()=>{
@@ -101,9 +102,11 @@ export default function Missions(){
     {error?<p className="auth-error" role="alert">{error}</p>:null}
     {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
     {pending?<div className="motion-action-status"><ActivityIndicator compact label="Saving your private project submission…" detail="Submitted projects remain learner-reported, not verified proficiency."/></div>:null}
-    <div className="mission-grid">
+    <div className="sx-mission-toolbar"><strong>{roleMissions.length+publishedMissions.filter(m=>m.roleId===careerId&&!roleMissions.some(existing=>existing.id===m.id)).length} curated projects</strong><label><input type="checkbox" checked={showPriorityOnly} onChange={event=>setShowPriorityOnly(event.target.checked)}/> Show roadmap priorities only</label></div>
+    {showPriorityOnly&&!roleMissions.some(m=>priority.has(m.skillId))&&!publishedMissions.some(m=>m.roleId===careerId&&priority.has(m.skillId))?<p className="workflow-notice" role="status">No roadmap-priority projects for this career yet. Turn off the filter to view all missions.</p>:null}
+    <div className="mission-grid sx-missions-grid">
       {[...roleMissions,...publishedMissions.filter(m=>m.roleId===careerId&&
-        !roleMissions.some(existing=>existing.id===m.id))].map((mission,index)=>{
+        !roleMissions.some(existing=>existing.id===m.id))].filter(m=>!showPriorityOnly||priority.has(m.skillId)).map((mission,index)=>{
         const item=work[mission.id]??draft(mission.id);
         const complete=mission.deliverables.every((_,i)=>item.completedIndices.includes(i));
         const hasEvidence=Boolean(item.repositoryUrl||item.demoUrl);
@@ -116,7 +119,8 @@ export default function Missions(){
           <div className="mission-title-row"><span><Target aria-hidden="true"/></span>
             <div><h2>{mission.title}</h2><p>{mission.description}</p></div></div>
           <div className="mission-focus"><span>Primary skill</span><strong>{skillById[mission.skillId].label}</strong></div>
-          <div className="mission-deliverables"><h3><FileCheck2 aria-hidden="true"/>Acceptance checklist</h3>
+          <details className="sx-mission-details"><summary><FileCheck2 aria-hidden="true"/> View checklist & evidence <span>{item.completedIndices.length}/{mission.deliverables.length} steps</span></summary>
+          <div className="mission-deliverables"><h3>Acceptance checklist</h3>
             <ul>{mission.deliverables.map((label,i)=><li key={label}><label>
               <input type="checkbox" checked={item.completedIndices.includes(i)} disabled={!canSave||pending!==null}
                 onChange={e=>update(mission.id,{completedIndices:e.target.checked
@@ -147,6 +151,7 @@ export default function Missions(){
             </div>
             <p className="note">Status: {item.status.replace("_"," ")} · Evidence is learner-reported, not reviewed or verified.</p>
           </div>:<p className="note">Checklist and evidence submission require an authenticated private workspace.</p>}
+          </details>
           <div className="mission-card-footer"><p>No generated skill scores.</p>
             <Link className="text-link" href="/simulator">Compare hypothetical plan <ArrowRight aria-hidden="true"/></Link></div>
         </article>;

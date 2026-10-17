@@ -18,5 +18,5 @@ export default async function AccountPage() {
   }
   if (!auth.user) redirect("/auth/sign-in?next=/account");
 
-  return <main className="account-shell"><nav className="auth-nav"><Brand/><Link className="btn btn-quiet" href="/dashboard">Back to workspace</Link></nav><header className="account-heading"><span className="eyebrow">Account & cloud</span><h1>Your private Skillmetry profile</h1><p>Session identity is validated server-side. Career setup syncs privately and assessment grades remain server-controlled.</p></header><AccountPanel/></main>;
+  return <main className="account-shell"><nav className="auth-nav"><Brand/><Link className="btn btn-quiet" href="/dashboard">Back to workspace</Link></nav><header className="account-heading"><span className="eyebrow">Account settings</span><h1>Your account & learning profile</h1><p>Manage your saved goals, quiz history and account securely.</p></header><AccountPanel/></main>;
 }

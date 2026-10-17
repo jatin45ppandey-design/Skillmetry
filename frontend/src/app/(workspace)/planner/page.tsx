@@ -14,6 +14,7 @@ export default function Planner() {
   const {preferences}=useSkillmetry();
   const {scores,illustrative}=useAssessmentProfile();
   const [tasks,setTasks]=useState<StudyTask[]>([]);
+  const [view,setView]=useState<"all"|"pending"|"completed">("all");
   const [loading,setLoading]=useState(false);
   const [pending,setPending]=useState<string|null>(null);
   const [error,setError]=useState<string|null>(null);
@@ -48,6 +49,7 @@ export default function Planner() {
     finally{setPending(null);}
   }
   const visible=persisted?tasks:preview;
+  const shownTasks=visible.filter(task=>view==="all"||(view==="completed"?task.status==="completed":task.status!=="completed"&&task.status!=="skipped"));
   const completed=visible.filter(t=>t.status==="completed").length;
   const focus=visible.filter(t=>t.status!=="skipped");
   const upcoming=visible.find(t=>t.status==="in_progress")??visible.find(t=>t.status==="todo");
@@ -76,8 +78,14 @@ export default function Planner() {
       {error?<p className="auth-error" role="alert">{error}</p>:null}
       <p className="note">{completed} completed of {focus.length} active tasks. Progress is self-reported learning activity.</p>
       {!visible.length?<p>Choose a career or skill focus in settings to receive a suggested learning plan.</p>:null}
-      <ol className="workflow-task-list">
-      {visible.map(task=><li key={task.taskKey}>
+      <div className="sx-planner-view" role="group" aria-label="Filter weekly tasks">
+       {(["all","pending","completed"] as const).map(value=><button type="button" key={value}
+          aria-pressed={view===value} onClick={()=>setView(value)}>{value==="all"?"All tasks":value==="pending"?"To do":"Completed"}</button>)}
+       <span>{shownTasks.length} shown</span>
+      </div>
+      {!shownTasks.length && visible.length ? <p className="workflow-notice" role="status">No tasks match this view. Choose another status to continue.</p> : null}
+      <ol className="workflow-task-list sx-planner-tasks">
+      {shownTasks.map(task=><li key={task.taskKey}>
         <div><strong>{task.title}</strong><small>{task.plannedDate} · {task.estimatedMinutes} min · {task.kind}</small>
         <Link href={task.kind==="reassess"?"/assessments":task.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(task.skillId)}>Open {task.kind==="learn"?"resources":task.kind==="practice"?"practice lab":"assessments"}</Link></div>
         {persisted?<div className="workflow-inline-actions"><label className="workflow-task-status">Study date

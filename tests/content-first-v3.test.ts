@@ -38,12 +38,29 @@ describe("V3 meaningful content and compact workspace contracts",()=>{
    expect(page).toContain("getPersonalizedResources");
    expect(page).toContain("ResourceCard");
  });
- it("makes contextual navigation available in all 15 student workspaces",()=>{
-   const strip=read("../frontend/src/components/learning-quick-bar.tsx");
-   for(const route of routes)expect(strip).toContain('"/'+route+'":');
+ it("keeps core student destinations accessible without duplicated focus banners",()=>{
    const shell=read("../frontend/src/components/workspace-shell.tsx");
-   expect(shell).toContain("<LearningQuickBar/>");
+   // A global question/shortcut bar repeated the page title, wasting the first viewport.
+   expect(shell).not.toContain("<LearningQuickBar/>");
+   expect(shell).toContain("studio-primary-nav");
    expect(shell).toContain("studio-drawer");
+   expect(shell).toContain("studio-bottom-nav");
+   // All ordinary workspaces remain discoverable through primary or grouped navigation.
+   for(const route of routes.filter(value=>value!=="practice")){
+     expect(shell).toContain('href: "/'+route+'"');
+   }
+   // Guided practice stays linked contextually from the learning desk.
+   const resources=read("../frontend/src/app/(workspace)/resources/page.tsx");
+   expect(resources).toContain("FocusedLearningHub");
+ });
+ it("distinguishes signed-in identity from an illustrative local profile",()=>{
+   const account=read("../frontend/src/components/account-panel.tsx");
+   const dashboard=read("../frontend/src/app/(workspace)/dashboard/page.tsx");
+   expect(account).toContain('cloudOwnerId===user.id');
+   expect(account).toContain("No saved career setup yet");
+   expect(account).toContain("Saved student profile");
+   expect(dashboard).toContain("profileReady && Boolean");
+   expect(dashboard).toContain("sx-latest-panel");
  });
  it("reduces oversized landing-style headings while retaining responsive controls",()=>{
    const css=read("../frontend/src/app/experience-v3.css");

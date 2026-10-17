@@ -52,21 +52,22 @@ export default function Jobs(){
  return <>
   <SectionTitle eyebrow="Chapter 08 / Career intelligence" title="Turn a job description into a learning map"
     description="Match stated requirements against Skillmetry's canonical skills and your server-graded quiz evidence. No imagined employability percentages."/>
-  <div className="grid-2">
-   <form className="panel" onSubmit={analyze}>
+  <div className={"sx-jobs-layout"+(result||pending?" has-results":"")}>
+   <form className="panel sx-jobs-form" onSubmit={analyze}>
     <label className="workflow-field">Job description
-      <textarea className="workflow-input" rows={12} required minLength={50} maxLength={12000}
+      <textarea className="workflow-input" rows={6} required minLength={50} maxLength={12000}
         placeholder="Paste a public job description. Remove names, personal details and other sensitive data."
         value={description} onChange={event=>setDescription(event.target.value)}/>
     </label>
-    <p className="note">This text is processed for this request only and is not stored. Skill recognition uses curated phrases, not generative AI.</p>
+<div className="sx-jobs-input-tools"><button className="btn btn-outline" type="button" onClick={()=>{setDescription("We are hiring a frontend developer to build accessible websites using React, JavaScript, HTML and CSS. Familiarity with REST APIs, Git, debugging and testing web applications is helpful.");setResult(null);setError("");}}>Try sample job description</button><button className="btn btn-quiet" type="button" disabled={!description} onClick={()=>{setDescription("");setResult(null);setError("");}}>Clear</button><span>{description.length}/12000</span></div>
+    <p className="note">Remove names and personal information. This description is not saved. Skill recognition uses curated phrases, not generative AI.</p>
     <button className="btn btn-primary" disabled={pending||description.trim().length<50} type="submit">
       {pending?<ActionSpinner label="Analyzing requirements…"/>:"Analyze requirements"}
     </button>
     {pending?<ActivityIndicator compact label="Comparing requirements with your available quiz evidence…" detail="Recognized skills are not a hiring prediction."/>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
    </form>
-   <section className="panel" aria-live="polite">
+   {result||pending?<section className="panel sx-jobs-results" aria-live="polite">
     <h2>Requirements and your next steps</h2>
     {pending?<ActivityIndicator compact label="Preparing your skill comparison…"/>:!result?<p>Paste a role description to map known technologies into assessments and learning resources.</p>:
      <>
@@ -92,9 +93,9 @@ export default function Jobs(){
       {result.matchingCareers.filter(x=>x.matchedSkillCount>0).map(c=><p key={c.id}>{c.title}: {c.matchedSkillCount} matching requirements</p>)}
       <p className="note">{result.notice}</p>
      </>}
-   </section>
+   </section>:null}
   </div>
-  {user?<section className="panel workflow-panel">
+  {user?<section className="panel workflow-panel sx-jobs-saved">
     <h2>Saved job requirement summaries</h2>
     <p className="note">Only role labels and recognized catalog requirements are stored privately. Original descriptions and quiz scores are not saved here.</p>
     {saved.map(item=><div className="workflow-result" key={item.id}>
