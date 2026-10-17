@@ -5,6 +5,7 @@ import {hasSupabaseServerCredentials} from "@skillmetry/backend/lib/supabase/con
 import {createAdminClient} from "@skillmetry/backend/lib/supabase/admin";
 import {listLabExercises,gradeLabExercise} from "@skillmetry/backend/lib/learning/lab-bank.server";
 import {isCanonicalSkillId} from "@skillmetry/shared/data/learning-catalog";
+import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
 
 const input=z.object({exerciseId:z.string().min(3).max(100),
   selectedIndex:z.number().int().min(0).max(3).optional(),
@@ -34,6 +35,12 @@ export async function POST(request:Request){
   const auth=await authenticatedRequest();
   const enabled=process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
   if(enabled&&auth.status==="authenticated"){
+    // Practice grades may be previewed without a session, but storing private activity is
+    // a state-changing authenticated operation and must satisfy the same-origin policy.
+    const origin=request.headers.get("origin");
+    const expectedOrigin=trustedSiteOrigin(request)?.origin;
+    if(!origin||!expectedOrigin||origin!==expectedOrigin)return NextResponse.json(
+      {error:"Same-origin practice submission required."},{status:403});
     if(!hasSupabaseServerCredentials())return NextResponse.json({error:"Practice persistence is unavailable."},{status:503});
     const {error}=await createAdminClient().from("practice_lab_attempts").insert({
       user_id:auth.userId,exercise_id:result.exerciseId,skill_id:result.skillId,is_correct:result.correct
