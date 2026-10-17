@@ -9,7 +9,6 @@ import {
   Settings2, Target, UserRound, WandSparkles, X, BookOpen
 } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { LearningQuickBar } from "@/components/learning-quick-bar";
 import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
 
@@ -151,7 +150,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <main className="studio-main" id="studio-main">
-        <div className="studio-content">{pathname === "/dashboard" ? null : <LearningQuickBar/>}{children}</div>
+        <div className="studio-content">{children}</div>
       </main>
 
       {drawerOpen ? (
