@@ -58,7 +58,8 @@ declare
  v_version text;
  v_questions jsonb;
 begin
- if p_actor is null or p_expected_revision is null or p_expected_revision<0 or
+ if p_actor is null or p_draft is null or p_assessment_id is null or
+    p_expected_revision is null or p_expected_revision<0 or
     p_assessment_id not in (
       'python-foundations','sql-foundations','javascript-foundations','html-foundations',
       'css-foundations','typescript-foundations','react-foundations','node-foundations','rest-api-foundations'
