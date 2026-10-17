@@ -25,6 +25,7 @@ type SecondaryLink = { href: string; label: string; icon: typeof BookOpen };
 const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
   { label: "LEARN & PRACTICE", items: [
     { href: "/resources", label: "Learning resources", icon: BookMarked },
+    { href: "/courses", label: "Courses & lessons", icon: BookOpen },
     { href: "/planner", label: "My weekly plan", icon: BookOpen },
     { href: "/lab", label: "Guided coding practice", icon: Target },
     { href: "/tutor", label: "Learning tutor", icon: BookOpen }
