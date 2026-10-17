@@ -151,7 +151,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <main className="studio-main" id="studio-main">
-        <div className="studio-content"><LearningQuickBar/>{children}</div>
+        <div className="studio-content">{pathname === "/dashboard" ? null : <LearningQuickBar/>}{children}</div>
       </main>
 
       {drawerOpen ? (
