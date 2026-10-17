@@ -1,5 +1,6 @@
 "use client";
 import {useCallback,useEffect,useState} from "react";
+import {AdminReviewQueue} from "@/components/admin-editorial-reviews";
 import {ActivityIndicator} from "@/components/motion-ui";
 import {ArrowRight,RefreshCw,ShieldCheck} from "lucide-react";
 
@@ -9,7 +10,7 @@ const labels:Record<ContentModule,string>={
  guides:"Learning guides",roadmaps:"Career roadmaps",courses:"Courses & lessons",
  missions:"Missions & projects",assessments:"Assessment banks"
 };
-export function AdminContentInventory({onManage}:{onManage:(key:ContentModule)=>void}){
+export function AdminContentInventory({onManage,role}:{onManage:(key:ContentModule)=>void;role:"owner"|"editor"|"reviewer"}){
  const [data,setData]=useState<Snapshot[]>([]);
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState("");
@@ -53,6 +54,7 @@ export function AdminContentInventory({onManage}:{onManage:(key:ContentModule)=>
          Open editor <ArrowRight size={16} aria-hidden="true"/></button>
      </article>)}
    </div>:null}
+   <AdminReviewQueue role={role}/>
    <p className="sx-admin-inventory-trust"><ShieldCheck size={16} aria-hidden="true"/>
      Inventory reports editorial metadata only. It does not display learner profiles or assessment answer keys.</p>
  </section>;
