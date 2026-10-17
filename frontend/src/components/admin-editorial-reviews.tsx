@@ -115,7 +115,7 @@ export function AdminReviewQueue({role}:{role:Role}){
          onClick={()=>void decide(row.id,"changes_requested")}>Request changes</button>
        <button type="button" className="btn btn-primary" disabled={pending!==null}
          onClick={()=>void decide(row.id,"approved")}>Approve revision</button>
-     </div>:<span className="sx-admin-review-waiting">Awaiting independent reviewer</span>}
+     </div>:<span className="sx-admin-review-waiting">{row.status==="approved"?"Independently approved":row.status==="changes_requested"?"Revision needs changes":"Awaiting independent reviewer"}</span>}
    </article>)}
    <p className="sx-admin-inventory-trust">Only metadata is displayed in this queue. Review the saved content in its editor before approving.</p>
  </section>;
