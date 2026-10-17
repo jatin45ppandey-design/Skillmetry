@@ -10,7 +10,7 @@ function currentPayload(id:string,rows:EditorialRoadmapRow[]){
  const row=rows.find(r=>r.career_id===id);
  return row?.draft??row?.published??defaultEditorialRoadmap(id);
 }
-export function AdminRoadmapEditor({role}:{role:Role}){
+export function AdminRoadmapEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:(dirty:boolean)=>void}){
  const [careerId,setCareerId]=useState<string>(careers[0].id);
  const [rows,setRows]=useState<EditorialRoadmapRow[]>([]);
  const [draft,setDraft]=useState<EditorialRoadmapPayload>(()=>defaultEditorialRoadmap(careers[0].id));
@@ -24,6 +24,7 @@ export function AdminRoadmapEditor({role}:{role:Role}){
  const revision=stored?.revision??0;
  const changed=JSON.stringify(draft)!==JSON.stringify(currentPayload(careerId,rows));
  const valid=saveEditorialRoadmapSchema.safeParse({careerId,draft,expectedRevision:revision,publish:false});
+ useEffect(()=>{onDirtyChange?.(changed);},[changed,onDirtyChange]);
  useEffect(()=>{
    const controller=new AbortController();
    void (async()=>{
