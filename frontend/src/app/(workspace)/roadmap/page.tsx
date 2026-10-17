@@ -100,18 +100,10 @@ export default function Roadmap() {
 
   return <>
     <SectionTitle eyebrow="Adaptive roadmap" title={title} description={description} action={<div className="resource-overview-actions">{selectedCareer ? <Link href={getCareerRoadmapBrowseHref(selectedCareer.id)} className="btn btn-outline">Explore career roadmaps <ArrowRight aria-hidden="true"/></Link> : null}<Link href="/settings" className="btn btn-quiet">Edit learning goals</Link></div>}/>
-    <section className="studio-roadmap-intro" aria-label="Learning atlas orientation">
-      <div>
-        <span className="studio-kicker">CHAPTER 03 / THE LEARNING ATLAS</span>
-        <h2>Every skill is <em>connected.</em></h2>
-        <p>Follow real prerequisites. Select a skill to highlight the path leading to it and see which assessment or resources are available.</p>
-      </div>
-      <div className="studio-roadmap-facts">
-        <span><strong>{allSkillIds.length}</strong> related canonical skills</span>
-        <span><strong>{focusSkillIds.length}</strong> selected focus skills</span>
-        <small>These counts describe your selected catalog pathway—not skills you have mastered.</small>
-      </div>
-    </section>
+    <details className="v3-context-details">
+      <summary>About your skill pathway · {allSkillIds.length} related skills · {focusSkillIds.length} selected</summary>
+      <p>Skills are connected by prerequisites. Select a node to inspect the skill, relevant resources and quiz availability. These counts are not mastered skill scores.</p>
+    </details>
     {status === "loading" ? <p className="roadmap-notice" role="status">Loading trusted assessment history. Existing selections remain available.</p> : null}
     {status === "error" || status === "offline" ? <p className="roadmap-notice warning" role="alert">{message ?? "Trusted assessment history is unavailable. Scores are not estimated."}</p> : null}
     <div className="roadmap-layout">

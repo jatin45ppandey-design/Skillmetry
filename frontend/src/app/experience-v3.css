@@ -1,0 +1,117 @@
+/* Skillmetry content-first V3: compact and purposeful, never fake metrics. */
+.studio-app .v3-learning-desk{background:#f0f4e9;border:1px solid #cadbc3;border-radius:25px;padding:clamp(17px,2.3vw,30px);color:#2b4733;}
+.studio-app .v3-learning-head{display:flex;gap:22px;align-items:center;justify-content:space-between;}
+.studio-app .v3-learning-head h1{font:750 clamp(1.55rem,2.9vw,2.5rem)/1.1 var(--font-display),sans-serif;letter-spacing:-.05em;margin:7px 0 7px;}
+.studio-app .v3-learning-head p{max-width:590px;font-size:.88rem;line-height:1.5;color:#607464;margin:0;}
+.studio-app .v3-kicker{font:750 .65rem var(--font-technical),monospace;letter-spacing:.08em;color:#547b5b;display:inline-flex;gap:5px;align-items:center;}
+.studio-app .v3-skill-chooser{display:grid;gap:5px;min-width:215px;}
+.studio-app .v3-skill-chooser label{font-size:.74rem;font-weight:750;color:#527156;}
+.studio-app .v3-skill-chooser select{background:#fffef9;border:1px solid #bdcfb9;min-height:44px;border-radius:11px;padding:10px;color:#284c36;width:100%;}
+.studio-app .v3-quick-topics{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:15px 0 6px;}
+.studio-app .v3-quick-topics span{color:#677969;font-size:.72rem;margin-right:4px;}
+.studio-app .v3-quick-topics button{background:#fdfcf5;color:#426b4c;border:1px solid #d7dfd0;border-radius:999px;padding:7px 11px;font-size:.74rem;font-weight:670;min-height:37px;}
+.studio-app .v3-quick-topics button[aria-pressed="true"]{background:#355f43;color:#fff;border-color:#355f43;}
+.studio-app .v3-learning-content{display:grid;grid-template-columns:minmax(185px,.3fr) minmax(0,.7fr);gap:14px;margin-top:17px;}
+.studio-app .v3-learning-modes{display:grid;align-content:start;gap:8px;}
+.studio-app .v3-learning-mode{display:flex;align-items:center;gap:13px;min-height:76px;padding:13px 12px;text-align:left;background:#fffdf6;color:#43644a;border:1px solid #d8e2d4;border-radius:15px;}
+.studio-app .v3-learning-mode.selected{background:#dcebd2;color:#254b34;border-color:#78a37c;box-shadow:inset 3px 0 #487f50;}
+.studio-app .v3-learning-mode span{display:grid;gap:4px;flex:1;min-width:0;}
+.studio-app .v3-learning-mode strong{font-size:.87rem;line-height:1.25;}
+.studio-app .v3-learning-mode small{font-size:.72rem;color:#6b7f70;line-height:1.35;}
+.studio-app .v3-learning-mode>svg:last-child{opacity:.6;}
+.studio-app .v3-learning-detail{background:#fffef9;border:1px solid #d8dfd4;border-radius:18px;padding:clamp(17px,2vw,25px);min-height:328px;display:flex;flex-direction:column;align-items:flex-start;gap:13px;}
+.studio-app .v3-learning-detail h2{font:730 clamp(1.35rem,2vw,1.75rem)/1.1 var(--font-display),sans-serif;letter-spacing:-.04em;margin:0;}
+.studio-app .v3-learning-detail>p{font-size:.84rem;color:#66756a;max-width:630px;line-height:1.6;margin:0;}
+.studio-app .v3-source-card{background:#eff5e9;border:1px solid #d9e6d4;border-radius:14px;padding:15px;display:flex;align-items:center;gap:13px;max-width:100%;width:100%;}
+.studio-app .v3-source-card svg{color:#467852;flex:none;}
+.studio-app .v3-video-source{background:#f5eee2;border-color:#ebdfcd;}
+.studio-app .v3-source-card>div{display:grid;gap:5px;min-width:0;}
+.studio-app .v3-source-card strong{font-size:.9rem;overflow-wrap:anywhere;}
+.studio-app .v3-source-card small{font-size:.7rem;color:#68796c;}
+.studio-app .v3-primary-link{display:inline-flex;gap:10px;align-items:center;background:#315b3c;color:#fff;padding:12px 17px;border-radius:11px;min-height:45px;font-weight:700;font-size:.83rem;}
+.studio-app .v3-primary-link:hover{background:#23472e;color:#fff;}
+.studio-app .v3-note-points{list-style:none;display:grid;gap:10px;padding:0;margin:1px 0 0;width:100%;}
+.studio-app .v3-note-points li{display:flex;gap:12px;line-height:1.5;font-size:.88rem;color:#455e4a;}
+.studio-app .v3-note-points span{font:700 .71rem var(--font-technical),monospace;color:#49865d;flex:none;padding-top:3px;}
+.studio-app .v3-do-next{border-top:1px solid #dae5d6;padding-top:12px;margin-top:auto;display:flex;align-items:center;gap:14px;justify-content:space-between;width:100%;}
+.studio-app .v3-do-next p{margin:6px 0 0;color:#425c49;font-size:.79rem;line-height:1.45;}
+.studio-app .v3-secondary-link{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:.76rem;color:#376341;font-weight:750;text-decoration:underline;}
+.studio-app .v3-trust-notice{display:flex;gap:7px;align-items:center;font-size:.7rem;line-height:1.5;color:#6c7c6c;margin:12px 0 0;}
+.studio-app .v3-legacy-catalog{background:#fffdf7;border:1px solid #dae2d5;border-radius:18px;margin-top:14px;}
+.studio-app .v3-legacy-catalog>summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:7px;align-items:center;min-height:54px;padding:14px 19px;font-size:.84rem;color:#4b684f;font-weight:650;}
+.studio-app .v3-legacy-catalog>summary span:first-child{font-weight:750;color:#2d5139;}
+.studio-app .v3-legacy-catalog>summary span:last-child{margin-left:auto;}
+.studio-app .v3-legacy-content{padding:4px 18px 20px;}
+.studio-app .v3-legacy-content>.section-title{padding-top:8px;}
+@media(max-width:900px){.studio-app .v3-learning-head{align-items:stretch;flex-direction:column}.studio-app .v3-learning-content{grid-template-columns:1fr}.studio-app .v3-learning-modes{grid-template-columns:repeat(3,1fr)}.studio-app .v3-learning-mode{min-height:82px}.studio-app .v3-learning-mode>svg:last-child,.studio-app .v3-learning-mode small{display:none}}
+@media(max-width:600px){.studio-app .v3-learning-modes{gap:5px}.studio-app .v3-learning-mode{display:grid;justify-items:center;text-align:center;gap:4px;padding:10px 5px;min-height:70px}.studio-app .v3-learning-mode span{display:block}.studio-app .v3-learning-mode strong{font-size:.71rem}.studio-app .v3-learning-head h1{font-size:1.6rem}.studio-app .v3-do-next{flex-direction:column;align-items:flex-start}.studio-app .v3-legacy-content{padding:8px}}
+
+/* Universal compact student workspace: lead with useful content, not a giant hero. */
+.studio-app .studio-header-inner{height:66px;}
+.studio-app .studio-content{width:min(1440px,calc(100% - 54px));padding-top:14px;padding-bottom:65px;}
+.studio-app .studio-contextbar{display:none;}
+.studio-app .v3-taskbar{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:12px 18px;min-height:75px;background:#e6eedc;border:1px solid #ccd9c5;border-radius:17px;margin-bottom:16px;}
+.studio-app .v3-taskbar-title{display:grid;gap:3px;}
+.studio-app .v3-taskbar-title strong{font:730 clamp(1.05rem,1.7vw,1.35rem)/1.17 var(--font-display),sans-serif;letter-spacing:-.025em;color:#294d35;}
+.studio-app .v3-taskbar-title>span:last-child{color:#647765;font-size:.74rem;line-height:1.42;}
+.studio-app .v3-taskbar-eyebrow{color:#5e825f;letter-spacing:.09em;font:.7rem var(--font-technical),monospace;}
+.studio-app .v3-taskbar-actions{display:flex;gap:8px;align-items:center;flex:none;}
+.studio-app .v3-taskbar-actions a{background:#fffdf7;border:1px solid #cddbc7;color:#335d3e;min-height:40px;padding:8px 11px;display:flex;gap:8px;align-items:center;border-radius:11px;font-size:.79rem;font-weight:700;}
+.studio-app .v3-taskbar-actions a:hover{background:#d9e7d1;}
+.studio-app .section-title{margin-top:0;margin-bottom:15px;}
+.studio-app .section-title h1{font-size:clamp(1.65rem,2.8vw,2.75rem);line-height:1.12;}
+.studio-app .section-title p{max-width:780px;line-height:1.5;}
+.studio-app .sx-welcome{padding:0;}
+.studio-app .sx-welcome h1{font-size:clamp(1.8rem,3vw,2.85rem);margin:4px 0;}
+.studio-app .sx-learning-home{gap:16px;}
+.studio-app .sx-next-step{min-height:210px;grid-template-columns:minmax(0,1.6fr) minmax(145px,.4fr);border-radius:20px;}
+.studio-app .sx-next-content{gap:9px;padding:clamp(20px,3vw,31px);}
+.studio-app .sx-next-content h2{font-size:clamp(1.45rem,2.6vw,2.5rem);}
+.studio-app .sx-next-content p{font-size:.87rem;line-height:1.55;}
+.studio-app .sx-next-content small{font-size:.7rem;}
+.studio-app .sx-visual-center{width:92px;height:92px;}
+.studio-app .sx-visual-center svg{width:43px;height:43px;}
+.studio-app .sx-visual-note{font-size:.6rem;}
+.studio-app .sx-home-grid{gap:11px;}
+.studio-app .sx-home-panel,.studio-app .sx-streak-card{border-radius:17px;padding:17px;gap:7px;}
+.studio-app .sx-quick-card{min-height:135px;padding:17px;gap:7px;}
+.studio-app .sx-continue h2{font-size:1.5rem;}
+.studio-app .career-explorer-grid{gap:12px;}
+.studio-app .career-explorer-card{padding:clamp(15px,2vw,21px);}
+.studio-app .career-explorer-card h2{font-size:clamp(1.17rem,1.8vw,1.55rem);}
+.studio-app .studio-roadmap-intro{padding:15px 22px;border-radius:17px;margin:6px 0 14px;gap:12px;}
+.studio-app .studio-roadmap-intro h2{font-size:clamp(1.5rem,2.2vw,2.35rem);margin:5px 0;}
+.studio-app .studio-roadmap-intro p{font-size:.78rem;line-height:1.45;}
+.studio-app .studio-roadmap-facts{flex-direction:row;flex-wrap:wrap;gap:12px;padding:7px 0 0 16px;}
+.studio-app .studio-roadmap-facts strong{font-size:1.3rem;}
+.studio-app .studio-evidence-cover{padding:18px 24px;margin:6px 0 16px;border-radius:20px;min-height:0;}
+.studio-app .studio-evidence-cover h2{font-size:clamp(1.45rem,2.3vw,2.5rem);}
+.studio-app .workflow-lab-grid,.studio-app .simulator-layout{gap:14px;}
+.studio-app .workflow-panel{padding:clamp(17px,2vw,23px);}
+.studio-app .sx-task-focus{margin:8px 0 12px;padding:16px 20px;}
+.studio-app .resource-overview{padding:16px 21px;}
+.studio-app .resource-grid{gap:13px;}
+@media(max-width:920px){.studio-app .v3-taskbar{align-items:flex-start;flex-direction:column;gap:10px;padding:12px 14px}.studio-app .v3-taskbar-actions{width:100%;flex-wrap:wrap}.studio-app .v3-taskbar-actions a{flex:1;justify-content:center}.studio-app .studio-content{width:calc(100% - 32px);padding-bottom:calc(80px + env(safe-area-inset-bottom))}.studio-app .sx-next-step{grid-template-columns:1fr}.studio-app .sx-next-visual{display:none}}
+@media(max-width:540px){.studio-app .studio-header-inner{height:59px}.studio-app .studio-content{padding-top:9px;width:calc(100% - 22px)}.studio-app .v3-taskbar-title>span:last-child{display:none}.studio-app .v3-taskbar{margin-bottom:11px}.studio-app .v3-taskbar-actions a{font-size:.7rem;padding:7px 8px}.studio-app .sx-welcome h1{font-size:1.8rem}.studio-app .sx-next-content{padding:16px}.studio-app .sx-quick-card{min-height:100px}}
+
+.studio-app .v3-note-check{flex:none;min-width:35px;height:35px;display:grid;place-items:center;border-radius:10px;border:1px solid #ceddc8;background:#f3f7ed;color:#547760;font:700 .76rem var(--font-technical),monospace;}
+.studio-app .v3-note-check.is-checked{background:#325d3f;color:#fff;border-color:#325d3f;}
+.studio-app .v3-note-points li>span{padding-top:5px;font-size:.85rem;line-height:1.5;flex:1;}
+.studio-app .v3-session-hint{font-size:.72rem;color:#67816d;}
+
+/* Correct shared SectionTitle element selector: almost every tool page uses it. */
+.studio-app .section-head{margin:0 0 13px;padding:3px 0 13px;gap:16px;align-items:center;}
+.studio-app .section-head h1{font-size:clamp(1.45rem,2.6vw,2.45rem);margin:5px 0;letter-spacing:-.045em;}
+.studio-app .section-head .eyebrow{font-size:.68rem;}
+.studio-app .section-head p{line-height:1.44;font-size:.81rem;max-width:720px;}
+.studio-app .section-head:before{height:2px;width:25px;}
+.studio-app .studio-evidence-cover-art{min-height:135px;}
+.studio-app .studio-evidence-cover{grid-template-columns:minmax(0,1.75fr) minmax(130px,.25fr);}
+.studio-app .studio-evidence-cover h2{margin:6px 0;font-size:clamp(1.4rem,2.2vw,2.3rem);}
+@media(max-width:760px){.studio-app .section-head{flex-direction:column;align-items:flex-start;gap:8px}.studio-app .section-head h1{font-size:1.55rem}.studio-app .studio-evidence-cover{grid-template-columns:1fr}.studio-app .studio-evidence-cover-art{display:none}.studio-app .section-action{width:100%}}
+
+/* Fewer introduction blocks before actual graph and learning evidence. */
+.studio-app .v3-context-details{margin:0 0 12px;padding:9px 13px;background:#f0f5e8;border:1px solid #d6e1d0;border-radius:12px;color:#48644c;}
+.studio-app .v3-context-details summary{font-size:.77rem;font-weight:700;cursor:pointer;min-height:25px;}
+.studio-app .v3-context-details p{margin:7px 0 0;font-size:.79rem;line-height:1.5;color:#65786b;}
+@media(min-width:1300px){.studio-app .career-explorer-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
