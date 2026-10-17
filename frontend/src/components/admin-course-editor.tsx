@@ -1,3 +1,4 @@
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 "use client";
 import {useEffect,useState} from "react";
 import {BookOpen,Plus,Save,Send,Trash2} from "lucide-react";
@@ -189,6 +190,7 @@ export function AdminCourseEditor({role,onDirtyChange}:{role:Role;onDirtyChange?
        <button className="btn btn-outline" type="button" disabled={draft.modules.length>=12||totalLessons>=50}
          onClick={addModule}><Plus size={16}/> Add module</button>
      </fieldset>
+     <AdminReviewRequest module="courses" contentId={slug} revision={original?.revision??0} changed={changed} role={role}/>
      <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(original?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview"><span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(original?.published)?"A published version also exists":"Not yet published"}</span>
        <h3><BookOpen size={18}/> {draft.title}</h3><p>{draft.summary}</p>
