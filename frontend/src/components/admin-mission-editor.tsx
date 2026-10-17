@@ -12,7 +12,7 @@ type Role="owner"|"editor"|"reviewer";
 const initialCareer=careers[0];
 const initialSkill=initialCareer.skills[0].skillId;
 
-export function AdminMissionEditor({role}:{role:Role}){
+export function AdminMissionEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:(dirty:boolean)=>void}){
  const [rows,setRows]=useState<AdminMissionRow[]>([]);
  const [id,setId]=useState("cms-new-project");
  const [careerId,setCareerId]=useState(initialCareer.id as string);
@@ -30,6 +30,16 @@ export function AdminMissionEditor({role}:{role:Role}){
    Boolean(current&&(current.career_id!==careerId||current.skill_id!==skillId));
  const valid=saveAdminMissionSchema.safeParse({id,careerId,skillId,expectedRevision:current?.revision??0,publish:false,draft});
  const lockedChecklist=Boolean(current?.published);
+
+ useEffect(()=>{
+   onDirtyChange?.(changed);
+ },[changed,onDirtyChange]);
+ useEffect(()=>{
+   if(!changed)return;
+   const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue="";};
+   window.addEventListener("beforeunload",warn);
+   return()=>window.removeEventListener("beforeunload",warn);
+ },[changed]);
 
  useEffect(()=>{
    const controller=new AbortController();
@@ -82,7 +92,8 @@ export function AdminMissionEditor({role}:{role:Role}){
    setId(next);setDraft(startingAdminMission(career.title));setError("");setNotice("");
  }
  function changeCareer(value:string){
-   const next=careers.find(item=>item.id===value);if(!next)return;
+   const next=careers.find(item=>item.id===value);if(!next||value===careerId)return;
+   if(changed&&!window.confirm("Changing careers resets the current draft. Discard unsaved mission edits?"))return;
    setCareerId(next.id);setSkillId(next.skills[0].skillId);
    setDraft(startingAdminMission(next.title));setNotice("");
  }
