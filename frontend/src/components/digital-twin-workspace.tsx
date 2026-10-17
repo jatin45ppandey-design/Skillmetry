@@ -204,12 +204,21 @@ export function DigitalTwinWorkspace() {
   const context = illustrative ? "demo" : "authenticated";
   const twin = useMemo(() => buildDigitalTwinSnapshot({ attempts, learning, context }), [attempts, context, learning]);
   const [selectedTarget, setSelectedTarget] = useState<SelectedTarget | null>(null);
+  const [skillQuery, setSkillQuery] = useState("");
+  const [skillFilter, setSkillFilter] = useState<"all"|"measured"|"available"|"unavailable">("all");
   const [selectedCareerId, setSelectedCareerId] = useState<CareerId>(learning.primaryCareerId ?? careers[0].id);
   const defaultSkill = twin.skills.find(skill => skill.evidenceState === "measured") ?? twin.skills[0];
   const selectedSkill = selectedTarget?.kind === "skill" ? twin.skills.find(skill => skill.skillId === selectedTarget.id) ?? defaultSkill : selectedTarget ? null : defaultSkill;
   const selectedCareer = twin.careers.find(career => career.careerId === selectedCareerId) ?? twin.careers[0];
   const latestActivity = twin.skills.filter(skill => skill.latestCompletedAt).toSorted((a, b) => (b.latestCompletedAt ?? "").localeCompare(a.latestCompletedAt ?? ""))[0] ?? null;
   const hasGoals = Boolean(learning.primaryCareerId || learning.selectedSkillIds.length || learning.selectedToolIds.length);
+  const visibleSkills=twin.skills.filter(skill=>{
+    if(!skill.label.toLocaleLowerCase().includes(skillQuery.trim().toLocaleLowerCase()))return false;
+    if(skillFilter==="measured")return skill.evidenceState==="measured";
+    if(skillFilter==="available")return skill.evidenceState==="assessment-available-not-taken";
+    if(skillFilter==="unavailable")return skill.evidenceState==="assessment-unavailable";
+    return true;
+  });
 
   function selectSkill(skillId: SkillId) {
     setSelectedTarget({ kind: "skill", id: skillId });
@@ -241,8 +250,9 @@ export function DigitalTwinWorkspace() {
       <div className="twin-content-stack">
         <section className="panel twin-skill-matrix" aria-labelledby="twin-skills-title">
           <div className="panel-header"><div><span className="eyebrow">All canonical skills</span><h2 id="twin-skills-title">Skill evidence matrix</h2></div><StatusPill tone="accent">{twin.catalogCoverage.measuredSkillCount} measured</StatusPill></div>
-          <p className="twin-panel-intro">Measured results are the latest trusted quiz outcome. “Not Assessed” means no numerical claim has been made.</p>
-          <div className="twin-skill-groups">{(["Foundation", "Core", "Applied"] as const).map(group => <section key={group}><h3>{group}</h3><div className="twin-skill-grid">{twin.skills.filter(skill => skillById[skill.skillId]?.group === group).map(skill => <button type="button" className={`twin-skill-card ${selectedSkill?.skillId === skill.skillId && selectedTarget?.kind !== "tool" ? "selected" : ""}`} key={skill.skillId} onClick={() => selectSkill(skill.skillId)} aria-pressed={selectedSkill?.skillId === skill.skillId && selectedTarget?.kind !== "tool"}><span className="twin-skill-card-top"><strong>{skill.label}</strong><i className={skill.evidenceState} /></span><span className="twin-skill-score">{skill.score === null ? "Not Assessed" : `${skill.score}%`}</span><span className="twin-skill-card-bottom"><small>{skill.score === null ? stateLabels[skill.evidenceState] : skill.band}</small><ArrowRight aria-hidden="true"/></span></button>)}</div></section>)}</div>
+          <div className="sx-twin-controls"><label htmlFor="sx-skill-search">Find a skill<input id="sx-skill-search" type="search" value={skillQuery} placeholder="Search skills…" onChange={event=>setSkillQuery(event.target.value)}/></label><div className="sx-twin-filters" role="group" aria-label="Filter by skill evidence">{([["all","All"],["measured","Measured"],["available","Quiz available"],["unavailable","Not yet available"]] as const).map(([value,label])=><button type="button" key={value} aria-pressed={skillFilter===value} onClick={()=>setSkillFilter(value)}>{label}</button>)}</div></div>
+          <p className="twin-panel-intro">{visibleSkills.length} of {twin.skills.length} skills · Not assessed means no numerical score has been claimed.</p>
+          <div className="twin-skill-groups">{visibleSkills.length===0?<div className="sx-twin-empty">No skills match these filters. <button type="button" onClick={()=>{setSkillQuery("");setSkillFilter("all");}}>Show all skills</button></div>:null}{(["Foundation", "Core", "Applied"] as const).map(group => visibleSkills.some(skill=>skillById[skill.skillId]?.group===group)?<section key={group}><h3>{group}</h3><div className="twin-skill-grid">{visibleSkills.filter(skill => skillById[skill.skillId]?.group === group).map(skill => <button type="button" className={`twin-skill-card ${selectedSkill?.skillId === skill.skillId && selectedTarget?.kind !== "tool" ? "selected" : ""}`} key={skill.skillId} onClick={() => selectSkill(skill.skillId)} aria-pressed={selectedSkill?.skillId === skill.skillId && selectedTarget?.kind !== "tool"}><span className="twin-skill-card-top"><strong>{skill.label}</strong><i className={skill.evidenceState} /></span><span className="twin-skill-score">{skill.score === null ? "Not Assessed" : `${skill.score}%`}</span><span className="twin-skill-card-bottom"><small>{skill.score === null ? stateLabels[skill.evidenceState] : skill.band}</small><ArrowRight aria-hidden="true"/></span></button>)}</div></section>:null)}</div>
         </section>
 
         {learning.selectedToolIds.length ? <section className="panel twin-tool-focus" aria-labelledby="twin-tool-focus-title"><div className="panel-header"><div><span className="eyebrow">Learning goals</span><h2 id="twin-tool-focus-title">Tool focus</h2></div><Wrench aria-hidden="true"/></div><p>Tools can guide resources but never create a standalone quiz score.</p><div>{learning.selectedToolIds.map(toolId => <button type="button" className={selectedTarget?.kind === "tool" && selectedTarget.id === toolId ? "selected" : ""} onClick={() => setSelectedTarget({ kind: "tool", id: toolId })} key={toolId}><Wrench aria-hidden="true"/><span><strong>{toolById[toolId].label}</strong><small>{toolById[toolId].canonicalSkillId ? "Maps to a canonical skill" : "Resource-only tool focus"}</small></span><ArrowRight aria-hidden="true"/></button>)}</div></section> : null}
