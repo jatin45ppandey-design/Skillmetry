@@ -109,7 +109,7 @@ export function AdminGuideEditor({role}:{role:Role}){
        <small>Revision {revision} · Published revision {current?.published_revision??0}</small>
        {lastUpdated?<small>Updated {lastUpdated}</small>:null}
      </div>
-     <div className="admin-history"><h3><History size={16}/> Recent changes</h3>
+     <div className="admin-history" hidden={!history.length}><h3><History size={16}/> Recent changes</h3>
        {history.length?history.map(item=><p key={item.revision}>
          <strong>v{item.revision}</strong> {item.action} · {new Date(item.created_at).toLocaleString()}
        </p>):<p>No saved versions for this skill yet.</p>}
@@ -154,18 +154,18 @@ export function AdminGuideEditor({role}:{role:Role}){
            onChange={e=>setDraft(old=>({...old,challenge:e.target.value}))}/></label>
        </div>}
      </fieldset>
-     <div className="admin-editor-preview">
-       <span className="admin-eyebrow">STUDENT PREVIEW · NOT YET PUBLISHED</span>
+     <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
+       <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{skills.find(s=>s.id===selected)?.label}</h3>
        <p><strong>Docs:</strong> {draft.documentation.title}</p>
        <p><strong>Lecture:</strong> {draft.lecture.title}</p>
        <ul>{draft.notes.filter(Boolean).slice(0,4).map(note=><li key={note}>{note}</li>)}</ul>
        <p><strong>Try this:</strong> {draft.challenge}</p>
-     </div>
+     </div></details>
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
      <div className="admin-editor-actions">
-       <span>{changed?"Unsaved changes":"All edits saved or original content"} · {valid?"Ready for review":"Complete required fields"}</span>
+       <span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid?"Ready for review":"Complete required fields"}</span>
        <button className="btn btn-outline" type="button" disabled={loading||Boolean(saving)||role==="reviewer"||!valid}
          onClick={()=>void save(false)}><Save size={17}/>{saving==="draft"?"Saving…":"Save draft"}</button>
        <button className="btn btn-primary" type="button" disabled={!publishReady}
