@@ -3,6 +3,7 @@ import { ArrowDownRight, ArrowRight, ArrowUpRight, BookOpenText, Compass, Finger
 import { Brand } from "@/components/brand";
 import { CareerChapterGallery } from "@/components/career-chapter-gallery";
 import { LandingJourneyPreview } from "@/components/landing-journey-preview";
+import {LandingScrollMotion} from "@/components/landing-scroll-motion";
 import "./chapter-landing.css";
 
 const chapters = [
@@ -13,7 +14,7 @@ const chapters = [
 
 export default function Home() {
   return (
-    <main className="lc-site">
+    <main className="lc-site"><LandingScrollMotion/>
       <a href="#main-content" className="lc-skip">Skip to content</a>
       <div className="lc-frame">
         <header className="lc-header">
@@ -45,7 +46,7 @@ export default function Home() {
             <LandingJourneyPreview/>
           </section>
 
-          <section id="explore" className="lc-discovery" aria-labelledby="lc-discovery-title">
+          <section id="explore" data-reveal className="lc-discovery" aria-labelledby="lc-discovery-title">
             <div className="lc-section-intro">
               <div>
                 <span className="lc-eyebrow">CHAPTER 01 / DISCOVER</span>
@@ -56,7 +57,7 @@ export default function Home() {
             <CareerChapterGallery />
           </section>
 
-          <section id="chapters" className="lc-chapter-section" aria-labelledby="lc-chapters-title">
+          <section id="chapters" data-reveal className="lc-chapter-section" aria-labelledby="lc-chapters-title">
             <div className="lc-chapter-heading"><span className="lc-eyebrow">A PATH, NOT A PILE OF DASHBOARDS</span><h2 id="lc-chapters-title">One clear step.<br /><em>Then the next.</em></h2></div>
             <div className="lc-chapter-stack">
               {chapters.map(({chapter,label,title,copy,icon:Icon,tone,href,action}) => (
@@ -70,7 +71,7 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="sx-home-example" aria-label="Example learner journey">
+          <section data-reveal className="sx-home-example" aria-label="Example learner journey">
             <div className="sx-home-example-copy">
               <span className="lc-eyebrow">THIS IS WHAT YOU WILL ACTUALLY DO</span>
               <h2>Less guessing.<br /><em>More doing.</em></h2>
@@ -86,13 +87,13 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="why" className="lc-statement" aria-labelledby="lc-statement-title">
+          <section id="why" data-reveal className="lc-statement" aria-labelledby="lc-statement-title">
             <div className="lc-statement-mark"><BookOpenText size={27} aria-hidden="true" /><span>OUR POINT OF VIEW / 001</span></div>
             <h2 id="lc-statement-title">Not assessed <span>doesn&apos;t mean</span> not skilled.</h2>
             <div className="lc-statement-bottom"><p>Skillmetry separates missing evidence from measured results. Your next move is explained through your selected goals, supported assessments and real skill prerequisites—not imaginary placement probabilities.</p><Link href="/twin">Explore the Skill Twin <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
           </section>
 
-          <section className="lc-end" aria-labelledby="lc-end-title">
+          <section data-reveal className="lc-end" aria-labelledby="lc-end-title">
             <span className="lc-eyebrow">YOUR STORY ISN&apos;T PREWRITTEN</span>
             <h2 id="lc-end-title">Your next move <em>starts here.</em></h2>
             <Link href="/onboarding" className="lc-split-cta"><span>Find my starting point</span><span className="lc-cta-orbit"><ArrowUpRight size={21} aria-hidden="true" /></span></Link>
