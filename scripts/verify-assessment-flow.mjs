@@ -185,7 +185,11 @@ async function run() {
     const practice = await alice.expectStatus("/api/learning/lab",{method:"GET"},200);
     const exercise = practice.exercises.find(item=>item.kind==="choice");
     assert(Boolean(exercise), "No guided practice exercise available.");
+    const noOriginPractice=await alice.request("/api/learning/lab",{method:"POST",
+      body:JSON.stringify({exerciseId:exercise.id,selectedIndex:0})});
+    assert(noOriginPractice.response.status===403,"Authenticated practice write must reject a missing Origin header.");
     const graded = await alice.expectStatus("/api/learning/lab",{method:"POST",
+      headers:{origin:appUrl},
       body:JSON.stringify({exerciseId:exercise.id,selectedIndex:0})},200);
     assert(graded.persisted === true && typeof graded.correct === "boolean",
       "Server-graded practice attempt was not saved.");
