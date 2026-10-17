@@ -113,7 +113,7 @@ export default function Lab(){
                   choose(visible[(index+1)%visible.length]?.id??current.id);
                 }}>Try next challenge →</button>
                 <Link href={"/resources?skill="+encodeURIComponent(current.skillId)} className="btn btn-quiet">Study this topic</Link>
-                <Link href="/assessments" className="btn btn-quiet">Find a verified assessment</Link>
+                <Link href={matchingAssessment?"/assessments?assessment="+encodeURIComponent(matchingAssessment.id):"/assessments"} className="btn btn-quiet">{matchingAssessment?"Assess this skill":"Browse verified assessments"}</Link>
               </div>
             </div>}
         </>:<p>Select a challenge to get started.</p>}
