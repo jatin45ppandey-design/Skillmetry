@@ -42,3 +42,12 @@ button:disabled .motion-spin{opacity:.9}
 .auth-form .motion-status,.auth-confirmation .motion-status{margin:6px 0}
 .auth-form .auth-submit[aria-busy="true"]{cursor:wait}
 .auth-social-btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+
+/* Subtle entrance on genuine state/step change, not simulated wait times. */
+.lc-hero-copy{animation:skillmetry-motion-enter .38s ease-out both}
+.lc-hero-art{animation:skillmetry-motion-enter .48s ease-out both}
+.v3-learning-detail{animation:skillmetry-motion-enter .21s ease-out}
+.career-selection-summary.motion-stage,.scenario-result.motion-stage{animation:skillmetry-motion-enter .24s ease-out}
+.twin-detail-panel,.skill-detail-panel{animation:skillmetry-motion-enter .23s ease-out}
+.motion-root-loading,.auth-shell:has(.motion-skeleton){color:#325a41}
+@media(prefers-reduced-motion:reduce){.lc-hero-copy,.lc-hero-art,.v3-learning-detail,.career-selection-summary.motion-stage,.scenario-result.motion-stage,.twin-detail-panel,.skill-detail-panel{animation:none!important}}

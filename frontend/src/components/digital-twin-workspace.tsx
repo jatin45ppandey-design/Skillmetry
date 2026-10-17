@@ -16,6 +16,7 @@ import {
   Wrench
 } from "lucide-react";
 import { StatusPill } from "@/components/workspace-ui";
+import {ActivityIndicator} from "@/components/motion-ui";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { toolById } from "@skillmetry/shared/data/learning-catalog";
 import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
@@ -220,6 +221,7 @@ export function DigitalTwinWorkspace() {
   }
 
   return <>
+    {status==="loading" && !illustrative ? <ActivityIndicator compact label="Loading trustworthy quiz history…" detail="Missing data is not treated as a zero score."/> : null}
     <section className="twin-context-strip" role={status === "error" || status === "offline" ? "alert" : "status"}>
       <Info aria-hidden="true"/>
       <p>{illustrative ? "Illustrative demo results are kept separate from signed-in student records." : status === "loading" ? "Loading server-graded assessment history. Unknown skills are not estimated while it loads." : status === "error" || status === "offline" ? message ?? "Assessment history is currently unavailable. No score is estimated." : "Scores reflect the latest completed server-graded quiz. They are not professional readiness or mastery claims."}</p>

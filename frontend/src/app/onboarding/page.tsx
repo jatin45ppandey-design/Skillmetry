@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { ActivityIndicator, ActionSpinner } from "@/components/motion-ui";
 import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Info, SlidersHorizontal } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LearningGoalEditor } from "@/components/learning-goal-editor";
@@ -23,6 +24,7 @@ export default function Onboarding() {
   const { user, syncStatus } = useAuth();
   const { name, preferences, completeOnboarding, careerId, onboardingCompleted } = useSkillmetry();
   const [step, setStep] = useState(1);
+  const [navigating, startTransition] = useTransition();
   const [localName, setLocalName] = useState(name === "Demo Student" ? "" : name);
   const [intent, setIntent] = useState<Intent>("career");
   const [learning, setLearning] = useState<LearningPreferences>(
@@ -44,10 +46,12 @@ export default function Onboarding() {
     const finalLearning = intent === "explore"
       ? { ...learning, primaryCareerId: null }
       : learning;
-    completeOnboarding(localName.trim(), finalLearning.primaryCareerId ?? careerId, {
-      ...preferences, hoursPerWeek: hours, learning: finalLearning
+    startTransition(()=>{
+      completeOnboarding(localName.trim(), finalLearning.primaryCareerId ?? careerId, {
+        ...preferences, hoursPerWeek: hours, learning: finalLearning
+      });
+      router.push("/dashboard");
     });
-    router.push("/dashboard");
   }
 
   return <main className="onboarding-shell sx-onboarding">
@@ -69,7 +73,7 @@ export default function Onboarding() {
           : "You can explore locally. Sign in later to take a secure assessment."}</p></div>
       </aside>
       <section className="onboarding-card sx-onboarding-card" aria-live="polite">
-        {step === 1 ? <div>
+        {step === 1 ? <div className="motion-stage" key="step-one">
           <span className="step-kicker">STEP 1 OF 2</span>
           <h2>What brings you here?</h2>
           <p className="form-lead">There is no wrong starting point.</p>
@@ -94,7 +98,7 @@ export default function Onboarding() {
             type="button" disabled={!localName.trim()} onClick={() => setStep(2)}>
             Continue <ArrowRight aria-hidden="true"/></button></div>
         </div> : null}
-        {step === 2 ? <div>
+        {step === 2 ? <div className="motion-stage" key="step-two">
           <span className="step-kicker">STEP 2 OF 2</span>
           <h2>{intent === "career" ? "What would you like to become?" : intent === "skill" ?
             "What would you like to learn?" : "Explore at your own pace."}</h2>
@@ -133,11 +137,12 @@ export default function Onboarding() {
           <div className="form-actions">
             <button type="button" className="btn btn-quiet" onClick={()=>setStep(1)}>
               <ArrowLeft aria-hidden="true"/> Back</button>
-            <button type="button" className="btn btn-primary" disabled={!canFinish} onClick={finish}>
-              Take me to my learning home <ArrowRight aria-hidden="true"/>
+            <button type="button" className="btn btn-primary" disabled={!canFinish || navigating} onClick={finish} aria-busy={navigating}>
+              {navigating?<ActionSpinner label="Preparing your learning home…"/>:<>Take me to my learning home <ArrowRight aria-hidden="true"/></>}
             </button>
           </div>
         </div> : null}
+        {navigating?<div className="motion-action-status"><ActivityIndicator compact label="Opening your personal learning journey…"/></div>:null}
       </section>
     </div>
   </main>;

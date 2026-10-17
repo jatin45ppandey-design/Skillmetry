@@ -1,5 +1,5 @@
 "use client";
-import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
+import {ActivityIndicator,ActionSpinner} from "@/components/motion-ui";
 import {useEffect,useState,type FormEvent} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
@@ -105,7 +105,7 @@ export default function Jobs(){
     </div>)}
     {!saved.length?<p className="note">No saved role summaries yet.</p>:null}
     {storageBusy?<ActivityIndicator compact label="Updating your saved role summary…"/>:null}
-    {storageNote?<ActionSuccess>{storageNote}</ActionSuccess>:null}
+    {storageNote?<p className="note" role="status">{storageNote}</p>:null}
   </section>:null}
  </>;
 }
