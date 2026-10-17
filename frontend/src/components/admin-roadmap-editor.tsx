@@ -11,7 +11,7 @@ function currentPayload(id:string,rows:EditorialRoadmapRow[]){
  return row?.draft??row?.published??defaultEditorialRoadmap(id);
 }
 export function AdminRoadmapEditor({role}:{role:Role}){
- const [careerId,setCareerId]=useState(careers[0].id);
+ const [careerId,setCareerId]=useState<string>(careers[0].id);
  const [rows,setRows]=useState<EditorialRoadmapRow[]>([]);
  const [draft,setDraft]=useState<EditorialRoadmapPayload>(()=>defaultEditorialRoadmap(careers[0].id));
  const [loading,setLoading]=useState(true);
