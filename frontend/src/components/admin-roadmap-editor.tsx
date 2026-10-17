@@ -98,10 +98,10 @@ export function AdminRoadmapEditor({role,onDirtyChange}:{role:Role;onDirtyChange
        <small>Revision {revision} · Published {stored?.published_revision??0}</small>
        <small>Skill weights, quiz scores and prerequisite graph stay unchanged.</small>
      </div>
-     <div className="admin-history" hidden={!history.length}><h3><History size={16}/> Roadmap history</h3>
+     <details className="admin-history" hidden={!history.length}><summary>Revision history · {history.length} entries</summary><h3><History size={16}/> Roadmap history</h3>
        {history.map(x=><p key={x.revision}>v{x.revision} · {x.action} · {new Date(x.created_at).toLocaleString()}</p>)}
        {!history.length?<p>No published or saved roadmap versions yet.</p>:null}
-     </div>
+     </details>
    </aside>
    <section className="admin-editor-main">
      <div className="admin-editor-heading"><span className="admin-eyebrow">CAREER / STUDY SEQUENCE</span>
@@ -133,6 +133,7 @@ export function AdminRoadmapEditor({role,onDirtyChange}:{role:Role;onDirtyChange
          </article>)}
        </div>
      </fieldset>
+     <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(stored?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
        <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(stored?.published)?"A published version also exists":"Not yet published"}</span>
        <h3>{draft.headline}</h3><p>{draft.introduction}</p>
@@ -142,7 +143,7 @@ export function AdminRoadmapEditor({role,onDirtyChange}:{role:Role;onDirtyChange
        {valid.error.issues[0]?.message??"Please check the roadmap structure."}</p>:null}
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
-     <div className="admin-editor-actions"><span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid.success?"Sequence valid":"Fix prerequisite order"}</span>
+     <div id="admin-save-actions" className="admin-editor-actions"><span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid.success?"Sequence valid":"Fix prerequisite order"}</span>
        <button type="button" className="btn btn-outline" disabled={loading||!!saving||role==="reviewer"||!valid.success}
          onClick={()=>void save(false)}><Save size={16}/>{saving==="save"?"Saving…":"Save draft"}</button>
        <button type="button" className="btn btn-primary" disabled={loading||!!saving||role!=="owner"||!valid.success}
