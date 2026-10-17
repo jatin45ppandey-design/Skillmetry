@@ -103,6 +103,7 @@ export default function Missions(){
     {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
     {pending?<div className="motion-action-status"><ActivityIndicator compact label="Saving your private project submission…" detail="Submitted projects remain learner-reported, not verified proficiency."/></div>:null}
     <div className="sx-mission-toolbar"><strong>{roleMissions.length+publishedMissions.filter(m=>m.roleId===careerId&&!roleMissions.some(existing=>existing.id===m.id)).length} curated projects</strong><label><input type="checkbox" checked={showPriorityOnly} onChange={event=>setShowPriorityOnly(event.target.checked)}/> Show roadmap priorities only</label></div>
+    {showPriorityOnly&&!roleMissions.some(m=>priority.has(m.skillId))&&!publishedMissions.some(m=>m.roleId===careerId&&priority.has(m.skillId))?<p className="workflow-notice" role="status">No roadmap-priority projects for this career yet. Turn off the filter to view all missions.</p>:null}
     <div className="mission-grid sx-missions-grid">
       {[...roleMissions,...publishedMissions.filter(m=>m.roleId===careerId&&
         !roleMissions.some(existing=>existing.id===m.id))].filter(m=>!showPriorityOnly||priority.has(m.skillId)).map((mission,index)=>{
