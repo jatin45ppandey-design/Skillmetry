@@ -337,6 +337,66 @@ async function run() {
     }
 
 
+    if(process.env.SKILLMETRY_ADMIN_QUESTION_BANKS_ENABLED==="true"){
+      const questions=Array.from({length:10},(_,i)=>({
+        id:"aq-e2e-"+String(i+1).padStart(3,"0"),
+        prompt:"Which option is correct for the original HTML question "+(i+1)+"?",
+        choices:["Correct original answer","Other answer A","Other answer B","Other answer C"],
+        correctIndex:0,
+        explanation:"The original correct answer is option one for this testing scenario."
+      }));
+      const authored={assessmentId:"html-foundations",expectedRevision:0,
+        draft:{questions},publish:false};
+      const studentPrivate=await bob.request("/api/admin/assessments",{method:"GET"});
+      assert(studentPrivate.response.status===403,
+        "Student accessed private question authoring and answer keys.");
+      const saved=await alice.expectStatus("/api/admin/assessments",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify(authored)},200);
+      assert(saved.result.revision===1,"Owner cannot create private assessment draft.");
+      const privateList=await alice.expectStatus("/api/admin/assessments",{method:"GET"},200);
+      assert(privateList.banks.some(item=>item.assessment_id==="html-foundations"),
+        "Owner could not access private saved draft.");
+      const published=await alice.expectStatus("/api/admin/assessments",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify({...authored,expectedRevision:1,publish:true})},200);
+      assert(published.result.publishedVersion==="cms.2","Owner could not publish immutable bank version.");
+      const questionHistory=await alice.expectStatus(
+        "/api/admin/assessments/history?assessmentId=html-foundations",{method:"GET"},200);
+      assert(questionHistory.history.length===2,"Question bank publication audit is missing.");
+      const started=await bob.expectStatus("/api/assessments/start",{method:"POST",
+        body:JSON.stringify({assessmentId:"html-foundations"})},200);
+      assert(started.session?.assessmentVersion==="cms.2",
+        "Student did not receive published assessment version.");
+      assert(started.session.questions.length===10,"Published quiz count changed.");
+      assert(started.session.questions.every(q=>q.correctIndex===undefined&&q.explanation===undefined),
+        "Correct answer or explanation leaked before grading.");
+      const nextQuestions=questions.map((q,i)=>({...q,correctIndex:i===0?1:0}));
+      const nextPublish=await alice.expectStatus("/api/admin/assessments",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify({
+          assessmentId:"html-foundations",expectedRevision:2,publish:true,
+          draft:{questions:nextQuestions}
+        })},200);
+      assert(nextPublish.result.publishedVersion==="cms.3","Second version was not immutable.");
+      const answers=Object.fromEntries(started.session.questions.map(q=>[q.id,0]));
+      const finished=await bob.expectStatus("/api/assessments/submit",{method:"POST",
+        body:JSON.stringify({sessionId:started.session.sessionId,answers})},200);
+      assert(finished.attempt?.assessmentVersion==="cms.2"&&finished.attempt.score===100,
+        "Existing student session was regraded with a newer published answer key.");
+      const snapshots=await admin.from("admin_assessment_versions")
+        .select("version,snapshot").eq("assessment_id","html-foundations")
+        .order("version",{ascending:true});
+      assert(!snapshots.error&&snapshots.data.length===2,
+        "Immutable assessment version history was not retained.");
+      assert(snapshots.data[0].snapshot.questions[0].correctIndex===0 &&
+             snapshots.data[1].snapshot.questions[0].correctIndex===1,
+        "Earlier correct-answer snapshot was overwritten.");
+      const stale=await alice.request("/api/admin/assessments",{method:"PUT",
+        headers:{origin:appUrl},body:JSON.stringify({...authored,expectedRevision:1})});
+      assert(stale.response.status===409,"Concurrent stale bank edit bypassed revision conflict.");
+      const publicLeaks=await bob.request("/api/admin/assessments/history?assessmentId=html-foundations",
+        {method:"GET"});
+      assert(publicLeaks.response.status===403,"Student accessed private bank audit metadata.");
+    }
+
 
   }
 
