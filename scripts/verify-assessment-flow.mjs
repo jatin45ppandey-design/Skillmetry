@@ -202,6 +202,39 @@ async function run() {
       "Student B could see student A's project draft.");
   }
 
+  if(process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED==="true"){
+    const {error:membershipError}=await admin.from("admin_members")
+      .insert({user_id:testUserIds[0],role:"owner"});
+    assert(!membershipError, "Disposable test owner could not be provisioned.");
+    const denied=await bob.request("/api/admin/guides",{method:"GET"});
+    assert(denied.response.status===403,"An ordinary student reached private Admin Studio data.");
+    const listed=await alice.expectStatus("/api/admin/guides",{method:"GET"},200);
+    assert(listed.role==="owner","Server did not verify an actual owner membership.");
+    const guide={documentation:{title:"JavaScript testing guide",url:"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"},
+      lecture:{title:"JavaScript lessons video",url:"https://www.youtube.com/watch?v=Zi-Q0t4gMC8",format:"video"},
+      notes:["Scope controls which variables you can access.","Closures retain surrounding lexical bindings.","Promises represent future asynchronous work."],
+      challenge:"Make a searchable list of tasks using vanilla JavaScript."};
+    const mutation={method:"PUT",headers:{origin:appUrl},
+      body:JSON.stringify({skillId:"javascript",expectedRevision:0,draft:guide,publish:false})};
+    const blocked=await bob.request("/api/admin/guides",mutation);
+    assert(blocked.response.status===403,"Student B could modify editorial drafts.");
+    const saved=await alice.expectStatus("/api/admin/guides",mutation,200);
+    assert(saved.result.revision===1,"Admin draft was not saved as revision one.");
+    const unpublished=await alice.expectStatus("/api/content/skill-guides?skill=javascript",{method:"GET"},200);
+    assert(unpublished.guide===null,"Private draft became publicly accessible.");
+    const published=await alice.expectStatus("/api/admin/guides",{method:"PUT",
+      headers:{origin:appUrl},body:JSON.stringify({skillId:"javascript",
+        expectedRevision:1,draft:guide,publish:true})},200);
+    assert(published.result.publishedRevision===2,"Owner could not publish guide version two.");
+    const publicGuide=await bob.expectStatus("/api/content/skill-guides?skill=javascript",{method:"GET"},200);
+    assert(publicGuide.guide?.documentation?.title===guide.documentation.title,
+      "Published guide did not reach the student content API.");
+    const outdated=await alice.request("/api/admin/guides",mutation);
+    assert(outdated.response.status===409,"A stale editor unexpectedly overwrote the current draft.");
+    const history=await alice.expectStatus("/api/admin/guides/history?skill=javascript",{method:"GET"},200);
+    assert(history.history?.length===2,"A guide revision was not audit logged.");
+  }
+
   const description="We need a frontend developer with React, TypeScript, JavaScript, CSS, HTML, REST API integration and unit testing experience.";
   const job = await alice.expectStatus("/api/jobs/analyze",{method:"POST",
     body:JSON.stringify({description})},200);

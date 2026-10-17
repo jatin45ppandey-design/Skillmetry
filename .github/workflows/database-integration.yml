@@ -8,6 +8,8 @@ on:
       - "scripts/verify-assessment-flow.mjs"
       - "scripts/run-local-auth-e2e.sh"
       - "frontend/src/app/api/**"
+      - "frontend/src/app/passport/share/**"
+      - "frontend/src/components/focused-learning-hub.tsx"
       - "backend/lib/supabase/**"
       - ".github/workflows/database-integration.yml"
   workflow_dispatch:
