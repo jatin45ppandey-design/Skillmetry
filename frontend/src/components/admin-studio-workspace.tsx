@@ -32,10 +32,22 @@ export function AdminStudioWorkspace({role}:{role:Role}){
      <button type="button" aria-pressed={mode==="assessments"} onClick={()=>changeMode("assessments")}>
        <BookOpenCheck size={18}/> Assessment Bank</button>
    </nav>
+   <div className="admin-mobile-module-select">
+     <label htmlFor="admin-active-module">Manage content</label>
+     <select id="admin-active-module" value={mode} onChange={event=>changeMode(event.target.value as typeof mode)}>
+       <option value="guides">Docs, Lectures & Notes</option>
+       <option value="roadmaps">Career Roadmaps</option>
+       <option value="courses">Courses & Lessons</option>
+       <option value="missions">Missions & Projects</option>
+       <option value="assessments">Assessment Bank</option>
+     </select>
+   </div>
+   <div className="admin-active-module">
    {mode==="guides"?<AdminGuideEditor role={role}/>:
      mode==="roadmaps"?<AdminRoadmapEditor role={role}/>:
      mode==="courses"?<AdminCourseEditor role={role}/>:
      mode==="missions"?<AdminMissionEditor role={role} onDirtyChange={setMissionDirty}/>:
      <AdminAssessmentEditor role={role} onDirtyChange={setAssessmentDirty}/>}
+   </div>
  </section>;
 }
