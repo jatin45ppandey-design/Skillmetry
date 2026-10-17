@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Circle } from "lucide-react";
+import {useState} from "react";
 import { careers, skills } from "@skillmetry/shared/data/catalog";
 import { learningTools } from "@skillmetry/shared/data/learning-catalog";
 import type { CareerId, LearningPreferences, SkillId, ToolId } from "@skillmetry/shared/types/domain";
@@ -16,6 +17,8 @@ function toggle<T>(values: T[], value: T): T[] {
 }
 
 export function LearningGoalEditor({ value, onChange, compact = false }: LearningGoalEditorProps) {
+  const [search,setSearch]=useState("");
+  const visibleSkills=skills.filter(item=>(item.label+" "+item.group).toLowerCase().includes(search.trim().toLowerCase()));
   function setCareer(primaryCareerId: CareerId | null) {
     onChange({ ...value, primaryCareerId });
   }
@@ -43,12 +46,16 @@ export function LearningGoalEditor({ value, onChange, compact = false }: Learnin
 
     <section className="learning-goal-group" aria-labelledby="individual-skills-label">
       <div className="learning-goal-heading"><div><span className="eyebrow">Build your focus</span><h3 id="individual-skills-label">Individual skills</h3></div><span className="selection-count">{value.selectedSkillIds.length}/18 selected</span></div>
+      <label className="sx-goal-search">Find a skill
+        <input type="search" placeholder="Search Python, SQL, JavaScript…" value={search} onChange={event=>setSearch(event.target.value)}/>
+      </label>
       <div className="learning-skill-grid">
-        {skills.map(skill => {
+        {visibleSkills.map(skill => {
           const selected = value.selectedSkillIds.includes(skill.id);
           return <button type="button" key={skill.id} className={`learning-choice skill ${selected ? "selected" : ""}`} aria-pressed={selected} onClick={() => setSkill(skill.id)}><span>{skill.label}</span><small>{skill.group}</small></button>;
         })}
       </div>
+      {visibleSkills.length===0?<p className="sx-goal-empty" role="status">No skills match. Try a different search.</p>:null}
     </section>
 
     <section className="learning-goal-group" aria-labelledby="tools-label">
