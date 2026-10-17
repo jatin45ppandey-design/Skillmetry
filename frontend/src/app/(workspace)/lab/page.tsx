@@ -3,6 +3,7 @@ import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
 import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
+import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
 
 type Exercise={id:string;skillId:string;title:string;kind:"choice"|"fill";prompt:string;snippet:string;
  difficulty:string;choices?:readonly string[]};
