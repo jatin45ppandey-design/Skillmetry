@@ -8,7 +8,7 @@ describe("Product roadmap staged source contracts",()=>{
    const course=read("frontend/src/app/(workspace)/courses/page.tsx");
    expect(course).toContain("saved activity");
    expect(course).toContain("Mark lesson studied");
-   expect(course).toContain("Practice the concepts");
+   expect(course).toContain("Practice this skill");
    expect(course).toContain("/assessments?assessment=");
    expect(course).toContain("Lesson completion tracking is staged");
    expect(course).toContain("do not automatically change verified quiz scores");
