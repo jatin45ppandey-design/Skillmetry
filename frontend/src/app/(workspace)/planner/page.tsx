@@ -1,3 +1,4 @@
+import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
 "use client";
 import {useCallback,useEffect,useMemo,useState} from "react";
 import Link from "next/link";
@@ -68,9 +69,10 @@ export default function Planner() {
     <section className="panel workflow-panel">
       <div className="workflow-top"><div><span className="eyebrow">WEEK OF {week}</span><h2>Focused learning plan</h2>
         <p className="note">{persisted?"Your private saved tasks":"Generated draft from your current learning preferences"} · {preferences.hoursPerWeek} study hours/week</p></div>
-        {persisted?<button type="button" className="btn btn-primary" disabled={pending!==null||loading} onClick={()=>void request("POST")}>Generate / fill this week</button>:<Link href="/settings" className="btn btn-outline">Adjust goals</Link>}
+        {persisted?<button type="button" className="btn btn-primary" disabled={pending!==null||loading} onClick={()=>void request("POST")}>{pending==="generate"?<ActionSpinner label="Building your week…"/>:"Generate / fill this week"}</button>:<Link href="/settings" className="btn btn-outline">Adjust goals</Link>}
       </div>
-      {loading?<p role="status">Loading saved plan…</p>:null}
+      {loading?<div className="motion-action-status"><ActivityIndicator label="Loading your saved weekly plan…" compact/></div>:null}
+      {pending?<div className="motion-action-status"><ActivityIndicator compact label={pending==="generate"?"Building your plan…":"Saving study task…"} detail="Changes are confirmed only after the server responds."/></div>:null}
       {error?<p className="auth-error" role="alert">{error}</p>:null}
       <p className="note">{completed} completed of {focus.length} active tasks. Progress is self-reported learning activity.</p>
       {!visible.length?<p>Choose a career or skill focus in settings to receive a suggested learning plan.</p>:null}

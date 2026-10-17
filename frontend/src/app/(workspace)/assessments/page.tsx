@@ -1,3 +1,4 @@
+import {ActivityIndicator,ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
 "use client";
 
 import Link from "next/link";
@@ -174,6 +175,7 @@ function AssessmentExperience() {
       </div>
     </dialog>
     <SectionTitle eyebrow="Skill assessments" title="Measure what you know" description="Authenticated quizzes are graded on the server. The latest completed result becomes the current score while every prior attempt remains in your history."/>
+    {pending?<div className="motion-action-status"><ActivityIndicator secure compact label={pending==="start"?"Creating secure quiz session…":"Grading and saving your answers…"} detail="Please wait for the server. Quiz scores are never guessed."/></div>:null}
     <section className="assessment-warning"><ShieldCheck aria-hidden="true"/><div><strong>{illustrative ? "Illustrative demo history" : "Server-authoritative scoring"}</strong><p>{illustrative ? "These sample results demonstrate the experience and are not connected to you. Sign in to create trusted results." : "Answer keys never reach the browser. Students can read results but cannot create or edit grades directly."}</p></div>{!user ? <Link className="btn btn-primary" href="/auth/sign-in?next=/assessments"><LockKeyhole aria-hidden="true"/>Sign in to assess</Link> : null}</section>
 
     <div className="assessment-layout">
@@ -258,5 +260,5 @@ function AssessmentExperience() {
 }
 
 export default function Assessments() {
-  return <Suspense fallback={<p className="assessment-warning" role="status">Loading assessments.</p>}><AssessmentExperience/></Suspense>;
+  return <Suspense fallback={<ContentSkeleton kind="cards" label="Preparing secure assessments"/>}><AssessmentExperience/></Suspense>;
 }

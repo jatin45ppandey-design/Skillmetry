@@ -1,3 +1,4 @@
+import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 "use client";
 import {useEffect,useState} from "react";
 import Link from "next/link";
@@ -101,7 +102,7 @@ export default function Passport(){
        onChange={e=>setConsent(e.target.checked)} disabled={pending}/>
        I agree to publish my display name, career and selected results to anyone holding the link for up to seven days.</span></label>
      <button type="button" className="btn btn-primary" disabled={pending||!consent||!chosen.length}
-       onClick={()=>void create()}>{pending?"Saving…":"Create expiring share link"}</button>
+       onClick={()=>void create()}>{pending?<ActionSpinner label="Creating private share link…"/>:"Create expiring share link"}</button>
      {url?<div className="workflow-field"><label>One-time share URL<input className="workflow-input" readOnly value={url}/></label>
        <button type="button" className="btn btn-outline" onClick={()=>void navigator.clipboard.writeText(url)}>Copy URL</button></div>:null}
      <h3>Existing links</h3>
@@ -110,11 +111,12 @@ export default function Passport(){
        <strong>{link.revoked_at?"Revoked":Date.parse(link.expires_at)<=Date.now()?"Expired":"Active"}</strong>
        {!link.revoked_at&&Date.parse(link.expires_at)>Date.now()?
          <button type="button" className="btn btn-outline" disabled={pending}
-           onClick={()=>void revoke(link.id)}>Revoke access</button>:null}</div>):
+           onClick={()=>void revoke(link.id)}>{pending?<ActionSpinner label="Revoking access…"/>:"Revoke access"}</button>:null}</div>):
        <p className="note">No share links created.</p>}
     </>}
    {error?<p role="alert" className="auth-error">{error}</p>:null}
-   {notice?<p role="status" className="note">{notice}</p>:null}
+   {pending?<ActivityIndicator compact label="Updating your consent-based Passport sharing…" detail="This operation is not complete until the server confirms."/ >:null}
+   {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
   </section>
  </>;
 }

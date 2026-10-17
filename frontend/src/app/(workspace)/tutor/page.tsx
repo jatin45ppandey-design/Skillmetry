@@ -1,3 +1,4 @@
+import {ActivityIndicator,ActionSpinner} from "@/components/motion-ui";
 "use client";
 import {Suspense,useEffect,useState,type FormEvent} from "react";
 import {useSearchParams} from "next/navigation";
@@ -39,12 +40,12 @@ function TutorContent(){
       onChange={e=>setConsent(e.target.checked)}/> Send this question and selected skill to the external AI provider</span></label>
     <p className="note">When unchecked, Skillmetry gives curated guidance only. No student profile, scores, email or full chat history is sent. Provider access may not be enabled.</p>
     <button type="submit" className="btn btn-primary" disabled={pending||question.trim().length<8}>
-      {pending?"Preparing guidance…":consent?"Ask AI tutor":"Show curated guidance"}</button>
+      {pending?<ActionSpinner label="Preparing guidance…"/>:consent?"Ask AI tutor":"Show curated guidance"}</button>
     {error?<p className="auth-error" role="alert">{error}</p>:null}
    </form>
    <section className="panel" aria-live="polite">
     <h2>Your study guidance</h2>
-    {!answer?<p>Select a topic and ask a question. Start with curated guidance if AI is not configured.</p>:
+    {pending?<ActivityIndicator compact label={consent?"Preparing your consented tutor response…":"Finding curated learning guidance…"} detail="No study results are changed by tutor answers."/>:!answer?<p>Select a topic and ask a question. Start with curated guidance if AI is not configured.</p>:
      <><p><strong>{answer.mode==="ai"?"AI-generated explanation":"Curated learning pathway"}</strong></p>
       <p className="workflow-answer">{answer.answer}</p>
       <h3>Reviewed learning resources</h3>
@@ -56,4 +57,4 @@ function TutorContent(){
  </>;
 }
 
-export default function Tutor(){return <Suspense fallback={<p role="status">Loading learning guidance…</p>}><TutorContent/></Suspense>;}
+export default function Tutor(){return <Suspense fallback={<ActivityIndicator compact label="Loading learning guidance…"/>}><TutorContent/></Suspense>;}

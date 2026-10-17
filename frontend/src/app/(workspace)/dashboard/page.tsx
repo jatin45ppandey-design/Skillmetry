@@ -1,3 +1,4 @@
+import {ActivityIndicator} from "@/components/motion-ui";
 "use client";
 
 import Link from "next/link";
@@ -59,6 +60,7 @@ export default function Dashboard() {
       <Link href="/auth/sign-in?next=/dashboard">Sign in for your own verified results <ArrowRight size={16}/></Link>
     </div> : null}
 
+    {loading?<div className="motion-action-status"><ActivityIndicator compact label="Loading your trusted assessment history…" detail="Your next action will be based on verified evidence."/></div>:null}
     <section className="sx-next-step" aria-labelledby="sx-next-heading">
       <div className="sx-next-content">
         <span className="sx-eyebrow"><span className="sx-pulse-dot"/> YOUR NEXT USEFUL STEP</span>

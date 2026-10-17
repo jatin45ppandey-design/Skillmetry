@@ -1,3 +1,4 @@
+import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 "use client";
 import {useEffect,useState,type FormEvent} from "react";
 import Link from "next/link";
@@ -60,13 +61,14 @@ export default function Jobs(){
     </label>
     <p className="note">This text is processed for this request only and is not stored. Skill recognition uses curated phrases, not generative AI.</p>
     <button className="btn btn-primary" disabled={pending||description.trim().length<50} type="submit">
-      {pending?"Analyzing…":"Analyze requirements"}
+      {pending?<ActionSpinner label="Analyzing requirements…"/>:"Analyze requirements"}
     </button>
+    {pending?<ActivityIndicator compact label="Comparing requirements with your available quiz evidence…" detail="Recognized skills are not a hiring prediction."/>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
    </form>
    <section className="panel" aria-live="polite">
     <h2>Requirements and your next steps</h2>
-    {!result?<p>Paste a role description to map known technologies into assessments and learning resources.</p>:
+    {pending?<ActivityIndicator compact label="Preparing your skill comparison…"/>:!result?<p>Paste a role description to map known technologies into assessments and learning resources.</p>:
      <>
       <p className="note">{result.summary}</p>
       <p><strong>{result.matches}</strong> recognized skills · <strong>{result.unassessed}</strong> without a trusted quiz result</p>
@@ -102,7 +104,8 @@ export default function Jobs(){
       <button className="btn btn-outline" type="button" disabled={storageBusy} onClick={()=>void updateSaved("DELETE",item.id)}>Delete summary</button>
     </div>)}
     {!saved.length?<p className="note">No saved role summaries yet.</p>:null}
-    {storageNote?<p role="status" className="note">{storageNote}</p>:null}
+    {storageBusy?<ActivityIndicator compact label="Updating your saved role summary…"/>:null}
+    {storageNote?<ActionSuccess>{storageNote}</ActionSuccess>:null}
   </section>:null}
  </>;
 }

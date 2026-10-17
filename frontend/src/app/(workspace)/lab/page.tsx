@@ -1,3 +1,4 @@
+import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
 "use client";
 import {useCallback,useEffect,useState} from "react";
 import Link from "next/link";
@@ -55,13 +56,14 @@ export default function Lab(){
     {!saved?<p className="workflow-notice">Practice is available without cloud storage. Sign in after the approved workflow rollout to save your private practice history.</p>:null}
     {error?<div className="auth-error" role="alert"><p>{error}</p>
       <button type="button" className="btn btn-outline" onClick={()=>void load()}>Try loading again</button></div>:null}
-    {loading?<p role="status">Loading exercises…</p>:null}
+    {loading?<div className="motion-action-status"><ActivityIndicator label="Getting guided exercises ready…" compact/></div>:null}
     <div className="workflow-inline-actions"><label className="workflow-task-status">Filter exercises
       <select className="workflow-input" value={filter} onChange={event=>{const value=event.target.value;setFilter(value);
         setActive(exercises.find(x=>value==="all"||x.skillId===value)?.id??null);
         setFeedback(null);setChoice(null);setText("");}}>
         <option value="all">All skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{id}</option>)}
       </select></label><span className="note">{history.length} recent saved attempts (unscored)</span></div>
+    {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
     <div className="workflow-lab-grid">
       <section className="panel" aria-label="Challenge library"><h2>Challenge library</h2>
         {visible.map(exercise=><button className={"btn "+(active===exercise.id?"btn-primary":"btn-outline")}
@@ -84,7 +86,7 @@ export default function Lab(){
             </label>}
           {!feedback?<button type="button" className="btn btn-primary"
             disabled={pending||(current.kind==="choice"?choice===null:!text.trim())}
-            onClick={()=>void submit()}>{pending?"Checking…":"Check answer"}</button>:
+            onClick={()=>void submit()}>{pending?<ActionSpinner label="Checking answer…"/>:"Check answer"}</button>:
             <div className="workflow-field" role="status"><strong>{feedback.correct?"Correct!":"Review this concept"}</strong>
               <p>Expected answer: <code>{feedback.answer}</code></p><p>{feedback.explanation}</p>
               <p className="note">{feedback.trust}{feedback.persisted?" Your attempt was saved.":""}</p>

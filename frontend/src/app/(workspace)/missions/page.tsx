@@ -1,3 +1,4 @@
+import {ActivityIndicator,ActionSpinner,ActionSuccess} from "@/components/motion-ui";
 "use client";
 import Link from "next/link";
 import {useEffect,useState} from "react";
@@ -83,9 +84,10 @@ export default function Missions(){
       {user?"Private mission saving is staged until the approved database rollout.":"Sign in to save project progress after the workflow rollout."}
       {" "}The reviewed mission descriptions are available for preview.
     </p>:null}
-    {loading?<p role="status">Loading your mission progress…</p>:null}
+    {loading?<div className="motion-action-status"><ActivityIndicator compact label="Loading your saved project progress…"/></div>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
-    {notice?<p className="note" role="status">{notice}</p>:null}
+    {notice?<ActionSuccess>{notice}</ActionSuccess>:null}
+    {pending?<div className="motion-action-status"><ActivityIndicator compact label="Saving your private project submission…" detail="Submitted projects remain learner-reported, not verified proficiency."/></div>:null}
     <div className="mission-grid">
       {roleMissions.map((mission,index)=>{
         const item=work[mission.id]??draft(mission.id);
@@ -123,9 +125,9 @@ export default function Missions(){
             <div className="workflow-inline-actions">
               <button type="button" className="btn btn-outline" disabled={pending!==null}
                 onClick={()=>void save(mission.id,"in_progress")}>
-                {pending===mission.id?"Saving…":dirty.includes(mission.id)?"Save changes":"Save progress"}</button>
+                {pending===mission.id?<ActionSpinner label="Saving project…"/>:dirty.includes(mission.id)?"Save changes":"Save progress"}</button>
               <button type="button" className="btn btn-primary" disabled={pending!==null||!complete||!hasEvidence}
-                onClick={()=>void save(mission.id,"submitted")}>Submit evidence</button>
+                onClick={()=>void save(mission.id,"submitted")}>{pending===mission.id?<ActionSpinner label="Submitting evidence…"/>:"Submit evidence"}</button>
               {item.status==="submitted"||item.status==="self_completed"?<button className="btn btn-outline"
                 disabled={pending!==null} onClick={()=>void save(mission.id,"self_completed")}>Mark self-completed</button>:null}
             </div>
