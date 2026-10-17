@@ -59,7 +59,7 @@ describe("V3 meaningful content and compact workspace contracts",()=>{
    expect(account).toContain('cloudOwnerId===user.id');
    expect(account).toContain("No saved career setup yet");
    expect(account).toContain("Saved student profile");
-   expect(dashboard).toContain("onboardingCompleted && Boolean");
+   expect(dashboard).toContain("profileReady && Boolean");
    expect(dashboard).toContain("sx-latest-panel");
  });
  it("reduces oversized landing-style headings while retaining responsive controls",()=>{
