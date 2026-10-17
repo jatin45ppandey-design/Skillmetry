@@ -91,11 +91,14 @@ async function run() {
     displayName: "Assessment E2E Student",
     careerId: "frontend-developer",
     onboardingCompleted: true,
-    preferences: { hoursPerWeek: 6, roadmapView: "graph" }
+    preferences: { hoursPerWeek: 6, roadmapView: "graph", learning: { primaryCareerId: "frontend-developer", selectedSkillIds: [], selectedToolIds: [] } }
   };
   await alice.expectStatus("/api/profile", { method: "PUT", body: JSON.stringify(profileInput) }, 200);
   const storedProfile = await alice.expectStatus("/api/profile", { method: "GET" }, 200);
   assert(storedProfile.profile?.displayName === profileInput.displayName, "Profile did not persist through the API.");
+  assert(storedProfile.profile?.preferences?.learning?.primaryCareerId === "frontend-developer", "Onboarding goal did not persist.");
+  const nextAction = await alice.expectStatus("/api/learning/overview", {method: "GET"}, 200);
+  assert(nextAction.state === "ready" && nextAction.trustedEvidenceOnly === true, "Next action did not use the verified profile.");
 
   const startRequest = () => alice.expectStatus("/api/assessments/start", {
       method: "POST",
@@ -153,6 +156,82 @@ async function run() {
   assert(historyBeforeSignOut.attempts.length === 6, "Immediate retakes did not preserve all six completed attempts.");
   assert(historyBeforeSignOut.attempts[0].id === completedAttemptIds.at(-1), "The newest valid attempt was not current.");
   assert(historyBeforeSignOut.attempts.some(attempt => attempt.id === firstSubmission.attempt.id), "The earliest attempt was not preserved.");
+  if (process.env.SKILLMETRY_STREAKS_ENABLED === "true") {
+    const streak = await alice.expectStatus("/api/learning/streak?timeZone=Asia/Kolkata", {method: "GET"}, 200);
+    assert(streak.activeToday === true && streak.currentStreak >= 1, "Real graded attempts did not count toward today's streak.");
+    assert(streak.totalActiveDays === 1, "Multiple same-day assessments counted as multiple active days.");
+    assert(streak.last7Days.length === 7, "Streak calendar did not include seven local days.");
+    const otherStreak = await bob.expectStatus("/api/learning/streak?timeZone=Asia/Kolkata", {method: "GET"}, 200);
+    assert(otherStreak.totalActiveDays === 0 && otherStreak.currentStreak === 0, "Student B inherited student A's streak.");
+  }
+
+
+
+  // End-to-end saved learning workflows: a second account cannot see, modify
+  // or inherit authenticated learning or practice history.
+  if (process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED === "true") {
+    const plan = await alice.expectStatus("/api/learning/plan", { method:"POST",body:"{}" }, 200);
+    assert(plan.tasks?.length > 0, "Could not generate a real saved learning plan.");
+    const task = plan.tasks[0];
+    const updatedTask = await alice.expectStatus("/api/learning/plan", {method:"PATCH",
+      body:JSON.stringify({taskKey:task.taskKey,status:"completed"})}, 200);
+    assert(updatedTask.task?.status === "completed", "Saved study task progress did not persist.");
+    const bobPlan = await bob.expectStatus("/api/learning/plan",{method:"GET"},200);
+    assert(bobPlan.tasks.length === 0, "Student B could see student A's saved plan.");
+    const crossPlan = await bob.request("/api/learning/plan",{method:"PATCH",
+      body:JSON.stringify({taskKey:task.taskKey,status:"completed"})});
+    assert(crossPlan.response.status === 404, "Student B could update student A's study task.");
+
+    const practice = await alice.expectStatus("/api/learning/lab",{method:"GET"},200);
+    const exercise = practice.exercises.find(item=>item.kind==="choice");
+    assert(Boolean(exercise), "No guided practice exercise available.");
+    const graded = await alice.expectStatus("/api/learning/lab",{method:"POST",
+      body:JSON.stringify({exerciseId:exercise.id,selectedIndex:0})},200);
+    assert(graded.persisted === true && typeof graded.correct === "boolean",
+      "Server-graded practice attempt was not saved.");
+    const bobPractice = await bob.expectStatus("/api/learning/lab",{method:"GET"},200);
+    assert(bobPractice.history.length === 0, "Student B could see student A's practice history.");
+
+    const missionInput = {missionId:"react-dashboard",status:"in_progress",
+      completedIndices:[],repositoryUrl:"",demoUrl:"",notes:"E2E local-only learner draft"};
+    const savedMission = await alice.expectStatus("/api/learning/missions",{
+      method:"PUT",body:JSON.stringify(missionInput)},200);
+    assert(savedMission.work?.missionId === "react-dashboard", "Mission draft was not saved.");
+    const bobMissions = await bob.expectStatus("/api/learning/missions",{method:"GET"},200);
+    assert(!bobMissions.work?.some(item=>item.missionId==="react-dashboard"),
+      "Student B could see student A's project draft.");
+  }
+
+  const description="We need a frontend developer with React, TypeScript, JavaScript, CSS, HTML, REST API integration and unit testing experience.";
+  const job = await alice.expectStatus("/api/jobs/analyze",{method:"POST",
+    body:JSON.stringify({description})},200);
+  assert(job.mode==="private-assessment-comparison" && job.requirements.length>0,
+    "Career requirement comparison did not use account-local quiz evidence.");
+  const savedJob = await alice.expectStatus("/api/jobs/saved",{method:"POST",
+    body:JSON.stringify({title:"Frontend test role",description})},200);
+  assert(Boolean(savedJob.saved?.id), "Private job requirement summary did not save.");
+  const bobJobs = await bob.expectStatus("/api/jobs/saved",{method:"GET"},200);
+  assert(!bobJobs.saved?.some(item=>item.id===savedJob.saved.id),
+    "Student B could read student A's saved job requirements.");
+
+  if (process.env.SKILLMETRY_PASSPORT_SHARING_ENABLED==="true") {
+    const shared = await alice.expectStatus("/api/passport/shares",{method:"POST",
+      body:JSON.stringify({skillIds:["python"],consent:true})},200);
+    assert(shared.link?.id && shared.url, "Consented passport link was not created.");
+    const publicBefore=await fetch(shared.url,{redirect:"manual"});
+    assert(publicBefore.status===200, "Consent-based passport share did not load.");
+    const bobLinks=await bob.expectStatus("/api/passport/shares",{method:"GET"},200);
+    assert(!bobLinks.links?.some(item=>item.id===shared.link.id),
+      "Student B could access student A's private Passport metadata.");
+    const bobRevoke=await bob.expectStatus("/api/passport/shares",{method:"DELETE",
+      body:JSON.stringify({id:shared.link.id})},200);
+    assert(bobRevoke.revoked===false, "Student B could revoke student A's link.");
+    const aliceRevoke=await alice.expectStatus("/api/passport/shares",{method:"DELETE",
+      body:JSON.stringify({id:shared.link.id})},200);
+    assert(aliceRevoke.revoked===true, "Student A could not revoke their Passport link.");
+    const publicAfter=await fetch(shared.url,{redirect:"manual"});
+    assert(publicAfter.status===404, "Revoked Passport URL remained public.");
+  }
 
   await alice.expectStatus("/api/auth/sign-out", { method: "POST" }, 204);
   const signedOutProfile = await alice.request("/api/profile", { method: "GET" });
@@ -166,8 +245,11 @@ async function run() {
   const restoredHistory = await alice.expectStatus("/api/assessments/history", { method: "GET" }, 200);
   assert(restoredProfile.profile?.displayName === profileInput.displayName, "Profile was not restored after sign-in.");
   assert(restoredHistory.attempts.length === 6, "Assessment history was not restored after sign-in.");
+  const noLeak = await bob.expectStatus("/api/learning/overview", {method: "GET"}, 200);
+  assert(noLeak.state === "onboarding-required", "Student B inherited student A's private profile.");
 
-  console.log("Concurrent start, concurrent idempotent submit, cross-user isolation, genuine 0%, six immediate retakes, and sign-in restoration passed.");
+
+  console.log("Authenticated E2E: profile and goals, next action, concurrent assessment, idempotent result, cross-user isolation, genuine zero, six retakes, streak isolation and session restoration passed.");
 }
 
 try {

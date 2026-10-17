@@ -10,17 +10,18 @@ const enabled = process.env.NEXT_PUBLIC_LEARNING_STREAK_ENABLED === "true";
 
 export function LearningStreakCard() {
   const { user, assessmentStatus } = useAuth();
-  const [streak, setStreak] = useState<LearningStreakSummary | null>(null);
-  const [state, setState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const ownerId = user?.id ?? null;
+  type OwnerStreak = { ownerId: string; status: "loading" | "ready" | "error"; summary: LearningStreakSummary | null };
+  const [result, setResult] = useState<OwnerStreak | null>(null);
 
   useEffect(() => {
-    // Backend streaks never use demo attempts, localStorage or student-written events.
-    if (!enabled || !user || assessmentStatus === "loading") return;
+    // A result is displayed only for the exact signed-in owner who requested it.
+    // This prevents an account-switch flash of the previous user's private days.
+    if (!enabled || !ownerId || assessmentStatus === "loading") return;
     const controller = new AbortController();
-    const owner = user.id;
+    const requestedOwner = ownerId;
     void (async () => {
-      setState("loading");
-      setStreak(null);
+      setResult({ownerId:requestedOwner, status:"loading", summary:null});
       try {
         const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata";
         const response = await fetch("/api/learning/streak?timeZone=" + encodeURIComponent(zone), {
@@ -28,16 +29,18 @@ export function LearningStreakCard() {
         });
         if (!response.ok) throw new Error("streak_unavailable");
         const data = await response.json() as LearningStreakSummary;
-        if (!controller.signal.aborted && user.id === owner) {
-          setStreak(data);
-          setState("ready");
-        }
+        if (!controller.signal.aborted)
+          setResult({ownerId:requestedOwner, status:"ready", summary:data});
       } catch {
-        if (!controller.signal.aborted) setState("error");
+        if (!controller.signal.aborted)
+          setResult({ownerId:requestedOwner, status:"error", summary:null});
       }
     })();
     return () => controller.abort();
-  }, [user, assessmentStatus]);
+  }, [ownerId, assessmentStatus]);
+
+  const owned = result?.ownerId === ownerId ? result : null;
+  const streak = owned?.status === "ready" ? owned.summary : null;
 
   return <section className="sx-streak-card" aria-labelledby="sx-streak-heading">
     <div className="sx-panel-heading"><span className="sx-eyebrow"><Flame size={16} aria-hidden="true"/> LEARNING CONSISTENCY</span>
@@ -49,8 +52,8 @@ export function LearningStreakCard() {
     </> : !user ? <>
       <p>Sign in to see your learning days. Demo quiz results never count toward a real streak.</p>
       <Link href="/auth/sign-in?next=/dashboard" className="sx-inline-link">Sign in to track learning →</Link>
-    </> : state === "loading" || state === "idle" ? <p role="status">Checking your verified learning days…</p>
-      : state === "error" ? <p role="status">Streak details could not be loaded. Your quiz history is unchanged.</p>
+    </> : !owned || owned.status === "loading" ? <p role="status">Checking your verified learning days…</p>
+      : owned.status === "error" ? <p role="status">Streak details could not be loaded. Your quiz history is unchanged.</p>
       : streak ? <>
         <div className="sx-streak-numbers">
           <div><strong>{streak.currentStreak} {streak.currentStreak === 1 ? "day" : "days"}</strong><span>Current streak</span></div>

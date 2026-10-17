@@ -12,7 +12,7 @@ Source-only implementation, not a production operations guarantee.
 ## Launch controls
 
 Before production:
-1. Review and approve migrations 001–005, in order; execute against disposable staging and run all pgTAP RLS suites.
+1. Review and approve migrations 001–006, in order; execute against disposable staging and run all pgTAP RLS suites.
 2. Test real auth, reset, retakes, job analysis, consented AI, share revocation/expiry, private exports and cross-user isolation in staging.
 3. Keep provider secrets and probe token server-only, and set authenticated service monitoring.
 4. Enable staged feature flags only after owner approval; test rate-limit cleanup, email deliverability and AI spend alerts.
