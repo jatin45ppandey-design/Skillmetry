@@ -149,7 +149,7 @@ export function AdminGuideEditor({role}:{role:Role}){
        </div>:<div className="admin-form-stack">
          <label>Revision notes (one point per line)<textarea rows={8}
            value={draft.notes.join("\n")} onChange={e=>setDraft(old=>({...old,notes:e.target.value.split("\n")}))}/></label>
-         <small>3–12 notes. Concise Skillmetry-written explanations; don't paste copyrighted course text.</small>
+         <small>3–12 notes. Concise Skillmetry-written explanations; do not paste copyrighted course text.</small>
          <label>Practical next challenge<textarea rows={3} value={draft.challenge} maxLength={700}
            onChange={e=>setDraft(old=>({...old,challenge:e.target.value}))}/></label>
        </div>}
