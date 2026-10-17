@@ -30,7 +30,7 @@ database migration, hosted service, deployment, authentication contract or secre
 - Data-bound tools: Dashboard, Twin, diagnostics, streak calendar, assessments and results,
   planner, lab, missions, targeted practice, job analysis, tutor and Passport sharing.
 - Instant state changes: career choice, resources tabs, roadmap details, what-if comparison.
-- Public Passport sharing: read-only waiting state; private token never enters logs.
+- Public Passport sharing: no streaming route-level loader; revoked links retain a genuine HTTP 404 response and private tokens never enter logs.
 
 ## Verification and release gates
 - [x] Source implementation of reusable components and all listed feedback states.

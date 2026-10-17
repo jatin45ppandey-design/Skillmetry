@@ -1,5 +1,5 @@
 import {describe,expect,it} from "vitest";
-import {readFileSync} from "node:fs";
+import {readFileSync,existsSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 const read=(file:string)=>readFileSync(fileURLToPath(new URL(file,import.meta.url)),"utf8");
 
@@ -52,13 +52,13 @@ describe("Meaningful loading, not fake progress",()=>{
    const sim=read("../frontend/src/app/(workspace)/simulator/page.tsx");
    expect(sim).not.toContain("Simulating your grade");
  });
- it("has route fallbacks for workspace, account, auth, onboarding and shared record",()=>{
+ it("has route fallbacks without corrupting revoked public-link HTTP status",()=>{
    const pages=["../frontend/src/app/loading.tsx",
     "../frontend/src/app/(workspace)/loading.tsx",
     "../frontend/src/app/auth/loading.tsx",
     "../frontend/src/app/account/loading.tsx",
-    "../frontend/src/app/onboarding/loading.tsx",
-    "../frontend/src/app/passport/share/[token]/loading.tsx"];
+    "../frontend/src/app/onboarding/loading.tsx"];
    for(const path of pages)expect(read(path)).toContain("ContentSkeleton");
+   expect(existsSync(new URL("../frontend/src/app/passport/share/[token]/loading.tsx",import.meta.url))).toBe(false);
  });
 });
