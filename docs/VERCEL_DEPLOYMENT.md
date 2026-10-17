@@ -35,7 +35,7 @@
 
 ## Verification
 - GitHub CI: typecheck, lint, Vitest, build, release/static-security gates and public URL smoke.
-- Disposable CI: full migrations, pgTAP RLS suites, and authenticated two-user quiz/profile/streak E2E (when workflow completes successfully).
+- Disposable CI: full migrations, pgTAP RLS suites, and authenticated two-user production-build API E2E (quiz/profile/streak, planner, practice, missions, saved jobs, share/revocation) (when workflow completes successfully).
 - `npm run release:preflight`: verifies environment configuration safely, without printing secrets or contacting hosted services.
 - Authenticated health: `GET /api/health/ready` with `Authorization: Bearer <monitor-token>`, otherwise 404. Returns only `ready` / `unavailable`.
 - Production canary: signup → confirmation → onboarding → quiz → progress → planner/practice/streak → sign-out → sign-in, with separate test users; check email provider, password reset, accessibility/mobile viewport and errors.

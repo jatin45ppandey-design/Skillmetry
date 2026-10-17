@@ -33,7 +33,14 @@ export NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED=true
 export SKILLMETRY_AI_TUTOR_ENABLED=false
 export SKILLMETRY_PASSPORT_SHARING_ENABLED=true
 export NEXT_PUBLIC_PASSPORT_SHARING_ENABLED=true
-npm --prefix frontend run dev -- -H 127.0.0.1 -p 3210 > /tmp/skillmetry-auth-e2e-next.log 2>&1 &
+# Build against disposable Supabase credentials and exercise Next.js production SSR
+# and API runtime rather than relying on dev-server behavior.
+npm --prefix frontend run build > /tmp/skillmetry-auth-e2e-build.log 2>&1 || {
+  echo "Disposable Supabase production build failed." >&2
+  tail -n 70 /tmp/skillmetry-auth-e2e-build.log >&2
+  exit 1
+}
+npm --prefix frontend run start -- -H 127.0.0.1 -p 3210 > /tmp/skillmetry-auth-e2e-next.log 2>&1 &
 app_pid=$!
 trap 'kill "$app_pid" 2>/dev/null || true' EXIT
 ready=0
