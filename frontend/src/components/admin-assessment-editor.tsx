@@ -1,5 +1,5 @@
-import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 "use client";
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 import {useEffect,useState} from "react";
 import {ArrowDown,ArrowUp,BookOpenCheck,Plus,Save,Send,Trash2} from "lucide-react";
 import {
