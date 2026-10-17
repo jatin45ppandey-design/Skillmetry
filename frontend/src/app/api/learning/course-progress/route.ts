@@ -61,12 +61,22 @@ export async function PUT(request:Request){
   if(!checked.success||!checked.data.modules.some(m=>m.lessons.some(l=>l.id===p.lessonId)))
     return NextResponse.json({error:"Lesson is not part of the published course."},{status:404,headers});
   const completionTime=p.completed?new Date().toISOString():null;
-  const {data,error}=await auth.supabase.from("course_lesson_progress").upsert({
-    user_id:auth.userId,course_slug:p.courseSlug,lesson_id:p.lessonId,
-    published_revision:p.publishedRevision,completed:p.completed,
-    completed_at:completionTime,updated_at:new Date().toISOString()
-  },{onConflict:"user_id,course_slug,lesson_id"})
-    .select("lesson_id,published_revision,completed,completed_at").single();
+  const table=auth.supabase.from("course_lesson_progress");
+  const {data:existing,error:readError}=await table.select("lesson_id")
+    .eq("user_id",auth.userId).eq("course_slug",p.courseSlug)
+    .eq("lesson_id",p.lessonId).maybeSingle();
+  if(readError)return NextResponse.json({error:"Previous course activity could not be checked."},
+    {status:503,headers});
+  const patch={published_revision:p.publishedRevision,completed:p.completed,
+    completed_at:completionTime,updated_at:new Date().toISOString()};
+  // Keep owner/course/lesson identity immutable: a changed lesson only updates activity columns.
+  const query=existing?
+    auth.supabase.from("course_lesson_progress").update(patch).eq("user_id",auth.userId)
+      .eq("course_slug",p.courseSlug).eq("lesson_id",p.lessonId):
+    auth.supabase.from("course_lesson_progress").insert({
+      user_id:auth.userId,course_slug:p.courseSlug,lesson_id:p.lessonId,...patch
+    });
+  const {data,error}=await query.select("lesson_id,published_revision,completed,completed_at").single();
   if(error)return NextResponse.json({error:"Lesson activity could not be saved. Try again."},
     {status:503,headers});
   return NextResponse.json({saved:true,courseSlug:p.courseSlug,lessonId:data.lesson_id,
