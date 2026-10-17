@@ -74,12 +74,17 @@ export default function Dashboard() {
           illustrative ? "Suggestions are based on illustrative demo data." :
           "Based on your stated goals and available trusted quiz evidence."}</small>
       </div>
-      <div className="sx-next-visual" aria-hidden="true">
-        <div className="sx-visual-ring sx-visual-ring-outer"/>
-        <div className="sx-visual-ring sx-visual-ring-inner"/>
-        <div className="sx-visual-center"><Target size={57} strokeWidth={1.4}/></div>
-        <span className="sx-visual-note">A LITTLE PROGRESS<br/>IS STILL PROGRESS.</span>
-      </div>
+      <aside className="sx-next-evidence" aria-label="Verified assessment snapshot">
+        <span className="sx-eyebrow">YOUR EVIDENCE</span>
+        <div className="sx-next-evidence-numbers">
+          <div><strong>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
+          <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
+        </div>
+        <p>{evidenceUnavailable ? "Assessment history is unavailable right now." :
+          lastAttempt && !loading ? "Latest: " + (skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId) + " · " + lastAttempt.score + "/100" :
+          loading ? "Checking your trusted assessment history…" : "Your first quiz will create a measured baseline."}</p>
+        <Link href="/twin" className="sx-next-evidence-link">View progress <ArrowRight size={16} aria-hidden="true"/></Link>
+      </aside>
     </section>
 
     <div className="sx-home-grid">
