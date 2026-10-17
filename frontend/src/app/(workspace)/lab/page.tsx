@@ -78,9 +78,9 @@ export default function Lab(){
     {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
     <div className="workflow-lab-grid sx-lab-workspace">
       <section className="panel sx-lab-library" aria-label="Challenge library"><h2>Challenge library <small>{visible.length} available</small></h2>
-        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>setQuery(e.target.value)}/></label>
+        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>{setQuery(e.target.value);setFeedback(null);setChoice(null);setText("");}}/></label>
         {visible.length===0?<p role="status">No matching exercises. <button type="button" className="text-button" onClick={()=>{setQuery("");setFilter("all");}}>Reset filters</button></p>:null}
-        {visible.map(exercise=><button aria-pressed={active===exercise.id} className={"btn "+(active===exercise.id?"btn-primary":"btn-outline")}
+        {visible.map(exercise=><button aria-pressed={current?.id===exercise.id} className={"btn "+(current?.id===exercise.id?"btn-primary":"btn-outline")}
           type="button" key={exercise.id} style={{display:"block",width:"100%",textAlign:"left",margin:"9px 0"}}
           onClick={()=>choose(exercise.id)}>{exercise.title} · {exercise.skillId}</button>)}
       </section>
