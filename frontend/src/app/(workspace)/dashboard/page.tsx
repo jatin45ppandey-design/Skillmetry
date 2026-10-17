@@ -37,16 +37,24 @@ export default function Dashboard() {
     const controller=new AbortController();
     setResume(null);
     if(!user)return;
-    void Promise.all([
-      fetch("/api/content/courses",{cache:"no-store",signal:controller.signal}),
-      fetch("/api/learning/course-progress",{cache:"no-store",signal:controller.signal})
-    ]).then(async([catalog,activity])=>{
-      if(!catalog.ok||!activity.ok)return null;
-      const a=await catalog.json() as {courses?:ResumeCourse[]};
-      const b=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[];truncated?:boolean};
-      if(!b.enabled||b.truncated)return null;
-      return selectCourseContinuation(a.courses??[],b.progress??[]);
-    }).then(next=>{if(!controller.signal.aborted)setResume(next);}).catch(()=>{
+    void fetch("/api/learning/course-progress",{cache:"no-store",signal:controller.signal})
+      .then(async activity=>{
+        if(!activity.ok)return null;
+        const body=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[];truncated?:boolean};
+        if(!body.enabled||body.truncated||!body.progress?.length)return null;
+        // Read only courses the learner has actually studied, not merely the first page
+        // of the published catalog. Bound the lookups to five recent courses.
+        const slugs=[...new Set(body.progress.map(row=>row.courseSlug))]
+          .filter(slug=>/^[a-z][a-z0-9-]{3,49}$/.test(slug)).slice(0,5);
+        const catalog=await Promise.all(slugs.map(slug=>
+          fetch("/api/content/courses?course="+encodeURIComponent(slug),
+            {cache:"no-store",signal:controller.signal})
+            .then(async response=>response.ok?
+              (await response.json() as {courses?:ResumeCourse[]}).courses??[]:[])
+            .catch(()=>[] as ResumeCourse[])
+        ));
+        return selectCourseContinuation(catalog.flat(),body.progress);
+      }).then(next=>{if(!controller.signal.aborted)setResume(next);}).catch(()=>{
       // Resume is optional: do not hide verified assessment recommendations on failure.
     });
     return()=>controller.abort();
