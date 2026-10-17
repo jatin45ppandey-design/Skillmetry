@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LockKeyhole } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, LockKeyhole } from "lucide-react";
+import { ActionSpinner, ActionSuccess, ActivityIndicator } from "@/components/motion-ui";
 
 export function EmailConfirmationPanel({ email, nextPath }: { email: string; nextPath: string }) {
   const [token, setToken] = useState("");
   const [pending, setPending] = useState(false);
+  const [redirecting,setRedirecting] = useState(false);
   const [resendPending, setResendPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export function EmailConfirmationPanel({ email, nextPath }: { email: string; nex
         setError(result.error ?? "Verification failed. Check the latest email and try again.");
         return;
       }
+      setRedirecting(true);
       window.location.assign(result.next ?? nextPath);
     } catch {
       setError("Verification is unavailable. Check your connection and try again.");
@@ -68,17 +71,17 @@ export function EmailConfirmationPanel({ email, nextPath }: { email: string; nex
         <input className="input" name="confirmation-code" type="text" inputMode="numeric"
           value={token} onChange={event => setToken(event.target.value.replace(/\D/g, "").slice(0, 6))}
           pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" placeholder="123456"
-          disabled={pending || resendPending} required/>
+          disabled={pending || resendPending || redirecting} required/>
       </label>
       <button className="btn btn-primary auth-submit" type="submit" disabled={pending || resendPending || token.length !== 6}>
-        {pending ? <LoaderCircle className="spin" aria-hidden="true"/> : <LockKeyhole aria-hidden="true"/>}
-        {pending ? "Verifying…" : "Verify and continue to assessments"}
+        {pending || redirecting ? <ActionSpinner label={redirecting ? "Opening your account…" : "Verifying email…"}/> : <><LockKeyhole aria-hidden="true"/>Verify and continue to assessments</>}
       </button>
     </form>
+    {pending||redirecting ? <ActivityIndicator compact secure label={redirecting?"Email verified. Opening your account…":"Checking your email code…"}/> : null}
     {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span></div> : null}
-    {notice ? <p className="auth-confirmation-notice" role="status">{notice}</p> : null}
-    <button type="button" className="btn btn-quiet" onClick={resendCode} disabled={resendPending || pending}>
-      {resendPending ? "Requesting email…" : "Resend confirmation email"}
+    {notice ? <ActionSuccess>{notice}</ActionSuccess> : null}
+    <button type="button" className="btn btn-quiet" onClick={resendCode} disabled={resendPending || pending || redirecting}>
+      {resendPending ? <ActionSpinner label="Requesting email…"/> : "Resend confirmation email"}
     </button>
     <Link className="auth-return-link" href={`/auth/sign-in?next=${encodeURIComponent(nextPath)}`}>
       Already verified? Sign in <ArrowRight aria-hidden="true"/>

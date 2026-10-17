@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense,useEffect,useMemo,useState } from "react";
 import { BookOpenCheck,CheckCircle2,RotateCcw } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
+import {ActivityIndicator, ActionSpinner, ContentSkeleton} from "@/components/motion-ui";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { diagnosticTopics, isDiagnosticAssessmentId } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
@@ -59,8 +60,9 @@ function PracticeContent() {
       description="Exercises for learning, not certification. Practice never changes server-graded scores or your Digital Twin."
       action={<Link className="btn btn-quiet" href={assessment?`/assessments?assessment=${assessment.id}`:"/assessments"}>Back to assessments</Link>}/>
     {!assessment||!topic?<p className="auth-error">This practice topic does not exist. Return to assessments and choose a valid topic.</p>:null}
-    {loading?<p role="status">Loading practice questions…</p>:null}
+    {loading?<ContentSkeleton kind="cards" label="Loading targeted practice questions…"/>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
+    {pending?<ActivityIndicator compact label="Checking answers against the practice rubric…"/>:null}
     {assessment&&topic&&!loading&&questions.length?<section className="diagnostic-practice">
       <div className="assessment-paper-head"><div><BookOpenCheck aria-hidden="true"/><h2>{assessment.title} · {topic.label}</h2><p>Answer five independently authored exercises, then review the explanations.</p></div></div>
       {questions.map((q,i)=><fieldset key={q.id} disabled={Boolean(result)||pending}>
@@ -69,7 +71,7 @@ function PracticeContent() {
           onChange={()=>setAnswers(prev=>({...prev,[q.id]:index}))}/> {choice}</label>)}
       </fieldset>)}
       {!result?<button className="btn btn-primary" type="button" disabled={pending||questions.some(q=>answers[q.id]===undefined)}
-        onClick={checkAnswers}>{pending?"Checking…":"Check answers and explain"}</button>:<div className="diagnostic-practice-feedback" role="status">
+        onClick={checkAnswers}>{pending?<ActionSpinner label="Checking all answers…"/>:"Check answers and explain"}</button>:<div className="diagnostic-practice-feedback" role="status">
         <CheckCircle2 aria-hidden="true"/><strong>{result.correctCount}/{result.totalQuestions} practice answers correct</strong>
         <p>{result.trust}</p>
         {result.review.map(q=><article key={q.id}><strong>{q.prompt}</strong><p>Your choice: {q.choices[q.selectedIndex]}</p>
@@ -81,5 +83,5 @@ function PracticeContent() {
   </>;
 }
 export default function PracticePage(){
-  return <Suspense fallback={<p role="status">Preparing practice…</p>}><PracticeContent/></Suspense>;
+  return <Suspense fallback={<ContentSkeleton kind="cards" label="Preparing targeted practice"/>}><PracticeContent/></Suspense>;
 }

@@ -1,0 +1,53 @@
+/* Accessible Skillmetry motion: calm, indeterminate, meaning-first. */
+@keyframes skillmetry-motion-turn{to{transform:rotate(360deg)}}
+@keyframes skillmetry-motion-sweep{0%{transform:translateX(-115%)}100%{transform:translateX(115%)}}
+@keyframes skillmetry-motion-pulse{0%,80%,100%{opacity:.3;transform:scale(.72)}40%{opacity:1;transform:scale(1)}}
+@keyframes skillmetry-motion-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.motion-spin{animation:skillmetry-motion-turn 1s linear infinite;flex:none}
+.motion-button-label{display:inline-flex;gap:9px;align-items:center;justify-content:center}
+.motion-status{background:#eef4e7;color:#32523d;border:1px solid #cfdfc9;border-radius:15px;padding:12px 15px;display:flex;align-items:center;gap:12px;min-height:58px;animation:skillmetry-motion-enter .22s ease-out}
+.motion-status--compact{min-height:42px;padding:9px 12px;font-size:.85rem}
+.motion-status-icon{width:30px;height:30px;display:grid;place-items:center;color:#4e8060;flex:none}
+.motion-status-copy{display:grid;gap:3px;min-width:0;flex:1}
+.motion-status-copy strong{font-size:.85rem;line-height:1.35}
+.motion-status-copy small{font-size:.74rem;color:#64776b;line-height:1.3}
+.motion-status-dots{display:flex;gap:4px;flex:none}
+.motion-status-dots i{height:5px;width:5px;border-radius:50%;background:#659574;animation:skillmetry-motion-pulse 1.2s ease-in-out infinite}
+.motion-status-dots i:nth-child(2){animation-delay:.14s}.motion-status-dots i:nth-child(3){animation-delay:.28s}
+.motion-success{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:14px;background:#e5f0dd;color:#30583c;border:1px solid #bdd4b9;animation:skillmetry-motion-enter .25s ease}
+.motion-route-progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .16s}
+.motion-route-progress.is-opening{opacity:1}
+.motion-route-progress-track{display:block;width:100%;height:100%;background:linear-gradient(90deg,transparent 0%,#70aa78 37%,#325a41 68%,transparent 100%);transform:translateX(-115%)}
+.motion-route-progress.is-opening .motion-route-progress-track{animation:skillmetry-motion-sweep 1.3s ease-in-out infinite}
+.motion-skeleton{background:#f9fbf5;border:1px solid #d9e3d6;border-radius:20px;padding:clamp(17px,2.5vw,30px);min-height:245px;display:grid;align-content:start;gap:13px}
+.motion-skeleton--auth{max-width:540px;margin:clamp(18px,5vw,80px) auto;min-height:360px}
+.motion-skeleton--dashboard{min-height:360px}
+.motion-skeleton-title{height:28px;width:min(360px,64%);border-radius:9px}
+.motion-skeleton-subtitle{height:13px;width:min(560px,90%);border-radius:7px}
+.motion-skeleton-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:14px}
+.motion-skeleton--auth .motion-skeleton-grid{grid-template-columns:1fr}
+.motion-skeleton-card{border-radius:14px;min-height:147px;padding:19px;display:flex;flex-direction:column;gap:12px}
+.motion-skeleton-card div{height:10px;width:72%;border-radius:8px;background:rgba(255,255,255,.54)}
+.motion-skeleton-card div:nth-child(2){width:95%}.motion-skeleton-card div:nth-child(3){width:43%}
+.motion-shimmer{position:relative;overflow:hidden;background:#e5ecdf}
+.motion-shimmer:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.68),transparent);transform:translateX(-100%);animation:skillmetry-motion-sweep 1.8s ease-in-out infinite}
+.motion-auth-progress{margin-top:12px}
+.motion-action-status{margin:12px 0}
+.motion-stage{animation:skillmetry-motion-enter .22s ease-out}
+button:disabled .motion-spin{opacity:.9}
+@media(max-width:680px){.motion-skeleton-grid{grid-template-columns:1fr 1fr}.motion-skeleton-card{min-height:110px;padding:12px}.motion-skeleton-card:nth-child(3){display:none}.motion-status{gap:9px;padding:11px}.motion-status-dots{display:none}}
+@media(prefers-reduced-motion:reduce){.motion-spin,.motion-route-progress-track,.motion-shimmer:after,.motion-status-dots i{animation:none!important}.motion-status,.motion-success,.motion-stage{animation:none!important}.motion-route-progress{transition:none}.motion-shimmer:after{display:none}}
+
+.motion-root-loading{min-height:55vh;padding:clamp(26px,6vw,90px);max-width:1450px;margin:0 auto}
+.auth-form .motion-status,.auth-confirmation .motion-status{margin:6px 0}
+.auth-form .auth-submit[aria-busy="true"]{cursor:wait}
+.auth-social-btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+
+/* Subtle entrance on genuine state/step change, not simulated wait times. */
+.lc-hero-copy{animation:skillmetry-motion-enter .38s ease-out both}
+.lc-hero-art{animation:skillmetry-motion-enter .48s ease-out both}
+.v3-learning-detail{animation:skillmetry-motion-enter .21s ease-out}
+.career-selection-summary.motion-stage,.scenario-result.motion-stage{animation:skillmetry-motion-enter .24s ease-out}
+.twin-detail-panel,.skill-detail-panel{animation:skillmetry-motion-enter .23s ease-out}
+.motion-root-loading,.auth-shell:has(.motion-skeleton){color:#325a41}
+@media(prefers-reduced-motion:reduce){.lc-hero-copy,.lc-hero-art,.v3-learning-detail,.career-selection-summary.motion-stage,.scenario-result.motion-stage,.twin-detail-panel,.skill-detail-panel{animation:none!important}}

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ContentSkeleton } from "@/components/motion-ui";
 import type { LucideIcon } from "lucide-react";
 
 export function StatusPill({tone = "neutral", children}:{tone?:"neutral"|"accent"|"success"|"warning";children:React.ReactNode}) {
@@ -19,7 +20,7 @@ export function EmptyState({title,description,actionHref,actionLabel}:{title:str
 }
 
 export function LoadingState({label="Loading your workspace"}:{label?:string}) {
-  return <div className="state-page" role="status"><LoaderCircle className="spin" aria-hidden="true"/><strong>{label}</strong><p>Preparing your student-specific view.</p></div>;
+  return <ContentSkeleton kind="workspace" label={label}/>;
 }
 
 export function ErrorState({title="This view could not be loaded",onRetry}:{title?:string;onRetry:()=>void}) {

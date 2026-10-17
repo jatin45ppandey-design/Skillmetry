@@ -7,6 +7,8 @@ import "./learning-workflows.css";
 import "./passport-workflows.css";
 import "./experience-v2.css";
 import "./experience-v3.css";
+import "./motion-system.css";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
 
@@ -36,5 +38,5 @@ const technicalFont = IBM_Plex_Mono({
 
 export default async function RootLayout({children}:Readonly<{children:React.ReactNode}>) {
   const authState = await getServerAuthState();
-  return <html lang="en"><body className={`${displayFont.variable} ${uiFont.variable} ${technicalFont.variable}`}><AuthProvider initialState={authState}>{children}</AuthProvider></body></html>;
+  return <html lang="en"><body className={`${displayFont.variable} ${uiFont.variable} ${technicalFont.variable}`}><NavigationProgress/><AuthProvider initialState={authState}>{children}</AuthProvider></body></html>;
 }

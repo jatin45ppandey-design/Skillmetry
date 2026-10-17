@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CalendarDays, Flame, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
+import {ActivityIndicator} from "@/components/motion-ui";
 import type { LearningStreakSummary } from "@skillmetry/shared/lib/learning-streak";
 
 const enabled = process.env.NEXT_PUBLIC_LEARNING_STREAK_ENABLED === "true";
@@ -52,7 +53,7 @@ export function LearningStreakCard() {
     </> : !user ? <>
       <p>Sign in to see your learning days. Demo quiz results never count toward a real streak.</p>
       <Link href="/auth/sign-in?next=/dashboard" className="sx-inline-link">Sign in to track learning →</Link>
-    </> : !owned || owned.status === "loading" ? <p role="status">Checking your verified learning days…</p>
+    </> : !owned || owned.status === "loading" ? <ActivityIndicator compact label="Checking your verified learning days…"/>
       : owned.status === "error" ? <p role="status">Streak details could not be loaded. Your quiz history is unchanged.</p>
       : streak ? <>
         <div className="sx-streak-numbers">
