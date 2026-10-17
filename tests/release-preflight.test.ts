@@ -3,9 +3,9 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 const root=fileURLToPath(new URL("../",import.meta.url));
-const read=path=>readFileSync(new URL(path,import.meta.url),"utf8");
+const read=(path:string)=>readFileSync(new URL(path,import.meta.url),"utf8");
 describe("deployment configuration preflight",()=>{
-  const run=(extras={},args=[])=>{
+  const run=(extras:Record<string,string>={},args:string[]=[])=>{
     try{
       const stdout=execFileSync(process.execPath,["scripts/release-preflight.mjs",...args],{
         cwd:root,env:{PATH:process.env.PATH??"",HOME:process.env.HOME??"",
@@ -16,7 +16,7 @@ describe("deployment configuration preflight",()=>{
           SKILLMETRY_HEALTHCHECK_TOKEN:"test-example-long-random-string-12345678",
           ...extras},encoding:"utf8",stdio:["ignore","pipe","pipe"]
       });return{passed:true,stdout};
-    }catch(e){return{passed:false,stdout:e.stdout?.toString()??""};}
+    }catch(error){const e=error as {stdout?:Buffer|string};return{passed:false,stdout:e.stdout?.toString()??""};}
   };
   it("does not reveal secrets and accepts separate disabled providers",()=>{
     const x=run();expect(x.passed).toBe(true);

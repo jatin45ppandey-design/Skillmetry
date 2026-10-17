@@ -35,7 +35,7 @@ export async function GET(request:Request){
  try{
    const admin=createAdminClient();
    for(const table of [...new Set(required)]){
-     const {error}=await admin.from(table).select("id").limit(1)
+     const {error}=await admin.from(table).select("*").limit(1)
        .abortSignal(AbortSignal.timeout(3500));
      if(error)return NextResponse.json({status:"unavailable"},{status:503,headers});
    }
