@@ -48,7 +48,7 @@ export default function CoursesPage(){
        const body=await response.json() as {courses:unknown[];nextPage?:number|null};
        if(!controller.signal.aborted){
          setItems(parsePublishedCourses(body.courses??[]));
-         setNextPage(Number.isSafeInteger(body.nextPage)?body.nextPage!:null);
+         setNextPage(typeof body.nextPage==="number"&&Number.isSafeInteger(body.nextPage)?body.nextPage:null);
        }
      }catch{if(!controller.signal.aborted)setError("Published courses are temporarily unavailable. Learning resources still work.");}
      finally{if(!controller.signal.aborted)setLoading(false);}
