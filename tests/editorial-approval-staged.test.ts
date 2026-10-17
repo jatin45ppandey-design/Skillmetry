@@ -55,7 +55,7 @@ describe("Staged editorial approval security and access contracts",()=>{
    expect(ui).toContain("Save changes before review");
    expect(ui).toContain("Approve revision");
    expect(ui).toContain("Request changes");
-   for(const module of ["guide","roadmap","course","mission","assessment"]){
+   for(const editorName of ["guide","roadmap","course","mission","assessment"]){
      const editor=read("frontend/src/components/admin-"+module+"-editor.tsx");
      expect(editor).toContain("<AdminReviewRequest");
      expect(editor).toContain('changed={changed}');
