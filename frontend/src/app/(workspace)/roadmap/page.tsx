@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Clock3, GitBranch, LockKeyhole, Target, Wrench } from "lucide-react";
 import { RecommendationPanel } from "@/components/recommendation-panel";
 import { RoadmapGraph } from "@/components/roadmap-graph";
+import { PublishedCareerStudySequence } from "@/components/published-career-study-sequence";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
@@ -100,6 +101,7 @@ export default function Roadmap() {
 
   return <>
     <SectionTitle eyebrow="Adaptive roadmap" title={title} description={description} action={<div className="resource-overview-actions">{selectedCareer ? <Link href={getCareerRoadmapBrowseHref(selectedCareer.id)} className="btn btn-outline">Explore career roadmaps <ArrowRight aria-hidden="true"/></Link> : null}<Link href="/settings" className="btn btn-quiet">Edit learning goals</Link></div>}/>
+    <PublishedCareerStudySequence careerId={selectedCareer?.id??null}/>
     <details className="v3-context-details">
       <summary>About your skill pathway · {allSkillIds.length} related skills · {focusSkillIds.length} selected</summary>
       <p>Skills are connected by prerequisites. Select a node to inspect the skill, relevant resources and quiz availability. These counts are not mastered skill scores.</p>

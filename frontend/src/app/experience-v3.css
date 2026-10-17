@@ -115,3 +115,20 @@
 .studio-app .v3-context-details summary{font-size:.77rem;font-weight:700;cursor:pointer;min-height:25px;}
 .studio-app .v3-context-details p{margin:7px 0 0;font-size:.79rem;line-height:1.5;color:#65786b;}
 @media(min-width:1300px){.studio-app .career-explorer-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+
+/* Published roadmap is one digestible action card, not an extra giant scroll page. */
+.studio-app .admin-published-study{background:#e9f1e3;border:1px solid #cbddc5;border-radius:17px;margin:0 0 13px;padding:15px 20px;display:grid;gap:10px}
+.studio-app .admin-published-study-top{display:flex;gap:15px;align-items:flex-start;justify-content:space-between}
+.studio-app .admin-published-study-top h2{font:750 clamp(1.13rem,1.8vw,1.48rem) var(--font-display),sans-serif;margin:6px 0}
+.studio-app .admin-published-study-top p{font-size:.8rem;line-height:1.46;color:#56745b;margin:0}
+.studio-app .admin-published-study-steps{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.studio-app .admin-published-study-steps li{display:flex;align-items:center;gap:12px;padding:9px 12px;background:#fcfdf9;border-radius:11px}
+.studio-app .admin-published-study-steps li>span{font-weight:800;color:#63836b}
+.studio-app .admin-published-study-steps li>div{flex:1;min-width:0}
+.studio-app .admin-published-study-steps strong{font-size:.81rem}
+.studio-app .admin-published-study-steps p{font-size:.73rem;color:#6b806e;margin:3px 0}
+.studio-app .admin-published-study-steps small{display:block;color:#4e6c58;font-size:.72rem}
+.studio-app .admin-published-study-steps a{display:inline-flex;align-items:center;gap:6px;color:#325f43;font-size:.76rem;font-weight:700}
+.studio-app .admin-study-toggle{border:0;background:none;color:#356a42;text-decoration:underline;justify-self:start;font-size:.78rem;font-weight:700;padding:7px 2px}
+.studio-app .admin-published-disclaimer{font-size:.68rem;color:#697f6b}
+@media(max-width:600px){.studio-app .admin-published-study{padding:13px}.studio-app .admin-published-study-steps li{align-items:flex-start}.studio-app .admin-published-study-steps li a{flex:none;margin-top:3px}}
