@@ -134,3 +134,16 @@ body{overflow-x:clip}
  :where(a,button,.sx-journey-tab){transition:none!important}
  :where(a,button):active:not(:disabled){transform:none!important}
 }
+
+
+/* Scroll reveals never hide content before hydration; progressive motion only. */
+.lc-site [data-reveal].sx-reveal-active{animation:ui-section-reveal 440ms var(--ui-ease) both}
+@keyframes ui-section-reveal{from{opacity:.75;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.lc-site .sx-journey-preview{animation:ui-section-reveal 500ms var(--ui-ease) both}
+.auth-shell .auth-social-btn:active,.auth-shell .auth-submit:active{transform:scale(.985)}
+.auth-shell .auth-social-btn[aria-disabled="true"]{cursor:progress;opacity:.75}
+.auth-shell .auth-submit[aria-busy="true"]{cursor:progress}
+@media(prefers-reduced-motion:reduce){
+ .lc-site [data-reveal].sx-reveal-active,.lc-site .sx-journey-preview{animation:none!important}
+ .auth-shell .auth-social-btn:active,.auth-shell .auth-submit:active{transform:none!important}
+}
