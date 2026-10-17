@@ -158,3 +158,20 @@
 @media(prefers-reduced-motion:reduce){
  .studio-app :is(.course-card,.mission-work-card,.scenario-option),.admin-studio-shell :is(button,summary){animation:none!important;transition:none!important;transform:none!important;}
 }
+
+
+/* Collapsible revision index and first-class save navigation in every editor. */
+.admin-studio-shell .admin-history{border:1px solid #d2dfcc;border-radius:11px;padding:0;background:#edf4e8;overflow:clip;}
+.admin-studio-shell .admin-history summary{list-style:none;cursor:pointer;padding:11px 12px;min-height:44px;font-size:.75rem;font-weight:750;color:#3e6448;}
+.admin-studio-shell .admin-history summary::-webkit-details-marker{display:none;}
+.admin-studio-shell .admin-history[open]>h3{padding:8px 12px 0;}
+.admin-studio-shell .admin-history p{padding:9px 12px;margin:0;}
+.admin-studio-shell .sx-admin-anchor{text-align:right;padding:7px 0 0;}
+.admin-studio-shell .sx-admin-anchor a{display:inline-flex;align-items:center;justify-content:center;min-height:38px;color:#315c40;font-size:.77rem;font-weight:740;text-decoration:underline;text-underline-offset:3px;}
+.admin-studio-shell .sx-admin-anchor a:hover{color:#1a412b;}
+.admin-studio-shell #admin-save-actions{scroll-margin-top:85px;}
+.admin-studio-shell #admin-save-actions:target{outline:2px solid #8aaf83;outline-offset:4px;}
+@media(max-width:760px){
+ .admin-studio-shell #admin-save-actions{scroll-margin-top:30px}
+ .admin-studio-shell .sx-admin-anchor{text-align:left}
+}
