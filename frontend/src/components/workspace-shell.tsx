@@ -150,7 +150,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <main className="studio-main" id="studio-main">
-        <div className="studio-content">{children}</div>
+        <div className="studio-content" key={pathname}>{children}</div>
       </main>
 
       {drawerOpen ? (
