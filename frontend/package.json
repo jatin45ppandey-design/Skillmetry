@@ -8,7 +8,9 @@
     "lint": "eslint src --config ../eslint.config.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "verify": "node --env-file-if-exists=.env.local ../scripts/verify-assessment-flow.mjs"
+    "verify": "node --env-file-if-exists=.env.local ../scripts/verify-assessment-flow.mjs",
+    "dev:admin": "node ../scripts/dev-admin.mjs",
+    "dev:admin:check": "node ../scripts/dev-admin.mjs --check"
   },
   "dependencies": {
     "@skillmetry/backend": "*",

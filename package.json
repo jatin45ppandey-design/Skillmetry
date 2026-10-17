@@ -20,7 +20,9 @@
     "verify:release": "node scripts/verify-release.mjs",
     "verify:backend": "node scripts/verify-backend-gates.mjs",
     "release:preflight": "node --env-file-if-exists=frontend/.env.local scripts/release-preflight.mjs",
-    "release:preflight:readonly": "node --env-file-if-exists=frontend/.env.local scripts/release-preflight.mjs --remote-readonly"
+    "release:preflight:readonly": "node --env-file-if-exists=frontend/.env.local scripts/release-preflight.mjs --remote-readonly",
+    "dev:admin": "node scripts/dev-admin.mjs",
+    "dev:admin:check": "node scripts/dev-admin.mjs --check"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
