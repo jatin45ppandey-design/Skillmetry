@@ -37,3 +37,8 @@
 button:disabled .motion-spin{opacity:.9}
 @media(max-width:680px){.motion-skeleton-grid{grid-template-columns:1fr 1fr}.motion-skeleton-card{min-height:110px;padding:12px}.motion-skeleton-card:nth-child(3){display:none}.motion-status{gap:9px;padding:11px}.motion-status-dots{display:none}}
 @media(prefers-reduced-motion:reduce){.motion-spin,.motion-route-progress-track,.motion-shimmer:after,.motion-status-dots i{animation:none!important}.motion-status,.motion-success,.motion-stage{animation:none!important}.motion-route-progress{transition:none}.motion-shimmer:after{display:none}}
+
+.motion-root-loading{min-height:55vh;padding:clamp(26px,6vw,90px);max-width:1450px;margin:0 auto}
+.auth-form .motion-status,.auth-confirmation .motion-status{margin:6px 0}
+.auth-form .auth-submit[aria-busy="true"]{cursor:wait}
+.auth-social-btn[aria-disabled="true"]{opacity:.55;pointer-events:none}

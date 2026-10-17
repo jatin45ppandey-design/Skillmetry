@@ -1,5 +1,2 @@
-import { LoadingState } from "@/components/workspace-ui";
-
-export default function AccountLoading() {
-  return <LoadingState label="Verifying your secure session"/>;
-}
+import { ContentSkeleton } from "@/components/motion-ui";
+export default function AccountLoading(){return <ContentSkeleton kind="auth" label="Verifying your secure session"/>;}
