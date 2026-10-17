@@ -8,6 +8,7 @@ import "./passport-workflows.css";
 import "./experience-v2.css";
 import "./experience-v3.css";
 import "./motion-system.css";
+import "./admin-studio.css";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";
