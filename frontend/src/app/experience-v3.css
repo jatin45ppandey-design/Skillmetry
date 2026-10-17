@@ -93,3 +93,8 @@
 .studio-app .resource-grid{gap:13px;}
 @media(max-width:920px){.studio-app .v3-taskbar{align-items:flex-start;flex-direction:column;gap:10px;padding:12px 14px}.studio-app .v3-taskbar-actions{width:100%;flex-wrap:wrap}.studio-app .v3-taskbar-actions a{flex:1;justify-content:center}.studio-app .studio-content{width:calc(100% - 32px);padding-bottom:calc(80px + env(safe-area-inset-bottom))}.studio-app .sx-next-step{grid-template-columns:1fr}.studio-app .sx-next-visual{display:none}}
 @media(max-width:540px){.studio-app .studio-header-inner{height:59px}.studio-app .studio-content{padding-top:9px;width:calc(100% - 22px)}.studio-app .v3-taskbar-title>span:last-child{display:none}.studio-app .v3-taskbar{margin-bottom:11px}.studio-app .v3-taskbar-actions a{font-size:.7rem;padding:7px 8px}.studio-app .sx-welcome h1{font-size:1.8rem}.studio-app .sx-next-content{padding:16px}.studio-app .sx-quick-card{min-height:100px}}
+
+.studio-app .v3-note-check{flex:none;min-width:35px;height:35px;display:grid;place-items:center;border-radius:10px;border:1px solid #ceddc8;background:#f3f7ed;color:#547760;font:700 .76rem var(--font-technical),monospace;}
+.studio-app .v3-note-check.is-checked{background:#325d3f;color:#fff;border-color:#325d3f;}
+.studio-app .v3-note-points li>span{padding-top:5px;font-size:.85rem;line-height:1.5;flex:1;}
+.studio-app .v3-session-hint{font-size:.72rem;color:#67816d;}

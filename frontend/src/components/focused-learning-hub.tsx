@@ -26,6 +26,7 @@ export function FocusedLearningHub(){
  const preferred=selectedCareer?.skills[0]?.skillId ?? preferences.learning.selectedSkillIds[0] ?? "javascript";
  const [skillId,setSkillId]=useState(querySkill && skillLearningGuides[querySkill]?querySkill:preferred);
  const [mode,setMode]=useState<Mode>("docs");
+ const [reviewed,setReviewed]=useState<Record<string,readonly number[]>>({});
  useEffect(()=>{if(querySkill && skillLearningGuides[querySkill])setSkillId(querySkill);},[querySkill]);
  const guide=skillLearningGuides[skillId]??skillLearningGuides.javascript;
  const skill=skills.find(item=>item.id===guide.skillId);
@@ -79,7 +80,17 @@ export function FocusedLearningHub(){
        </>:<>
          <h2>Remember the essentials.</h2>
          <p>Short Skillmetry-written revision notes; use the full docs and lecture for deeper explanations.</p>
-         <ul className="v3-note-points">{guide.notes.map((note,i)=><li key={note}><span>{String(i+1).padStart(2,"0")}</span>{note}</li>)}</ul>
+         <ul className="v3-note-points">{guide.notes.map((note,i)=>{
+           const complete=(reviewed[guide.skillId]??[]).includes(i);
+           return <li key={note}><button type="button"
+             className={"v3-note-check "+(complete?"is-checked":"")}
+             aria-pressed={complete} aria-label={(complete?"Unmark":"Mark")+" note "+(i+1)+" reviewed"}
+             onClick={()=>setReviewed(current=>{const existing=current[guide.skillId]??[];
+               return {...current,[guide.skillId]:complete?existing.filter(n=>n!==i):[...existing,i]};})}>
+             {complete?"✓":String(i+1).padStart(2,"0")}
+           </button><span>{note}</span></li>;
+         })}</ul>
+         <p className="v3-session-hint">{(reviewed[guide.skillId]??[]).length} of {guide.notes.length} reviewed this session. This is self-check only, not graded proficiency.</p>
        </>}
        <div className="v3-do-next"><div><span className="v3-kicker"><CheckCircle2 size={13} aria-hidden="true"/> TRY THIS NEXT</span><p>{guide.challenge}</p></div>
          <Link href={quiz?"/assessments?assessment="+encodeURIComponent(quiz.id):"/lab"} className="v3-secondary-link">{quiz?"Check understanding":"Practice"} <ArrowRight size={16} aria-hidden="true"/></Link>

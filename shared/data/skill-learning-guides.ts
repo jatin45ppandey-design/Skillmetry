@@ -53,8 +53,8 @@ const guides: SkillLearningGuide[] = [
       "url": "https://www.khanacademy.org/math/statistics-probability"
     },
     "lecture": {
-      "title": "Statistics for data science with Python",
-      "url": "https://www.freecodecamp.org/news/learn-pandas-for-data-science/",
+      "title": "Statistics and A/B testing — practical video-led course",
+      "url": "https://www.freecodecamp.org/news/learn-python-for-data-science-hands-on-projects-with-eda-ab-testing-business-intelligence",
       "format": "course-with-video"
     },
     "notes": [
@@ -107,7 +107,7 @@ const guides: SkillLearningGuide[] = [
       "url": "https://scikit-learn.org/stable/modules/model_evaluation.html"
     },
     "lecture": {
-      "title": "Scikit-learn metrics crash course",
+      "title": "Scikit-learn evaluation and metrics video course",
       "url": "https://www.freecodecamp.org/news/learn-scikit-learn",
       "format": "course-with-video"
     },
@@ -197,9 +197,9 @@ const guides: SkillLearningGuide[] = [
       "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics"
     },
     "lecture": {
-      "title": "CSS full course for beginners",
-      "url": "https://www.youtube.com/watch?v=OXGznpKZ_sA",
-      "format": "video"
+      "title": "Comprehensive CSS video course",
+      "url": "https://www.freecodecamp.org/news/learn-css-in-11-hours",
+      "format": "course-with-video"
     },
     "notes": [
       "The box model controls spacing and sizing.",
@@ -215,8 +215,8 @@ const guides: SkillLearningGuide[] = [
       "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"
     },
     "lecture": {
-      "title": "JavaScript for beginners with exercises",
-      "url": "https://www.youtube.com/watch?v=PkZNo7MFNFg",
+      "title": "JavaScript fundamentals with exercises — video course",
+      "url": "https://www.youtube.com/watch?v=Zi-Q0t4gMC8",
       "format": "video"
     },
     "notes": [
@@ -269,8 +269,8 @@ const guides: SkillLearningGuide[] = [
       "url": "https://web.dev/learn/accessibility"
     },
     "lecture": {
-      "title": "Accessibility guided curriculum",
-      "url": "https://web.dev/learn/accessibility",
+      "title": "Web accessibility by solving coding challenges",
+      "url": "https://www.youtube.com/watch?v=e2nkq3h1P68",
       "format": "video"
     },
     "notes": [
@@ -287,7 +287,7 @@ const guides: SkillLearningGuide[] = [
       "url": "https://vitest.dev/guide/"
     },
     "lecture": {
-      "title": "JavaScript unit testing with Jest",
+      "title": "Test JavaScript using Jest — guided video course",
       "url": "https://www.freecodecamp.org/news/how-to-test-javascript-code-with-jest",
       "format": "course-with-video"
     },
