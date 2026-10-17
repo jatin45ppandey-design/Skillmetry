@@ -16,7 +16,7 @@
 ## Activation prerequisites (NOT performed)
 
 1. Run all migrations through `202610170001_admin_learning_guides.sql` in a disposable or authorized staging Supabase database.
-2. Run pgTAP and two-user authenticated E2E testing before any hosted operation.
+2. Run pgTAP and two-user authenticated E2E testing before any hosted operation. The disposable CI suite now tests owner enrollment, denied student edits, draft privacy, publish, stale update rejection and history.
 3. A database operator explicitly inserts the **intended existing authenticated user's UUID** into `public.admin_members` with `role='owner'`. Never infer owner from first account, email or public signup.
 4. Set `SKILLMETRY_ADMIN_STUDIO_ENABLED=true` only on that verified environment, then test `/admin`.
 5. Test owner/editor/reviewer permissions, two-browser draft conflicts, publish, reload, student-facing guide updates and keyboard/mobile behavior.
