@@ -23,6 +23,8 @@ export function AccountPanel(){
  const [signOutError,setSignOutError]=useState<string|null>(null);
  const savedProfile=Boolean(user&&profileSource==="student"&&onboardingCompleted&&cloudOwnerId===user.id);
  const savedCareer=savedProfile?careers.find(c=>c.id===careerId):null;
+ const profilePending=syncStatus==="loading"||syncStatus==="saving";
+ const profileUnavailable=syncStatus==="error"||syncStatus==="offline";
  const statusTone=syncStatus==="synced"?"success":syncStatus==="error"||syncStatus==="offline"?"warning":"accent";
 
  async function signOut(){
@@ -47,13 +49,13 @@ export function AccountPanel(){
     {(syncStatus==="error"||syncStatus==="offline")?<button className="btn btn-outline" type="button" onClick={retrySync}><RefreshCw aria-hidden="true"/>Retry sync</button>:null}
    </section>
    <section className="panel account-data sx-account-learning">
-    <div className="panel-header"><div><span className="eyebrow">Your learning profile</span><h2>{savedProfile?"Saved learning direction":"Choose your learning direction"}</h2></div><Cloud aria-hidden="true"/></div>
+    <div className="panel-header"><div><span className="eyebrow">Your learning profile</span><h2>{savedProfile?"Saved learning direction":profilePending?"Checking your profile":profileUnavailable?"Learning profile temporarily unavailable":"Choose your learning direction"}</h2></div><Cloud aria-hidden="true"/></div>
     {savedProfile?<dl>
       <div><dt>Student</dt><dd>{name}</dd></div>
       <div><dt>Career goal</dt><dd>{savedCareer?.title??"Independent skills"}</dd></div>
       <div><dt>Verified quiz attempts</dt><dd>{assessmentStatus==="loading"?"Loading…":assessmentStatus==="error"||assessmentStatus==="offline"?"Unavailable":attempts.length}</dd></div>
       <div><dt>Source</dt><dd>Saved student profile</dd></div>
-    </dl>:<div className="sx-account-setup" role="status">
+    </dl>:profilePending?<div className="sx-account-setup" role="status"><strong>Loading your saved learning profile…</strong><p>We are checking your private account before showing goal information.</p></div>:profileUnavailable?<div className="sx-account-setup" role="status"><strong>Profile could not be confirmed</strong><p>Reconnect or retry sync to confirm the current saved goals. Your quiz results are not replaced with demo values.</p></div>:<div className="sx-account-setup" role="status">
       <strong>No saved career setup yet</strong>
       <p>Your account is signed in, but the default illustrative learning profile is not your saved profile. Choose your goals to personalize Skillmetry.</p>
       <span>{assessmentStatus==="ready"?`${attempts.length} verified quiz attempt(s) are still preserved in your account.`:"Your quiz history is kept separate from sample data."}</span>
