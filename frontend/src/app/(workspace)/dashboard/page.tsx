@@ -43,8 +43,8 @@ export default function Dashboard() {
     ]).then(async([catalog,activity])=>{
       if(!catalog.ok||!activity.ok)return null;
       const a=await catalog.json() as {courses?:ResumeCourse[]};
-      const b=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[]};
-      if(!b.enabled)return null;
+      const b=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[];truncated?:boolean};
+      if(!b.enabled||b.truncated)return null;
       return selectCourseContinuation(a.courses??[],b.progress??[]);
     }).then(next=>{if(!controller.signal.aborted)setResume(next);}).catch(()=>{
       // Resume is optional: do not hide verified assessment recommendations on failure.
