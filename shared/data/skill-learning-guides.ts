@@ -269,9 +269,9 @@ const guides: SkillLearningGuide[] = [
       "url": "https://web.dev/learn/accessibility"
     },
     "lecture": {
-      "title": "Accessibility course — web.dev teaching modules",
-      "url": "https://web.dev/learn/accessibility",
-      "format": "interactive-course"
+      "title": "Accessible web development — coding challenges",
+      "url": "https://www.youtube.com/watch?v=e2nkq3h1P68",
+      "format": "video"
     },
     "notes": [
       "Keyboard access and focus order are fundamental.",
@@ -287,8 +287,8 @@ const guides: SkillLearningGuide[] = [
       "url": "https://vitest.dev/guide/"
     },
     "lecture": {
-      "title": "Practical JavaScript testing overview",
-      "url": "https://www.freecodecamp.org/news/learn-javascript-with-clear-explanations/",
+      "title": "JavaScript unit testing with Jest",
+      "url": "https://www.youtube.com/watch?v=IPiUDhwnZxA",
       "format": "course-with-video"
     },
     "notes": [
