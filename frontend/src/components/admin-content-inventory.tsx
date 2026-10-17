@@ -45,10 +45,10 @@ export function AdminContentInventory({onManage,role}:{onManage:(key:ContentModu
      {data.map(row=><article key={row.key} className="sx-admin-inventory-card">
        <h3>{labels[row.key]}</h3>
        <div className="sx-admin-inventory-metrics">
-         <span><strong>{row.total}</strong> total</span><span><strong>{row.published}</strong> published</span>
-         <span><strong>{row.drafts}</strong> to review</span>
+         <span><strong>{row.total}</strong> {row.truncated?"shown":"total"}</span><span><strong>{row.published}</strong> published{row.truncated?" shown":""}</span>
+         <span><strong>{row.drafts}</strong> to review{row.truncated?" shown":""}</span>
        </div>
-       <small>{row.truncated?"Showing first 250 items · more may exist":
+       <small>{row.truncated?"Showing newest 250 items; counts exclude older content":
          row.lastUpdated?"Last edited "+new Date(row.lastUpdated).toLocaleDateString():"No saved content yet"}</small>
        <button className="btn btn-outline" type="button" onClick={()=>onManage(row.key)}>
          Open editor <ArrowRight size={16} aria-hidden="true"/></button>
