@@ -1,3 +1,4 @@
+import {approvedPublication} from "@skillmetry/backend/lib/admin/editorial-review.server";
 import {NextResponse} from "next/server";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
 import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
@@ -32,6 +33,11 @@ export async function PUT(request:Request){
    issues:parsed.error.flatten().fieldErrors},{status:400,headers});
  if(parsed.data.publish&&session.role!=="owner")
    return NextResponse.json({error:"Only owner can publish."},{status:403,headers});
+ if(parsed.data.publish){
+   const approval=await approvedPublication(session.admin,"roadmaps",parsed.data.careerId,
+     parsed.data.expectedRevision,parsed.data.draft);
+   if(!approval.ok)return NextResponse.json({error:approval.reason},{status:409,headers});
+ }
  const {data,error:writeError}=await session.admin.rpc("save_admin_career_roadmap",{
    p_actor:session.userId,p_career_id:parsed.data.careerId,
    p_draft:parsed.data.draft,p_expected_revision:parsed.data.expectedRevision,

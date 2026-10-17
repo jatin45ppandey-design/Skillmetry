@@ -1,3 +1,4 @@
+import {approvedPublication} from "@skillmetry/backend/lib/admin/editorial-review.server";
 import {NextResponse} from "next/server";
 import {skills} from "@skillmetry/shared/data/catalog";
 import {saveAdminGuideSchema} from "@skillmetry/shared/lib/admin-content";
@@ -36,6 +37,11 @@ export async function PUT(request:Request){
    return NextResponse.json({error:"Invalid learning guide update.",issues:input.success?undefined:input.error.flatten().fieldErrors},
      {status:400,headers});
  if(input.data.publish&&session.role!=="owner")return unavailable("forbidden");
+ if(input.data.publish){
+   const approval=await approvedPublication(session.admin,"guides",input.data.skillId,
+     input.data.expectedRevision,input.data.draft);
+   if(!approval.ok)return NextResponse.json({error:approval.reason},{status:409,headers});
+ }
  const {data,error}=await session.admin.rpc("save_admin_skill_guide",{
    p_actor:session.userId,p_skill_id:input.data.skillId,p_draft:input.data.draft,
    p_expected_revision:input.data.expectedRevision,p_publish:input.data.publish

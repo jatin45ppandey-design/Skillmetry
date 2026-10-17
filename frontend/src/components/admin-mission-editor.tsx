@@ -1,4 +1,5 @@
 "use client";
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 import {useEffect,useState} from "react";
 import {ClipboardList,Plus,Save,Send,Trash2,ArrowUp,ArrowDown} from "lucide-react";
 import {careers,skillById} from "@skillmetry/shared/data/catalog";
@@ -211,6 +212,7 @@ export function AdminMissionEditor({role,onDirtyChange}:{role:Role;onDirtyChange
          </article>
        </div>
      </fieldset>
+     <AdminReviewRequest module="missions" contentId={id} revision={current?.revision??0} changed={changed} role={role}/>
      <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
        <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>

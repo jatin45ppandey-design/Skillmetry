@@ -1,8 +1,9 @@
 "use client";
 import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
-import {useCallback,useEffect,useState} from "react";
+import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
+import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
 
 type Exercise={id:string;skillId:string;title:string;kind:"choice"|"fill";prompt:string;snippet:string;
  difficulty:string;choices?:readonly string[]};
@@ -22,6 +23,16 @@ export default function Lab(){
   const [saved,setSaved]=useState(false);
   const [filter,setFilter]=useState("all");
   const [query,setQuery]=useState("");
+  const linkedSkillApplied=useRef(false);
+  useEffect(()=>{
+    if(linkedSkillApplied.current||!exercises.length)return;
+    linkedSkillApplied.current=true;
+    const value=new URLSearchParams(window.location.search).get("skill");
+    if(value&&exercises.some(item=>item.skillId===value)){
+      setFilter(value);setActive(exercises.find(item=>item.skillId===value)?.id??null);
+      setChoice(null);setText("");setFeedback(null);
+    }
+  },[exercises]);
   const load=useCallback(async()=>{
     try{
       const response=await fetch("/api/learning/lab",{cache:"no-store"});
@@ -36,9 +47,10 @@ export default function Lab(){
   const visible=exercises.filter(x=>(filter==="all"||x.skillId===filter)&&
     (x.title+" "+x.skillId+" "+x.difficulty).toLowerCase().includes(query.trim().toLowerCase()));
   const current=visible.find(x=>x.id===active)??visible[0];
+  const matchingAssessment=current?assessmentCatalog.find(a=>a.skillId===current.skillId):null;
   function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);}
   async function submit(){
-    if(!current)return;
+    if(!current||pending||feedback)return;
     setPending(true);setError(null);
     try{
       const response=await fetch("/api/learning/lab",{method:"POST",
@@ -68,9 +80,9 @@ export default function Lab(){
     {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
     <div className="workflow-lab-grid sx-lab-workspace">
       <section className="panel sx-lab-library" aria-label="Challenge library"><h2>Challenge library <small>{visible.length} available</small></h2>
-        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>setQuery(e.target.value)}/></label>
+        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>{setQuery(e.target.value);setFeedback(null);setChoice(null);setText("");}}/></label>
         {visible.length===0?<p role="status">No matching exercises. <button type="button" className="text-button" onClick={()=>{setQuery("");setFilter("all");}}>Reset filters</button></p>:null}
-        {visible.map(exercise=><button aria-pressed={active===exercise.id} className={"btn "+(active===exercise.id?"btn-primary":"btn-outline")}
+        {visible.map(exercise=><button aria-pressed={current?.id===exercise.id} className={"btn "+(current?.id===exercise.id?"btn-primary":"btn-outline")}
           type="button" key={exercise.id} style={{display:"block",width:"100%",textAlign:"left",margin:"9px 0"}}
           onClick={()=>choose(exercise.id)}>{exercise.title} · {exercise.skillId}</button>)}
       </section>
@@ -101,6 +113,7 @@ export default function Lab(){
                   choose(visible[(index+1)%visible.length]?.id??current.id);
                 }}>Try next challenge →</button>
                 <Link href={"/resources?skill="+encodeURIComponent(current.skillId)} className="btn btn-quiet">Study this topic</Link>
+                <Link href={matchingAssessment?"/assessments?assessment="+encodeURIComponent(matchingAssessment.id):"/assessments"} className="btn btn-quiet">{matchingAssessment?"Assess this skill":"Browse verified assessments"}</Link>
               </div>
             </div>}
         </>:<p>Select a challenge to get started.</p>}

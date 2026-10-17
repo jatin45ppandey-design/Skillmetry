@@ -1,3 +1,4 @@
+import {approvedPublication} from "@skillmetry/backend/lib/admin/editorial-review.server";
 import {NextResponse} from "next/server";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
 import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
@@ -35,6 +36,11 @@ export async function PUT(request:Request){
    issues:input.error.flatten().fieldErrors},{status:400,headers});
  if(input.data.publish&&session.role!=="owner")
    return NextResponse.json({error:"Only the owner may publish question banks."},{status:403,headers});
+ if(input.data.publish){
+   const approval=await approvedPublication(session.admin,"assessments",input.data.assessmentId,
+     input.data.expectedRevision,input.data.draft);
+   if(!approval.ok)return NextResponse.json({error:approval.reason},{status:409,headers});
+ }
  const {data,error:dbError}=await session.admin.rpc("save_admin_assessment_bank",{
    p_actor:session.userId,p_assessment_id:input.data.assessmentId,
    p_draft:input.data.draft,p_expected_revision:input.data.expectedRevision,p_publish:input.data.publish

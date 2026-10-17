@@ -1,0 +1,77 @@
+/* Product phases 1–5: honest course activity, editorial inventory and opt-in usability studies.
+   Matches established cream / forest / sage components. No score or auth customization. */
+.studio-app .sx-course-next-actions{display:flex;gap:9px;flex-wrap:wrap;padding-top:11px;border-top:1px solid #d9e3d5;margin-top:auto}
+.studio-app .sx-course-next-actions .btn{min-height:41px;font-size:.78rem}
+.studio-app .sx-lesson-completion{border:1px solid #aec7aa;background:#edf6e8;color:#2a5837;min-height:39px;border-radius:9px;padding:8px 12px;font-size:.76rem;font-weight:710;cursor:pointer}
+.studio-app .sx-lesson-completion[aria-pressed="true"]{background:#285e3c;color:#fffdf5;border-color:#285e3c}
+.studio-app .sx-lesson-completion:disabled{opacity:.7;cursor:progress}
+.studio-app .sx-lesson-completion:not(:disabled):hover{box-shadow:0 3px 10px #22503622}
+.studio-app .sx-course-module ol>li{padding:10px 0;border-bottom:1px solid #d6e5d1}
+.studio-app .sx-course-module ol>li:last-child{border-bottom:0}
+.studio-app .sx-product-feedback-cta{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:16px 0;padding:17px 20px;background:#e8f0e2;border:1px solid #d0dfca;border-radius:14px}
+.studio-app .sx-product-feedback-cta strong{font-size:.96rem}
+.studio-app .sx-product-feedback-cta p{font-size:.77rem;line-height:1.45;color:#5b755f;margin:5px 0 0;max-width:610px}
+
+/* Editorial inventory: data is private editor counts only, never answer keys. */
+.admin-studio-shell .sx-admin-inventory{padding:clamp(16px,2.2vw,30px);background:#fffdf5;border:1px solid #d4dfcd;border-radius:16px;min-width:0;}
+.admin-studio-shell .sx-admin-inventory-heading{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:17px}
+.admin-studio-shell .sx-admin-inventory-heading h2{font:740 clamp(1.4rem,2.2vw,1.95rem)/1.15 var(--font-display),sans-serif;letter-spacing:-.045em;color:#294b35;margin:7px 0}
+.admin-studio-shell .sx-admin-inventory-heading p{color:#5e7361;font-size:.81rem;margin:0;line-height:1.5}
+.admin-studio-shell .sx-admin-inventory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-studio-shell .sx-admin-inventory-card{display:flex;flex-direction:column;gap:13px;border:1px solid #d1e0cc;background:#f2f6ec;padding:17px;border-radius:13px;min-width:0;}
+.admin-studio-shell .sx-admin-inventory-card h3{font-size:1.02rem;margin:0;color:#294a32}
+.admin-studio-shell .sx-admin-inventory-metrics{display:flex;flex-wrap:wrap;gap:8px}
+.admin-studio-shell .sx-admin-inventory-metrics span{background:#fffefa;border:1px solid #d9e5d4;padding:8px 10px;border-radius:8px;font-size:.75rem;color:#54705a}
+.admin-studio-shell .sx-admin-inventory-metrics strong{color:#244f32;font-size:1.1rem}
+.admin-studio-shell .sx-admin-inventory-card small{font-size:.73rem;color:#637a67;margin-top:auto}
+.admin-studio-shell .sx-admin-inventory-card button{align-self:start}
+.admin-studio-shell .sx-admin-inventory-trust{display:flex;align-items:center;gap:8px;font-size:.74rem;line-height:1.45;color:#59715c;margin:16px 0 0}
+.admin-studio-shell .sx-admin-inventory-error{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:#a03b30}
+
+/* Study page stores nothing or sends no telemetry; export is user-controlled. */
+.studio-app .sx-feedback-page{max-width:1040px;margin-inline:auto;display:grid;gap:15px;color:#294a33}
+.studio-app .sx-feedback-head h1{font:750 clamp(2rem,3.4vw,3.2rem)/1.09 var(--font-display),sans-serif;letter-spacing:-.06em;margin:9px 0}
+.studio-app .sx-feedback-head p{max-width:760px;font-size:.91rem;line-height:1.56;color:#556e5a}
+.studio-app .sx-feedback-trust{display:flex;gap:12px;align-items:start;background:#e7f0df;border:1px solid #c4d8bd;border-radius:13px;padding:14px}
+.studio-app .sx-feedback-trust p{margin:0;font-size:.82rem;line-height:1.5}
+.studio-app .sx-feedback-tasks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.studio-app .sx-feedback-task,.studio-app .sx-feedback-finish{background:#fffdf6;border:1px solid #d8e2d3;border-radius:14px;padding:17px;display:grid;gap:12px}
+.studio-app .sx-feedback-task-head{display:flex;align-items:start;justify-content:space-between;gap:10px}
+.studio-app .sx-feedback-task-head h2{font-size:1rem;line-height:1.35;margin:5px 0}
+.studio-app .sx-feedback-task-head a{white-space:nowrap;font-size:.75rem;color:#2e613b;text-decoration:underline;text-underline-offset:3px}
+.studio-app .sx-feedback-task label,.studio-app .sx-feedback-finish>label{display:grid;gap:7px;font-size:.78rem;font-weight:710;color:#40624b}
+.studio-app .sx-feedback-task :is(select,textarea),.studio-app .sx-feedback-finish textarea{width:100%;min-width:0;min-height:42px;border:1px solid #bed0b9;border-radius:9px;background:#fffef9;padding:9px 11px;color:#264832;font:500 .85rem var(--font-ui),sans-serif}
+.studio-app .sx-feedback-finish .sx-feedback-consent{display:flex;flex-direction:row;align-items:start;gap:10px;font-size:.8rem}
+.studio-app .sx-feedback-finish .sx-feedback-consent input{margin-top:4px}
+.studio-app .sx-feedback-finish>.btn{justify-self:start}
+@media(max-width:900px){.studio-app .sx-feedback-tasks{grid-template-columns:1fr}}
+@media(max-width:760px){.admin-studio-shell .sx-admin-inventory-grid{grid-template-columns:1fr}.studio-app .sx-product-feedback-cta .btn{width:100%;justify-content:center}}
+@media(max-width:460px){.studio-app .sx-feedback-task-head{flex-direction:column}.studio-app .sx-feedback-finish>.btn{width:100%}}
+@media(prefers-reduced-motion:reduce){.studio-app .sx-lesson-completion,.admin-studio-shell .sx-admin-inventory-card{transition:none!important;animation:none!important}}
+
+
+/* Opt-in editorial approval queue and per-editor revision state. */
+.admin-studio-shell .sx-admin-review-request{display:flex;flex-direction:column;gap:9px;margin-top:15px;padding:13px;border:1px solid #cbddc4;border-radius:11px;background:#eef6e8;}
+.admin-studio-shell .sx-admin-review-request>div:first-child{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:.82rem;color:#315941;}
+.admin-studio-shell .sx-admin-review-request>div:first-child>span{display:inline-flex;align-items:center;gap:5px;color:#57745c;font-size:.76rem;}
+.admin-studio-shell .sx-admin-review-request .btn{align-self:flex-start;}
+.admin-studio-shell .sx-admin-review-request p,.admin-studio-shell .sx-admin-review-request small{margin:0;font-size:.73rem;color:#547359;line-height:1.45;}
+.admin-studio-shell .sx-admin-review-queue{border-top:1px solid #d4e0cf;margin-top:19px;padding-top:16px;}
+.admin-studio-shell .sx-admin-review-queue-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px;}
+.admin-studio-shell .sx-admin-review-queue-head h3{margin:6px 0;font-size:1.14rem;}
+.admin-studio-shell .sx-admin-review-row{display:flex;gap:15px;flex-wrap:wrap;justify-content:space-between;align-items:start;padding:14px;border:1px solid #d8e4d4;border-radius:11px;margin:9px 0;background:#f4f8f0;}
+.admin-studio-shell .sx-admin-review-row>div:first-child{display:grid;gap:5px;}
+.admin-studio-shell .sx-admin-review-row small,.admin-studio-shell .sx-admin-review-waiting{font-size:.72rem;color:#617c65;}
+.admin-studio-shell .sx-admin-review-controls{display:flex;align-items:end;gap:9px;flex-wrap:wrap;}
+.admin-studio-shell .sx-admin-review-controls label{display:grid;gap:5px;flex:1 1 185px;font-size:.73rem;}
+.admin-studio-shell .sx-admin-review-controls textarea{width:100%;min-width:180px;border:1px solid #bed3ba;border-radius:8px;background:#fffdf5;padding:8px;color:#244a35;}
+@media(max-width:680px){
+ .admin-studio-shell .sx-admin-review-queue-head{flex-wrap:wrap;}
+ .admin-studio-shell .sx-admin-review-controls{width:100%}
+ .admin-studio-shell .sx-admin-review-controls label{flex-basis:100%;}
+ .admin-studio-shell .sx-admin-review-controls textarea{min-width:0}
+ .admin-studio-shell .sx-admin-review-controls .btn{flex:1}
+}
+@media(prefers-reduced-motion:reduce){
+ .admin-studio-shell .sx-admin-review-request,.admin-studio-shell .sx-admin-review-row{animation:none!important;transition:none!important;}
+}

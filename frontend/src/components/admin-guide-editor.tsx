@@ -1,4 +1,5 @@
 "use client";
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 import {useEffect,useMemo,useState} from "react";
 import {BookOpen,FileText,History,PlayCircle,Save,Send,ShieldCheck} from "lucide-react";
 import {skills} from "@skillmetry/shared/data/catalog";
@@ -155,6 +156,7 @@ export function AdminGuideEditor({role,onDirtyChange}:{role:Role;onDirtyChange?:
            onChange={e=>setDraft(old=>({...old,challenge:e.target.value}))}/></label>
        </div>}
      </fieldset>
+     <AdminReviewRequest module="guides" contentId={selected} revision={revision} changed={changed} role={role}/>
      <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(current?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview">
        <span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(current?.published)?"A published version also exists":"Not yet published"}</span>
