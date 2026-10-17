@@ -65,6 +65,7 @@ export function AdminReviewQueue({role}:{role:Role}){
  const [note,setNote]=useState<Record<string,string>>({});
  const [error,setError]=useState("");
  const [loading,setLoading]=useState(true);
+ const [view,setView]=useState<"pending"|"approved"|"changes_requested">("pending");
  const refresh=useCallback(async()=>{
    setLoading(true);setError("");
    try{
@@ -96,11 +97,18 @@ export function AdminReviewQueue({role}:{role:Role}){
      disabled={loading} onClick={()=>void refresh()}>Refresh</button></div>
    {loading?<ActivityIndicator compact label="Loading review decisions…"/>:null}
    {error?<p role="alert">{error}</p>:null}
-   {!loading&&!items.some(row=>row.status==="pending")?<p>No requests awaiting review.</p>:null}
-   {items.filter(row=>row.status==="pending").map(row=><article className="sx-admin-review-row" key={row.id}>
+   {enabled?<div className="sx-admin-review-filter" role="group" aria-label="Filter editorial reviews">
+     {(["pending","approved","changes_requested"] as const).map(state=><button type="button"
+        key={state} aria-pressed={view===state} onClick={()=>setView(state)}>
+        {state==="pending"?"Awaiting review":state==="approved"?"Approved":"Changes requested"}
+        <span>{items.filter(item=>item.status===state).length}</span>
+     </button>)}
+   </div>:null}
+   {!loading&&!items.some(row=>row.status===view)?<p role="status">No reviews in this status.</p>:null}
+   {items.filter(row=>row.status===view).map(row=><article className="sx-admin-review-row" key={row.id}>
      <div><strong>{row.module} · {row.content_id}</strong>
        <small>Saved revision {row.requested_revision} · Requested {new Date(row.requested_at).toLocaleDateString()}</small></div>
-     {role==="reviewer"?<div className="sx-admin-review-controls">
+     {role==="reviewer"&&row.status==="pending"?<div className="sx-admin-review-controls">
        <label>Optional decision note<textarea rows={2} maxLength={600} value={note[row.id]??""}
          onChange={event=>setNote(old=>({...old,[row.id]:event.target.value}))}/></label>
        <button type="button" className="btn btn-outline" disabled={pending!==null}
