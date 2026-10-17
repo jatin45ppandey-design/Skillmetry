@@ -53,12 +53,13 @@ describe("Meaningful loading, not fake progress",()=>{
    expect(sim).not.toContain("Simulating your grade");
  });
  it("has route fallbacks without corrupting revoked public-link HTTP status",()=>{
-   const pages=["../frontend/src/app/loading.tsx",
+   const pages=[
     "../frontend/src/app/(workspace)/loading.tsx",
     "../frontend/src/app/auth/loading.tsx",
     "../frontend/src/app/account/loading.tsx",
     "../frontend/src/app/onboarding/loading.tsx"];
    for(const path of pages)expect(read(path)).toContain("ContentSkeleton");
    expect(existsSync(new URL("../frontend/src/app/passport/share/[token]/loading.tsx",import.meta.url))).toBe(false);
+   expect(existsSync(new URL("../frontend/src/app/loading.tsx",import.meta.url))).toBe(false);
  });
 });
