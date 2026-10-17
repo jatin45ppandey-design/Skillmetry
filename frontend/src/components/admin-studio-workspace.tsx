@@ -56,7 +56,7 @@ export function AdminStudioWorkspace({role}:{role:Role}){
      </select>
    </div>
    <div className="admin-active-module">
-   {mode==="inventory"?<AdminContentInventory onManage={changeMode}/>:
+   {mode==="inventory"?<AdminContentInventory onManage={changeMode} role={role}/>:
     mode==="guides"?<AdminGuideEditor role={role} onDirtyChange={setGuideDirty}/>:
      mode==="roadmaps"?<AdminRoadmapEditor role={role} onDirtyChange={setRoadmapDirty}/>:
      mode==="courses"?<AdminCourseEditor role={role} onDirtyChange={setCourseDirty}/>:
