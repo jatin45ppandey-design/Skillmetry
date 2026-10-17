@@ -24,7 +24,7 @@ export function summarizeUsability(exports){
      }
    }
  }
- return {participants:accepted,notStatisticallyRepresentative:accepted<10,
+ return {exportsAnalyzed:accepted,uniqueParticipantsNotVerifiable:true,notStatisticallyRepresentative:accepted<10,
   summary:[...counts].map(([task,row])=>({task,tested:row.tested,completed:row.yes,partly:row.partly,failed:row.no,
     completionRate:row.tested?Math.round(100*row.yes/row.tested):null,
     meanDifficulty:row.difficultyRated?Math.round(row.difficultyTotal/row.difficultyRated*10)/10:null
@@ -47,7 +47,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  else{
    try{
      const result=await analyzeFiles(paths);
-     if(result.participants<5)console.warn("Preliminary observations only: fewer than five supplied consented feedback exports.");
+     if(result.exportsAnalyzed<5)console.warn("Preliminary observations only: fewer than five supplied consented feedback exports.");
      console.log(JSON.stringify(result,null,2));
    }catch{console.error("Unable to analyze the provided local exports. Check their JSON format and file size.");process.exitCode=1;}
  }
