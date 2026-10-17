@@ -27,10 +27,10 @@ export async function GET(){
     notice:"Course progress saving is not enabled on this deployment."},{headers});
   const {data,error}=await auth.supabase.from("course_lesson_progress")
     .select("course_slug,lesson_id,published_revision,completed,completed_at")
-    .eq("user_id",auth.userId).eq("completed",true).limit(500);
+    .eq("user_id",auth.userId).eq("completed",true).limit(501);
   if(error)return NextResponse.json({error:"Saved course activity is temporarily unavailable."},
     {status:503,headers});
-  return NextResponse.json({enabled:true,progress:(data??[]).map(row=>({
+  return NextResponse.json({enabled:true,truncated:(data??[]).length>500,progress:(data??[]).slice(0,500).map(row=>({
     courseSlug:row.course_slug,lessonId:row.lesson_id,
     publishedRevision:row.published_revision,completed:row.completed,
     completedAt:row.completed_at
