@@ -48,7 +48,9 @@ describe("Meaningful loading, not fake progress",()=>{
    const quiz=read("../frontend/src/app/(workspace)/assessments/page.tsx");
    expect(quiz).toContain("Grading and saving your answers");
    const settings=read("../frontend/src/app/(workspace)/settings/page.tsx");
-   expect(settings).toContain("cloud sync will follow automatically");
+   expect(settings).toContain("Cloud confirmation is not yet available");
+   expect(settings).toContain('syncStatus==="saving"');
+   expect(settings).toContain('syncStatus==="synced"');
    const sim=read("../frontend/src/app/(workspace)/simulator/page.tsx");
    expect(sim).not.toContain("Simulating your grade");
  });
