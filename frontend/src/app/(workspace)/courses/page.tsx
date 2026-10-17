@@ -9,6 +9,7 @@ type Published=CoursePayload&{slug:string;skillId:string;version:number};
 export default function CoursesPage(){
  const [items,setItems]=useState<Published[]>([]);
  const [selected,setSelected]=useState<string>("all");
+ const [query,setQuery]=useState("");
  const [loading,setLoading]=useState(true);
  const [error,setError]=useState("");
  const [openCourse,setOpenCourse]=useState<string|null>(null);
@@ -33,7 +34,8 @@ export default function CoursesPage(){
    })();
    return()=>controller.abort();
  },[]);
- const filtered=useMemo(()=>items.filter(item=>selected==="all"||item.skillId===selected),[items,selected]);
+ const filtered=useMemo(()=>items.filter(item=>(selected==="all"||item.skillId===selected)&&
+   (item.title+" "+item.summary+" "+(skillById[item.skillId]?.label??"")).toLowerCase().includes(query.trim().toLowerCase())),[items,selected,query]);
  return <div className="course-student-page">
    <header className="course-student-head"><div><span className="v3-kicker">STRUCTURED LEARNING</span>
      <h1>Learn through small, practical lessons.</h1>
@@ -44,6 +46,8 @@ export default function CoursesPage(){
      <select id="course-skill" value={selected} onChange={e=>{setSelected(e.target.value);setOpenCourse(null);}}>
        <option value="all">All skills</option>{skills.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
      </select>
+     <label className="sx-course-search" htmlFor="course-search">Search courses
+       <input id="course-search" type="search" placeholder="Search title, skill…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
      <span>{filtered.length} published {filtered.length===1?"course":"courses"}</span>
    </div>
    {loading?<ActivityIndicator compact label="Loading published lessons…"/>:null}
@@ -66,8 +70,8 @@ export default function CoursesPage(){
          {openCourse===course.slug?"Hide lessons":"Explore course lessons"} <ArrowRight size={16}/>
        </button>
        {openCourse===course.slug?<div className="course-module-list">
-         {course.modules.map((module,mi)=><section key={module.id}>
-           <h3>Module {mi+1} · {module.title}</h3>
+         {course.modules.map((module,mi)=><details className="sx-course-module" key={module.id} open={course.modules.length===1?true:undefined}>
+           <summary><strong>Module {mi+1} · {module.title}</strong><span>{module.lessons.length} lessons</span></summary>
            <ol>{module.lessons.map((lesson,li)=><li key={lesson.id}>
              <div><strong>{li+1}. {lesson.title}</strong>
                <span><Clock size={13}/> {lesson.estimatedMinutes} min · {lesson.kind}</span>
@@ -79,7 +83,7 @@ export default function CoursesPage(){
                  Open published {lesson.kind==="video"?"video":"resource"} <ExternalLink size={13}/></a>:null}
              </div>
            </li>)}</ol>
-         </section>)}
+         </details>)}
        </div>:null}
      </article>)}
    </div>
