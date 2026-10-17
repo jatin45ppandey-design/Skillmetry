@@ -40,7 +40,7 @@ describe("Connected learning experience source contracts", () => {
   it("connects assessments, roadmap, resources and practice without altering scoring", () => {
     const assessment = read("../frontend/src/app/(workspace)/assessments/page.tsx");
     const roadmap = read("../frontend/src/app/(workspace)/roadmap/page.tsx");
-    expect(assessment).toContain('href="/lab"');
+    expect(assessment).toContain('href={"/lab?skill="+encodeURIComponent(safeResult.attempt.skillId)}');
     expect(assessment).toContain('"/resources?skill="');
     expect(assessment).toContain("View my progress");
     expect(roadmap).toContain('href="/lab"');
