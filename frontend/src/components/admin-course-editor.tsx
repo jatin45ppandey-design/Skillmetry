@@ -128,9 +128,9 @@ export function AdminCourseEditor({role,onDirtyChange}:{role:Role;onDirtyChange?
      <div className="admin-guide-state"><strong>{original?.published?"Published course":"Private draft / new course"}</strong>
        <small>Revision {original?.revision??0} · Published {original?.published_revision??0}</small>
        <small>{draft.modules.length} modules · {totalLessons} lessons</small></div>
-     <div className="admin-history" hidden={!history.length}><h3>Changes</h3>
+     <details className="admin-history" hidden={!history.length}><summary>Revision history · {history.length} entries</summary><h3>Changes</h3>
        {history.length?history.map(x=><p key={x.revision}>v{x.revision} · {x.action} · {new Date(x.created_at).toLocaleString()}</p>):
-         <p>No version history yet.</p>}</div>
+         <p>No version history yet.</p>}</details>
    </aside>
    <section className="admin-editor-main">
      <div className="admin-editor-heading"><span className="admin-eyebrow">COURSE / LESSON BUILDER</span>
@@ -189,13 +189,14 @@ export function AdminCourseEditor({role,onDirtyChange}:{role:Role;onDirtyChange?
        <button className="btn btn-outline" type="button" disabled={draft.modules.length>=12||totalLessons>=50}
          onClick={addModule}><Plus size={16}/> Add module</button>
      </fieldset>
+     <div className="sx-admin-anchor"><a href="#admin-save-actions">Jump to save & publish ↓</a></div>
      <details className="sx-admin-preview"><summary><span>Preview current editor content</span><small>{Boolean(original?.published)?"Published version exists · preview shows edits":"Not yet published"}</small></summary><div className="admin-editor-preview"><span className="admin-eyebrow">CURRENT EDITOR CONTENT · {Boolean(original?.published)?"A published version also exists":"Not yet published"}</span>
        <h3><BookOpen size={18}/> {draft.title}</h3><p>{draft.summary}</p>
        <ol>{draft.modules.map(m=><li key={m.id}>{m.title}: {m.lessons.map(l=>l.title).join(", ")}</li>)}</ol></div></details>
      {!valid.success?<p role="alert" className="auth-error">{valid.error.issues[0]?.message??"Complete course details."}</p>:null}
      {error?<p role="alert" className="auth-error">{error}</p>:null}
      {message?<ActionSuccess>{message}</ActionSuccess>:null}
-     <div className="admin-editor-actions"><span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid.success?"Ready for review":"Correct course fields"}</span>
+     <div id="admin-save-actions" className="admin-editor-actions"><span role="status" aria-live="polite">{changed?"Unsaved changes":"No unsaved edits"} · {valid.success?"Ready for review":"Correct course fields"}</span>
        <button className="btn btn-outline" type="button" disabled={loading||!!saving||role==="reviewer"||!valid.success}
          onClick={()=>void save(false)}><Save size={16}/>{saving==="draft"?"Saving…":"Save draft"}</button>
        <button className="btn btn-primary" type="button" disabled={loading||!!saving||role!=="owner"||!valid.success}
