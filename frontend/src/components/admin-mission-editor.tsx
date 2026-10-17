@@ -1,5 +1,5 @@
-import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 "use client";
+import {AdminReviewRequest} from "@/components/admin-editorial-reviews";
 import {useEffect,useState} from "react";
 import {ClipboardList,Plus,Save,Send,Trash2,ArrowUp,ArrowDown} from "lucide-react";
 import {careers,skillById} from "@skillmetry/shared/data/catalog";
