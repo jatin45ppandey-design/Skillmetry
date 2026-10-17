@@ -98,3 +98,14 @@
 .studio-app .v3-note-check.is-checked{background:#325d3f;color:#fff;border-color:#325d3f;}
 .studio-app .v3-note-points li>span{padding-top:5px;font-size:.85rem;line-height:1.5;flex:1;}
 .studio-app .v3-session-hint{font-size:.72rem;color:#67816d;}
+
+/* Correct shared SectionTitle element selector: almost every tool page uses it. */
+.studio-app .section-head{margin:0 0 13px;padding:3px 0 13px;gap:16px;align-items:center;}
+.studio-app .section-head h1{font-size:clamp(1.45rem,2.6vw,2.45rem);margin:5px 0;letter-spacing:-.045em;}
+.studio-app .section-head .eyebrow{font-size:.68rem;}
+.studio-app .section-head p{line-height:1.44;font-size:.81rem;max-width:720px;}
+.studio-app .section-head:before{height:2px;width:25px;}
+.studio-app .studio-evidence-cover-art{min-height:135px;}
+.studio-app .studio-evidence-cover{grid-template-columns:minmax(0,1.75fr) minmax(130px,.25fr);}
+.studio-app .studio-evidence-cover h2{margin:6px 0;font-size:clamp(1.4rem,2.2vw,2.3rem);}
+@media(max-width:760px){.studio-app .section-head{flex-direction:column;align-items:flex-start;gap:8px}.studio-app .section-head h1{font-size:1.55rem}.studio-app .studio-evidence-cover{grid-template-columns:1fr}.studio-app .studio-evidence-cover-art{display:none}.studio-app .section-action{width:100%}}
