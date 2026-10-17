@@ -1,6 +1,6 @@
 "use client";
 import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
-import {useCallback,useEffect,useState} from "react";
+import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 
@@ -22,6 +22,16 @@ export default function Lab(){
   const [saved,setSaved]=useState(false);
   const [filter,setFilter]=useState("all");
   const [query,setQuery]=useState("");
+  const linkedSkillApplied=useRef(false);
+  useEffect(()=>{
+    if(linkedSkillApplied.current||!exercises.length)return;
+    linkedSkillApplied.current=true;
+    const value=new URLSearchParams(window.location.search).get("skill");
+    if(value&&exercises.some(item=>item.skillId===value)){
+      setFilter(value);setActive(exercises.find(item=>item.skillId===value)?.id??null);
+      setChoice(null);setText("");setFeedback(null);
+    }
+  },[exercises]);
   const load=useCallback(async()=>{
     try{
       const response=await fetch("/api/learning/lab",{cache:"no-store"});
@@ -38,7 +48,7 @@ export default function Lab(){
   const current=visible.find(x=>x.id===active)??visible[0];
   function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);}
   async function submit(){
-    if(!current)return;
+    if(!current||pending||feedback)return;
     setPending(true);setError(null);
     try{
       const response=await fetch("/api/learning/lab",{method:"POST",
@@ -101,6 +111,7 @@ export default function Lab(){
                   choose(visible[(index+1)%visible.length]?.id??current.id);
                 }}>Try next challenge →</button>
                 <Link href={"/resources?skill="+encodeURIComponent(current.skillId)} className="btn btn-quiet">Study this topic</Link>
+                <Link href="/assessments" className="btn btn-quiet">Find a verified assessment</Link>
               </div>
             </div>}
         </>:<p>Select a challenge to get started.</p>}
