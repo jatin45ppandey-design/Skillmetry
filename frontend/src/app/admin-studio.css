@@ -45,3 +45,14 @@
 .admin-step-order button{min-width:36px;min-height:36px;border-radius:8px;border:1px solid #ccdacb;display:grid;place-items:center;background:#fff}
 .admin-step-order button:disabled{opacity:.34}
 .admin-editor-preview ol{padding-left:20px}
+
+.admin-course-fields{margin-top:20px}
+.admin-course-modules{display:grid;gap:18px;margin:25px 0}
+.admin-course-module{background:#edf4e6;border:1px solid #cfdfc7;border-radius:18px;padding:17px;display:grid;gap:14px}
+.admin-course-module>label,.admin-course-lesson>label{display:grid;gap:7px;color:#42664c;font-weight:700;font-size:.8rem}
+.admin-course-module input,.admin-course-module textarea,.admin-course-module select{border:1px solid #cbd7c6;border-radius:10px;padding:10px;background:white;color:#2a4b33;width:100%;min-height:44px;font:inherit}
+.admin-course-module-header,.admin-course-lesson header{display:flex;justify-content:space-between;align-items:center;gap:13px}
+.admin-course-module-header>button,.admin-course-lesson header>button{border:1px solid #d4ddd1;border-radius:9px;min-height:37px;min-width:37px;display:grid;place-items:center;color:#974a41}
+.admin-course-module-header button:disabled,.admin-course-lesson header button:disabled{opacity:.3}
+.admin-course-lesson{display:grid;gap:12px;background:#fffdf8;border:1px solid #e1e7dc;padding:16px;border-radius:13px}
+.admin-course-lesson header{color:#456a4f}

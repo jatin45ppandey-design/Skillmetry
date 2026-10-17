@@ -38,7 +38,7 @@ jobs:
             sleep 2
           done
           if [ "$READY" != 1 ]; then cat /tmp/skillmetry-public-smoke.log; exit 1; fi
-          for route in / /onboarding /dashboard /careers /roadmap /assessments /twin /planner /lab /missions /jobs /tutor /passport; do
+          for route in / /onboarding /dashboard /careers /roadmap /assessments /twin /planner /lab /missions /jobs /tutor /passport /courses; do
             status=$(curl -sS -o /dev/null -w '%{http_code}' "http://127.0.0.1:3101$route")
             echo "$route: $status"
             if [ "$status" != "200" ]; then cat /tmp/skillmetry-public-smoke.log; exit 1; fi

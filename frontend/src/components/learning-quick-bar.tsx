@@ -22,6 +22,7 @@ const sections:Record<string,{question:string;hint:string;actions:{href:string;l
  "/passport":{question:"What can I share?",hint:"Review your actual verified learning evidence before sharing.",actions:[{href:"/twin",label:"My progress",icon:"notes"},{href:"/assessments",label:"Improve evidence",icon:"quiz"}]},
  "/settings":{question:"What are my learning goals?",hint:"Choose a career or topic to personalize future steps.",actions:[{href:"/careers",label:"Explore careers",icon:"book"},{href:"/roadmap",label:"View my path",icon:"notes"}]},
  "/practice":{question:"Can I explain this topic?",hint:"Answer and review questions without changing verified quiz scores.",actions:[{href:"/resources",label:"Review notes",icon:"notes"},{href:"/assessments",label:"Assess",icon:"quiz"}]},
+ "/courses":{question:"What can I learn lesson by lesson?",hint:"Choose a course and work through one practical topic.",actions:[{href:"/resources",label:"Docs and videos",icon:"book"},{href:"/roadmap",label:"My skill path",icon:"notes"}]},
  "/resources":{question:"How do I want to learn?",hint:"Docs, video lectures and notes for the same topic.",actions:[{href:"/roadmap",label:"My skill path",icon:"book"},{href:"/lab",label:"Try a challenge",icon:"practice"}]}
 };
 const icons={book:BookOpen,video:PlayCircle,notes:FileText,quiz:BookOpenCheck,practice:Target};
