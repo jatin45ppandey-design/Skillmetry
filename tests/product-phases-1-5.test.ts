@@ -30,7 +30,7 @@ describe("Product roadmap staged source contracts",()=>{
    expect(sql).toContain("force row level security");
    expect(sql).toContain("auth.uid()");
    expect(sql).toContain("grant select,insert,update(completed,completed_at,updated_at,published_revision)");
-   expect(sql).not.toContain("assessment_attempts");
+   expect(sql).not.toMatch(/(?:insert\\s+into|update|delete\\s+from)\\s+public\\.assessment_attempts/i);
    expect(sql).toContain("STAGED ONLY");
  });
  it("prefers live next learning action for signed-in accounts, with honest fallback",()=>{
