@@ -1,12 +1,13 @@
 "use client";
 import {useState} from "react";
-import {BookOpen,Route,GraduationCap} from "lucide-react";
+import {BookOpen,Route,GraduationCap,ClipboardList} from "lucide-react";
 import {AdminCourseEditor} from "@/components/admin-course-editor";
+import {AdminMissionEditor} from "@/components/admin-mission-editor";
 import {AdminGuideEditor} from "@/components/admin-guide-editor";
 import {AdminRoadmapEditor} from "@/components/admin-roadmap-editor";
 type Role="owner"|"editor"|"reviewer";
 export function AdminStudioWorkspace({role}:{role:Role}){
- const [mode,setMode]=useState<"guides"|"roadmaps"|"courses">("guides");
+ const [mode,setMode]=useState<"guides"|"roadmaps"|"courses"|"missions">("guides");
  return <section className="admin-workspace" aria-label="Manage learning content">
    <nav className="admin-manager-tabs" aria-label="Management area">
      <button type="button" aria-pressed={mode==="guides"} onClick={()=>setMode("guides")}>
@@ -15,7 +16,11 @@ export function AdminStudioWorkspace({role}:{role:Role}){
        <Route size={18}/> Career Roadmaps</button>
      <button type="button" aria-pressed={mode==="courses"} onClick={()=>setMode("courses")}>
        <GraduationCap size={18}/> Courses & Lessons</button>
+     <button type="button" aria-pressed={mode==="missions"} onClick={()=>setMode("missions")}>
+       <ClipboardList size={18}/> Missions & Projects</button>
    </nav>
-   {mode==="guides"?<AdminGuideEditor role={role}/>:mode==="roadmaps"?<AdminRoadmapEditor role={role}/>:<AdminCourseEditor role={role}/>}
+   {mode==="guides"?<AdminGuideEditor role={role}/>:
+     mode==="roadmaps"?<AdminRoadmapEditor role={role}/>:
+     mode==="courses"?<AdminCourseEditor role={role}/>:<AdminMissionEditor role={role}/>}
  </section>;
 }
