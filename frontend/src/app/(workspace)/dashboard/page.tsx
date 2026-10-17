@@ -13,11 +13,11 @@ import { useSkillmetry } from "@/store/use-skillmetry";
 import { LearningStreakCard } from "@/components/learning-streak-card";
 
 export default function Dashboard() {
-  const { name, preferences, onboardingCompleted } = useSkillmetry();
+  const { name, preferences, onboardingCompleted, profileSource } = useSkillmetry();
   const { attempts, scores, illustrative, status } = useAssessmentProfile();
   const learning = preferences.learning;
-  const career = careers.find(item => item.id === learning.primaryCareerId) ?? null;
-  const hasFocus = Boolean(career || learning.selectedSkillIds.length || learning.selectedToolIds.length);
+  const career = onboardingCompleted ? careers.find(item => item.id === learning.primaryCareerId) ?? null : null;
+  const hasFocus = onboardingCompleted && Boolean(career || learning.selectedSkillIds.length || learning.selectedToolIds.length);
   const loading = !illustrative && status === "loading";
   const evidenceUnavailable = !illustrative && (status === "error" || status === "offline") && !attempts.length;
   const twin = useMemo(() => buildDigitalTwinSnapshot({
@@ -26,7 +26,7 @@ export default function Dashboard() {
   const resource = useMemo(() => getPersonalizedResources({
     learning, trustedScores: scores, maxResults: 1
   })[0], [learning, scores]);
-  const focus = twin.insights.find(item=>item.priority==="now") ?? twin.insights[0];
+  const focus = hasFocus ? twin.insights.find(item=>item.priority==="now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
   const nextHref = !onboardingCompleted || !hasFocus ? "/onboarding" :
     focus?.action.href ?? "/roadmap";
@@ -103,20 +103,16 @@ export default function Dashboard() {
           {career ? "Explore my skill path" : "Choose my direction"} <ArrowRight size={17} aria-hidden="true"/>
         </Link>
       </section>
-      <section className="sx-home-panel" aria-labelledby="sx-evidence-heading">
+      <section className="sx-home-panel sx-latest-panel" aria-labelledby="sx-evidence-heading">
         <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU HAVE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
-        <h2 id="sx-evidence-heading">Your learning evidence</h2>
-        <div className="sx-evidence-stats">
-          <div><strong>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
-          <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
-        </div>
+        <h2 id="sx-evidence-heading">Latest quiz result</h2>
+        <div className="sx-latest-score" role="status"><strong>{lastAttempt&&!loading&&!evidenceUnavailable?lastAttempt.score+"/100":"—"}</strong><span>{lastAttempt&&!loading&&!evidenceUnavailable?(skillById[lastAttempt.skillId]?.label??lastAttempt.skillId):"No trusted quiz loaded"}</span></div>
         <p>{lastAttempt && !loading ?
           "Last quiz: " + (skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId) +
           " · " + lastAttempt.score + "/100" :
           evidenceUnavailable ? "Trusted history could not be loaded. Please try again when online." : "Your first quiz will give you a real baseline. No scores are guessed."}</p>
         <Link href="/twin" className="sx-inline-link">See my progress <ArrowRight size={17} aria-hidden="true"/></Link>
       </section>
-      <LearningStreakCard/>
     </div>
 
     <section className="sx-continue" aria-labelledby="sx-continue-title">
@@ -138,6 +134,7 @@ export default function Dashboard() {
         </Link>
       </div>
     </section>
+    <details className="sx-streak-disclosure"><summary>Learning consistency & streaks</summary><LearningStreakCard/></details>
     {resource ? <aside className="sx-resource-suggestion">
       <div><span className="sx-eyebrow">ONE RESOURCE FOR YOU</span><strong>{resource.resource.title}</strong>
         <p>{resource.reason}</p></div>
