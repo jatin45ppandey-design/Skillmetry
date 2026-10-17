@@ -86,6 +86,6 @@ export function FocusedLearningHub(){
        </div>
      </div>
    </div>
-   <p className="v3-trust-notice"><CircleHelp size={14} aria-hidden="true"/> Watching or reading doesn't automatically change your assessed skill score. External material belongs to its creators.</p>
+   <p className="v3-trust-notice"><CircleHelp size={14} aria-hidden="true"/> Watching or reading does not automatically change your assessed skill score. External material belongs to its creators.</p>
  </section>;
 }
