@@ -11,13 +11,16 @@ import { buildDigitalTwinSnapshot } from "@skillmetry/shared/lib/digital-twin-in
 import { getPersonalizedResources } from "@skillmetry/shared/lib/resource-intelligence";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import { LearningStreakCard } from "@/components/learning-streak-card";
+import {useAuth} from "@/components/auth-provider";
 
 export default function Dashboard() {
-  const { name, preferences, onboardingCompleted, profileSource } = useSkillmetry();
+  const { name, preferences, onboardingCompleted, profileSource, cloudOwnerId } = useSkillmetry();
+  const {user}=useAuth();
+  const profileReady=onboardingCompleted && (!user || (profileSource==="student" && cloudOwnerId===user.id));
   const { attempts, scores, illustrative, status } = useAssessmentProfile();
   const learning = preferences.learning;
-  const career = onboardingCompleted ? careers.find(item => item.id === learning.primaryCareerId) ?? null : null;
-  const hasFocus = onboardingCompleted && Boolean(career || learning.selectedSkillIds.length || learning.selectedToolIds.length);
+  const career = profileReady ? careers.find(item => item.id === learning.primaryCareerId) ?? null : null;
+  const hasFocus = profileReady && Boolean(career || learning.selectedSkillIds.length || learning.selectedToolIds.length);
   const loading = !illustrative && status === "loading";
   const evidenceUnavailable = !illustrative && (status === "error" || status === "offline") && !attempts.length;
   const twin = useMemo(() => buildDigitalTwinSnapshot({
@@ -28,16 +31,16 @@ export default function Dashboard() {
   })[0], [learning, scores]);
   const focus = hasFocus ? twin.insights.find(item=>item.priority==="now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
-  const nextHref = !onboardingCompleted || !hasFocus ? "/onboarding" :
+  const nextHref = !profileReady || !hasFocus ? "/onboarding" :
     focus?.action.href ?? "/roadmap";
-  const nextLabel = !onboardingCompleted || !hasFocus ? "Find my starting point" :
+  const nextLabel = !profileReady || !hasFocus ? "Find my starting point" :
     focus?.action.kind === "assessment" ? "Take a foundational quiz" :
     focus?.action.kind === "resources" ? "Explore a learning resource" : "Open my pathway";
-  const nextTitle = !onboardingCompleted || !hasFocus ? "Choose what you want to learn." :
+  const nextTitle = !profileReady || !hasFocus ? "Choose what you want to learn." :
     loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ?
     "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
     "Check how far you've come." : detail ? "Let's work on " + detail + "." : "Make one useful move today.";
-  const nextExplanation = !onboardingCompleted || !hasFocus ?
+  const nextExplanation = !profileReady || !hasFocus ?
     "Select a career or one skill you care about. We will show you an understandable place to begin." :
     loading ? "Your trusted quiz results are loading. We won't guess your next action." :
     focus?.explanation ?? "Explore your pathway and choose a practical next step.";
