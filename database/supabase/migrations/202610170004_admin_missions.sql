@@ -91,7 +91,9 @@ begin
    raise exception using errcode='22023',message='Invalid or duplicate checklist entries';
  end if;
  -- A new CMS ID may not hijack an already existing canonical mission.
- if p_expected_revision=0 and exists(select 1 from public.missions where id=p_id) then
+ if p_expected_revision=0 and
+    not exists(select 1 from public.admin_missions where id=p_id) and
+    exists(select 1 from public.missions where id=p_id) then
    raise exception using errcode='22023',message='Mission ID is already reserved';
  end if;
  insert into public.admin_missions(id,career_id,skill_id,revision)
