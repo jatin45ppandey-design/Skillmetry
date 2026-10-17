@@ -1,3 +1,4 @@
+import {approvedPublication} from "@skillmetry/backend/lib/admin/editorial-review.server";
 import {NextResponse} from "next/server";
 import {adminSession} from "@skillmetry/backend/lib/admin/session.server";
 import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
@@ -32,6 +33,11 @@ export async function PUT(request:Request){
  if(!parsed.success)return NextResponse.json({error:"Check mission career, skill, description, time and checklist.",issues:parsed.error.flatten().fieldErrors},{status:400,headers});
  if(parsed.data.publish&&session.role!=="owner")
    return NextResponse.json({error:"Owner approval is required to publish."},{status:403,headers});
+ if(parsed.data.publish){
+   const approval=await approvedPublication(session.admin,"missions",parsed.data.id,
+     parsed.data.expectedRevision,parsed.data.draft);
+   if(!approval.ok)return NextResponse.json({error:approval.reason},{status:409,headers});
+ }
  const {data,error:dbError}=await session.admin.rpc("save_admin_mission",{
   p_actor:session.userId,p_id:parsed.data.id,
   p_career_id:parsed.data.careerId,p_skill_id:parsed.data.skillId,
