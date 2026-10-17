@@ -152,6 +152,7 @@ export default function Dashboard() {
         </Link>
       </div>
     </section>
+    <aside className="sx-product-feedback-cta"><div><strong>Help make Skillmetry easier to use</strong><p>Try a few real tasks and optionally export anonymous usability notes. No feedback is sent automatically.</p></div><Link href="/feedback" className="btn btn-outline">Give product feedback <ArrowRight size={16} aria-hidden="true"/></Link></aside>
     <details className="sx-streak-disclosure"><summary>Learning consistency & streaks</summary><LearningStreakCard/></details>
     {resource ? <aside className="sx-resource-suggestion">
       <div><span className="sx-eyebrow">ONE RESOURCE FOR YOU</span><strong>{resource.resource.title}</strong>
