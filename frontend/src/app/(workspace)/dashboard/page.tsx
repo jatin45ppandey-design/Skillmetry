@@ -74,8 +74,8 @@ export default function Dashboard() {
           illustrative ? "Suggestions are based on illustrative demo data." :
           "Based on your stated goals and available trusted quiz evidence."}</small>
       </div>
-      <aside className="sx-next-evidence" aria-label="Verified assessment snapshot">
-        <span className="sx-eyebrow">YOUR EVIDENCE</span>
+      <aside className="sx-next-evidence" aria-label={illustrative ? "Illustrative assessment snapshot" : "Trusted assessment snapshot"}>
+        <span className="sx-eyebrow">{illustrative ? "SAMPLE PROGRESS" : "YOUR EVIDENCE"}</span>
         <div className="sx-next-evidence-numbers">
           <div><strong>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
           <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
