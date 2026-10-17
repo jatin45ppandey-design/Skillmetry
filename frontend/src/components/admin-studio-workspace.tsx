@@ -9,13 +9,22 @@ import {AdminRoadmapEditor} from "@/components/admin-roadmap-editor";
 type Role="owner"|"editor"|"reviewer";
 export function AdminStudioWorkspace({role}:{role:Role}){
  const [mode,setMode]=useState<"guides"|"roadmaps"|"courses"|"missions"|"assessments">("guides");
+ const [guideDirty,setGuideDirty]=useState(false);
+ const [roadmapDirty,setRoadmapDirty]=useState(false);
+ const [courseDirty,setCourseDirty]=useState(false);
  const [missionDirty,setMissionDirty]=useState(false);
  const [assessmentDirty,setAssessmentDirty]=useState(false);
  function changeMode(next:typeof mode){
    if(next===mode)return;
+   if(mode==="guides"&&guideDirty&&!window.confirm("Discard unsaved guide edits?"))return;
+   if(mode==="roadmaps"&&roadmapDirty&&!window.confirm("Discard unsaved roadmap edits?"))return;
+   if(mode==="courses"&&courseDirty&&!window.confirm("Discard unsaved course edits?"))return;
    if(mode==="missions"&&missionDirty&&!window.confirm("Discard unsaved mission edits?"))return;
    if(mode==="assessments"&&assessmentDirty&&!window.confirm("Discard unsaved assessment edits?"))return;
    setMode(next);
+   setGuideDirty(false);
+   setRoadmapDirty(false);
+   setCourseDirty(false);
    setMissionDirty(false);
    setAssessmentDirty(false);
  }
@@ -43,9 +52,9 @@ export function AdminStudioWorkspace({role}:{role:Role}){
      </select>
    </div>
    <div className="admin-active-module">
-   {mode==="guides"?<AdminGuideEditor role={role}/>:
-     mode==="roadmaps"?<AdminRoadmapEditor role={role}/>:
-     mode==="courses"?<AdminCourseEditor role={role}/>:
+   {mode==="guides"?<AdminGuideEditor role={role} onDirtyChange={setGuideDirty}/>:
+     mode==="roadmaps"?<AdminRoadmapEditor role={role} onDirtyChange={setRoadmapDirty}/>:
+     mode==="courses"?<AdminCourseEditor role={role} onDirtyChange={setCourseDirty}/>:
      mode==="missions"?<AdminMissionEditor role={role} onDirtyChange={setMissionDirty}/>:
      <AdminAssessmentEditor role={role} onDirtyChange={setAssessmentDirty}/>}
    </div>
