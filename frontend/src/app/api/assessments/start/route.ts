@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { checkRequestLimit } from "@skillmetry/backend/lib/security/request-rate-limit.server";
 
 import { getAssessmentRetakePolicy } from "@skillmetry/backend/lib/assessments/policy.server";
-import { getAssessmentDefinition, isDiagnosticDefinition, publicQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import { isDiagnosticDefinition, publicQuestions } from "@skillmetry/backend/lib/assessments/question-bank.server";
+import {resolveStartingAssessment} from "@skillmetry/backend/lib/assessments/admin-bank.server";
 import { selectDiagnosticQuestionIds } from "@skillmetry/backend/lib/assessments/diagnostic-selection.server";
 import { startAssessmentSchema } from "@skillmetry/backend/lib/assessments/schema";
 import { hasSupabaseServerCredentials } from "@skillmetry/backend/lib/supabase/config.server";
@@ -25,9 +26,9 @@ function shuffle<T>(items: readonly T[]) {
 
 function responseForSession(
   session: { id: string; assessment_id: string; assessment_version: string; question_ids: string[]; expires_at: string },
-  assessmentId: AssessmentId
+  assessmentId: AssessmentId,
+  definition: Awaited<ReturnType<typeof resolveStartingAssessment>>
 ) {
-  const definition = getAssessmentDefinition(assessmentId);
   const payload: AssessmentSession = {
     sessionId: session.id,
     assessmentId,
@@ -56,7 +57,9 @@ export async function POST(request: Request) {
   if (limit === "unavailable") return NextResponse.json({ error: "The secure assessment service is temporarily unavailable." }, { status: 503 });
 
   const assessmentId = parsed.data.assessmentId as AssessmentId;
-  const definition = getAssessmentDefinition(assessmentId);
+  let definition;
+  try { definition = await resolveStartingAssessment(assessmentId); }
+  catch { return NextResponse.json({error:"Published assessment is unavailable. No session was started."},{status:503}); }
   const admin = createAdminClient();
   const now = new Date();
   const questionIds = isDiagnosticDefinition(definition)
@@ -100,5 +103,5 @@ export async function POST(request: Request) {
     .single();
 
   if (error || !session) return NextResponse.json({ error: "The secure assessment session could not be loaded." }, { status: 503 });
-  return responseForSession(session, assessmentId);
+  return responseForSession(session, assessmentId, definition);
 }
