@@ -59,7 +59,7 @@ describe("UI/UX phases 5–7 structural regression gates",()=>{
  });
  it("uses real publishing revision for assessment preview and discloses draft scope",()=>{
    const assessment=read("frontend/src/components/admin-assessment-editor.tsx");
-   expect(assessment).toContain("(current?.published_revision??0)>0");
+   expect(assessment).toContain("(current?.published_version??0)>0");
    expect(assessment).not.toContain("Boolean(current?.published)");
    const guide=read("frontend/src/components/admin-guide-editor.tsx");
    expect(guide).toContain("publish a valid version directly as an owner");
