@@ -56,3 +56,45 @@
 .admin-course-module-header button:disabled,.admin-course-lesson header button:disabled{opacity:.3}
 .admin-course-lesson{display:grid;gap:12px;background:#fffdf8;border:1px solid #e1e7dc;padding:16px;border-radius:13px}
 .admin-course-lesson header{color:#456a4f}
+
+/* Phase 0: content-first Admin Studio. One page scrollbar, compact header,
+   persistent desktop modules and a single accessible mobile selector. */
+.admin-studio-shell{padding:clamp(14px,2vw,30px);}
+.admin-studio-top{max-width:1480px;margin:0 auto 14px;gap:12px;}
+.admin-studio-top h1{font-size:clamp(1.65rem,2.5vw,2.3rem);margin:3px 0;letter-spacing:-.04em;}
+.admin-studio-top p{font-size:.84rem;line-height:1.42;}
+.admin-workspace{display:grid;grid-template-columns:205px minmax(0,1fr);gap:16px;max-width:1480px;margin-inline:auto;align-items:start;}
+.admin-manager-tabs{position:sticky;top:14px;display:grid;align-content:start;gap:5px;max-width:none;margin:0;padding:13px;background:#eaf0e4;border:1px solid #d5dfce;border-radius:15px;}
+.admin-manager-tabs::before{content:"WORKSPACES";font:700 .66rem var(--font-technical),monospace;letter-spacing:.08em;color:#64806a;padding:4px 7px 9px;}
+.admin-manager-tabs button{width:100%;justify-content:flex-start;text-align:left;min-height:43px;padding:10px 11px;border-radius:9px;font-size:.8rem;line-height:1.3;}
+.admin-manager-tabs button[aria-pressed="true"]{box-shadow:inset 3px 0 #a5c79d;}
+.admin-manager-tabs button:focus-visible,.admin-mobile-module-select select:focus-visible{outline:3px solid #b7795b;outline-offset:2px;}
+.admin-active-module{min-width:0;}
+.admin-editor-grid{max-width:none;grid-template-columns:minmax(195px,.27fr) minmax(0,.73fr);gap:14px;}
+.admin-skill-panel,.admin-editor-main{min-width:0;border-radius:15px;padding:clamp(15px,1.8vw,24px);}
+.admin-editor-heading h2{font-size:clamp(1.3rem,2vw,1.75rem);}
+.admin-editor-tabs{margin:15px 0 13px;}
+.admin-mobile-module-select{display:none;}
+@media(max-width:1100px){
+ .admin-workspace{grid-template-columns:1fr;gap:13px;}
+ .admin-manager-tabs{position:static;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px;gap:6px;}
+ .admin-manager-tabs::before{display:none;}
+ .admin-manager-tabs button{display:flex;flex-direction:column;justify-content:center;text-align:center;gap:5px;padding:9px 5px;min-height:63px;font-size:.72rem;}
+}
+@media(max-width:760px){
+ .admin-studio-top{flex-direction:column;align-items:flex-start;gap:8px;}
+ .admin-studio-top h1{font-size:1.7rem;}
+ .admin-manager-tabs{display:none;}
+ .admin-mobile-module-select{display:grid;gap:6px;background:#eaf0e4;border:1px solid #d5dfce;border-radius:12px;padding:11px 13px;}
+ .admin-mobile-module-select label{font-size:.75rem;font-weight:740;color:#45664d;}
+ .admin-mobile-module-select select{width:100%;min-width:0;min-height:44px;border:1px solid #bfd0bd;border-radius:9px;background:#fffef8;color:#285039;padding:8px 12px;font:inherit;font-size:.88rem;}
+ .admin-editor-grid{grid-template-columns:1fr;}
+ .admin-skill-panel{display:flex;flex-direction:column;gap:10px;}
+ .admin-skill-panel select{margin:0 0 5px;}
+ .admin-history{margin-top:4px;}
+}
+@media(max-width:500px){
+ .admin-studio-shell{padding:12px;}
+ .admin-editor-main,.admin-skill-panel{padding:15px;}
+ .admin-editor-actions{gap:9px;}
+}
