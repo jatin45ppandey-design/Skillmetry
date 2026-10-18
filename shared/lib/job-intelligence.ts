@@ -47,7 +47,7 @@ export function findUnknownRequirements(description:string):string[]{
     const phrase=match[1].replace(/\s+(?:is required|are required|is preferred|are preferred|preferred|required)$/i,"").trim();
     for(const part of phrase.split(/\s*,\s*|\s+and\s+|\s+or\s+/i)){
       const candidate=part.replace(/^[\s:–—-]+|[\s:–—-]+$/g,"")
-        .replace(/^(?:strong|solid|good|basic|advanced|expert)\s+/i,"").trim();
+        .replace(/^(?:(?:and|or)\s+|(?:strong|solid|good|basic|advanced|expert)\s+)/i,"").trim();
       if(candidate.length<2||candidate.length>60||ignored.has(candidate.toLowerCase()))continue;
       const normalized=candidate.toLowerCase();
       const containsKnown=knownTerms.some(term=>{
