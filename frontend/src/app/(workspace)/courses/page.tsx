@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {ArrowRight,BookOpen,Clock,ExternalLink,PlayCircle} from "lucide-react";
 import {skills,skillById} from "@skillmetry/shared/data/catalog";
 import {coursePayloadSchema,type CoursePayload} from "@skillmetry/shared/lib/admin-courses";
@@ -33,12 +33,36 @@ export default function CoursesPage(){
  const [openCourse,setOpenCourse]=useState<string|null>(null);
  const [nextPage,setNextPage]=useState<number|null>(null);
  const [loadingMore,setLoadingMore]=useState(false);
+ const handledDeepLink=useRef(false);
+ const currentAccount=useRef<string|null>(null);
+ useEffect(()=>{currentAccount.current=user?.id??null;return()=>{currentAccount.current=null;};},[user?.id]);
  useEffect(()=>{
-   // Only a matching published course is opened; an arbitrary query parameter never creates content.
+   // Resolve a trusted published course directly even when it is beyond the first page.
+   // Handle this once per page mount so "Hide lessons" and search remain user-controlled.
+   if(loading||handledDeepLink.current)return;
+   handledDeepLink.current=true;
    const wanted=new URLSearchParams(window.location.search).get("course");
-   if(!wanted||!items.some(item=>item.slug===wanted))return;
-   setSelected("all");setQuery("");setOpenCourse(wanted);
- },[items]);
+   if(!wanted||!/^[a-z][a-z0-9-]{3,49}$/.test(wanted))return;
+   if(items.some(item=>item.slug===wanted)){
+     setSelected("all");setQuery("");setOpenCourse(wanted);
+     return;
+   }
+   const controller=new AbortController();
+   void fetch("/api/content/courses?course="+encodeURIComponent(wanted),
+     {cache:"no-store",signal:controller.signal})
+     .then(async response=>{
+       if(!response.ok)throw new Error("Saved course is unavailable.");
+       const body=await response.json() as {courses?:unknown[]};
+       const found=parsePublishedCourses(body.courses??[]).find(item=>item.slug===wanted);
+       if(!found)throw new Error("Saved course is no longer published.");
+       if(controller.signal.aborted)return;
+       setItems(existing=>existing.some(item=>item.slug===found.slug)?existing:[found,...existing]);
+       setSelected("all");setQuery("");setOpenCourse(wanted);
+     }).catch(error=>{
+       if(!controller.signal.aborted)setError(error instanceof Error?error.message:"Unable to resume saved course.");
+     });
+   return()=>controller.abort();
+ },[items,loading]);
  useEffect(()=>{
    const controller=new AbortController();
    void (async()=>{
@@ -70,6 +94,7 @@ export default function CoursesPage(){
  },[user?.id]);
  async function markLesson(course:Published,lessonId:string,completed:boolean){
    if(!progressEnabled||!user||progressPending)return;
+   const ownerId=user.id;
    const key=course.slug+":"+lessonId;setProgressPending(key);setProgressError("");
    try{
      const response=await fetch("/api/learning/course-progress",{method:"PUT",
@@ -78,11 +103,12 @@ export default function CoursesPage(){
        })});
      const body=await response.json() as {saved?:boolean;error?:string};
      if(!response.ok||!body.saved)throw new Error(body.error??"Lesson progress not saved.");
+     if(currentAccount.current!==ownerId)return;
      setProgress(previous=>[...previous.filter(row=>row.courseSlug!==course.slug||row.lessonId!==lessonId),{
        courseSlug:course.slug,lessonId,publishedRevision:course.version,completed
      }]);
-   }catch(e){setProgressError(e instanceof Error?e.message:"Lesson progress could not be saved.");}
-   finally{setProgressPending(null);}
+   }catch(e){if(currentAccount.current===ownerId)setProgressError(e instanceof Error?e.message:"Lesson progress could not be saved.");}
+   finally{if(currentAccount.current===ownerId)setProgressPending(null);}
  }
  async function loadMoreCourses(){
    if(nextPage===null||loadingMore)return;
