@@ -9,6 +9,13 @@ describe("P10 readiness probe",()=>{
   expect(src).toContain('Cache-Control":"no-store"');
   expect(src).not.toContain("NEXT_PUBLIC_HEALTHCHECK_TOKEN");
  });
+ it("checks backing tables for enabled staged course and editorial workflows",()=>{
+  expect(src).toContain('SKILLMETRY_COURSE_PROGRESS_ENABLED==="true"');
+  expect(src).toContain('"course_lesson_progress","admin_courses"');
+  expect(src).toContain('SKILLMETRY_EDITORIAL_APPROVAL_ENABLED==="true"');
+  expect(src).toContain('"admin_editorial_reviews"');
+  expect(src).toContain('"admin_assessment_banks"');
+ });
  it("fails closed when service-role connection is unavailable",()=>{
   expect(src).toContain("hasSupabaseServerCredentials()");
   expect(src).toContain("status:503");
