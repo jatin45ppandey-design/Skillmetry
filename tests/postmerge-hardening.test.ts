@@ -27,7 +27,7 @@ describe("Post-merge Admin review exact-revision visibility",()=>{
     expect(endpoint).toContain('lookupKeys=["module","contentId","revision"]');
     expect(endpoint).toContain("requestSchema.safeParse");
     expect(endpoint).toContain('.eq("requested_revision",requested.data.revision)');
-    expect(endpoint).toContain("lookup?1:150");
+    expect(endpoint).toContain("lookup?ordered.limit(1):ordered.range(page*150,page*150+150)");
     expect(endpoint).toContain("adminSession()");
     expect(endpoint).toContain("approvalEnabled()");
   });
