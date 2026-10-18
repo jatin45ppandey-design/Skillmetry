@@ -18,7 +18,8 @@ export function AdminReviewRequest({module,contentId,revision,changed,role}:{
  useEffect(()=>{
    const controller=new AbortController();
    setReview(null);setEnabled(false);setMessage("");
-   void fetch("/api/admin/reviews",{cache:"no-store",signal:controller.signal}).then(async response=>{
+   const params=new URLSearchParams({module,contentId,revision:String(revision)});
+   void fetch("/api/admin/reviews?"+params.toString(),{cache:"no-store",signal:controller.signal}).then(async response=>{
      if(!response.ok)return;
      const body=await response.json() as {enabled?:boolean;reviews?:Review[]};
      if(controller.signal.aborted)return;
@@ -65,18 +66,37 @@ export function AdminReviewQueue({role}:{role:Role}){
  const [note,setNote]=useState<Record<string,string>>({});
  const [error,setError]=useState("");
  const [loading,setLoading]=useState(true);
+ const [loadingMore,setLoadingMore]=useState(false);
+ const [nextPage,setNextPage]=useState<number|null>(null);
  const [view,setView]=useState<"pending"|"approved"|"changes_requested">("pending");
  const refresh=useCallback(async()=>{
-   setLoading(true);setError("");
+   setLoading(true);setError("");setNextPage(null);
    try{
      const response=await fetch("/api/admin/reviews",{cache:"no-store"});
-     const body=await response.json() as {enabled?:boolean;reviews?:Review[];error?:string};
+     const body=await response.json() as {enabled?:boolean;reviews?:Review[];nextPage?:number|null;error?:string};
      if(!response.ok)throw new Error(body.error??"Review queue unavailable.");
      setEnabled(Boolean(body.enabled));setItems(body.reviews??[]);
+     setNextPage(typeof body.nextPage==="number"&&Number.isSafeInteger(body.nextPage)?body.nextPage:null);
    }catch(e){setError(e instanceof Error?e.message:"Could not load review queue.");}
    finally{setLoading(false);}
  },[]);
  useEffect(()=>{void refresh();},[refresh]);
+ async function loadOlderReviews(){
+   if(nextPage===null||loadingMore||loading)return;
+   const page=nextPage;
+   setLoadingMore(true);setError("");
+   try{
+     const response=await fetch("/api/admin/reviews?page="+page,{cache:"no-store"});
+     const body=await response.json() as {enabled?:boolean;reviews?:Review[];nextPage?:number|null;error?:string};
+     if(!response.ok)throw new Error(body.error??"Older reviews unavailable.");
+     setItems(previous=>{
+       const existing=new Set(previous.map(row=>row.id));
+       return [...previous,...(body.reviews??[]).filter(row=>!existing.has(row.id))];
+     });
+     setNextPage(typeof body.nextPage==="number"&&body.nextPage>page?body.nextPage:null);
+   }catch(error){setError(error instanceof Error?error.message:"Older reviews unavailable.");}
+   finally{setLoadingMore(false);}
+ }
  async function decide(id:string,decision:"approved"|"changes_requested"){
    if(role!=="reviewer"||pending)return;
    setPending(id);setError("");
@@ -94,7 +114,7 @@ export function AdminReviewQueue({role}:{role:Role}){
  return <section className="sx-admin-review-queue" aria-label="Editorial approvals">
    <div className="sx-admin-review-queue-head"><div><span className="admin-eyebrow">STAGED EDITORIAL WORKFLOW</span>
      <h3>Review queue</h3></div><button type="button" className="btn btn-outline"
-     disabled={loading} onClick={()=>void refresh()}>Refresh</button></div>
+     disabled={loading||loadingMore} onClick={()=>void refresh()}>Refresh</button></div>
    {loading?<ActivityIndicator compact label="Loading review decisions…"/>:null}
    {error?<p role="alert">{error}</p>:null}
    {enabled?<div className="sx-admin-review-filter" role="group" aria-label="Filter editorial reviews">
@@ -104,7 +124,7 @@ export function AdminReviewQueue({role}:{role:Role}){
         <span>{items.filter(item=>item.status===state).length}</span>
      </button>)}
    </div>:null}
-   {!loading&&!items.some(row=>row.status===view)?<p role="status">No reviews in this status.</p>:null}
+   {!loading&&!items.some(row=>row.status===view)?<p role="status">No {view==="pending"?"pending":view==="approved"?"approved":"changes-requested"} reviews in the loaded history.</p>:null}
    {items.filter(row=>row.status===view).map(row=><article className="sx-admin-review-row" key={row.id}>
      <div><strong>{row.module} · {row.content_id}</strong>
        <small>Saved revision {row.requested_revision} · Requested {new Date(row.requested_at).toLocaleDateString()}</small></div>
@@ -117,6 +137,11 @@ export function AdminReviewQueue({role}:{role:Role}){
          onClick={()=>void decide(row.id,"approved")}>Approve revision</button>
      </div>:<span className="sx-admin-review-waiting">{row.status==="approved"?"Independently approved":row.status==="changes_requested"?"Revision needs changes":"Awaiting independent reviewer"}</span>}
    </article>)}
+   {nextPage!==null?<div className="sx-admin-review-more">
+     <p>Showing loaded review history. Older decisions may still be available.</p>
+     <button type="button" className="btn btn-outline" disabled={loadingMore||loading}
+       onClick={()=>void loadOlderReviews()}>{loadingMore?"Loading older reviews…":"Load older reviews"}</button>
+   </div>:null}
    <p className="sx-admin-inventory-trust">Only metadata is displayed in this queue. Review the saved content in its editor before approving.</p>
  </section>;
 }
