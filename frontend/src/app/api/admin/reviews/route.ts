@@ -29,9 +29,12 @@ export async function GET(request:Request){
  const params=new URL(request.url).searchParams;
  const lookupKeys=["module","contentId","revision"];
  const lookup=lookupKeys.some(key=>params.has(key));
- if([...params.keys()].some(key=>!lookupKeys.includes(key))||
+ const pageText=params.get("page")??"0";
+ const page=/^(0|[1-9][0-9]{0,1})$/.test(pageText)?Number(pageText):NaN;
+ if([...params.keys()].some(key=>![...lookupKeys,"page"].includes(key))||
     (lookup&&(!lookupKeys.every(key=>params.getAll(key).length===1)||params.size!==3))||
-    (!lookup&&params.size>0))return NextResponse.json({error:"Invalid review lookup."},{status:400,headers});
+    (!lookup&&(params.getAll("page").length>1||params.size>1||!Number.isSafeInteger(page)||page>20)))
+     return NextResponse.json({error:"Invalid review lookup."},{status:400,headers});
  const requested=lookup?requestSchema.safeParse({
    module:params.get("module"),contentId:params.get("contentId"),
    revision:Number(params.get("revision"))
@@ -47,9 +50,13 @@ export async function GET(request:Request){
    query=query.eq("module",requested.data.module).eq("content_id",requested.data.contentId)
      .eq("requested_revision",requested.data.revision);
  }
- const {data,error}=await query.order("requested_at",{ascending:false}).limit(lookup?1:150);
+ const ordered=query.order("requested_at",{ascending:false}).order("id",{ascending:true});
+ const {data,error}=await (lookup?ordered.limit(1):ordered.range(page*150,page*150+150));
  if(error)return NextResponse.json({error:"Editorial review queue unavailable."},{status:503,headers});
- return NextResponse.json({enabled:true,role:session.role,reviews:data??[]},{headers});
+ const rows=data??[];
+ return NextResponse.json({enabled:true,role:session.role,
+   reviews:lookup?rows:rows.slice(0,150),
+   nextPage:!lookup&&rows.length>150?page+1:null},{headers});
 }
 export async function POST(request:Request){
  const {session,error}=await gate();if(error||!session)return error;
