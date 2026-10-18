@@ -1,5 +1,5 @@
 import {describe,it,expect} from "vitest";
-import {analyzeJobDescription,findUnknownRequirements} from "../shared/lib/job-intelligence";
+import {analyzeJobDescription,findUnknownRequirements} from "@skillmetry/shared/lib/job-intelligence";
 import type {SkillMap} from "@skillmetry/shared/types/domain";
 
 describe("job description unknown requirements",()=>{
