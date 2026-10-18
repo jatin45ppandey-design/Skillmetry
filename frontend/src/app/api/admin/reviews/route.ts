@@ -25,14 +25,29 @@ async function gate(){
  },{status:503,headers})};
  return {session,error:null};
 }
-export async function GET(){
+export async function GET(request:Request){
+ const params=new URL(request.url).searchParams;
+ const lookupKeys=["module","contentId","revision"];
+ const lookup=lookupKeys.some(key=>params.has(key));
+ if([...params.keys()].some(key=>!lookupKeys.includes(key))||
+    (lookup&&(!lookupKeys.every(key=>params.getAll(key).length===1)||params.size!==3))||
+    (!lookup&&params.size>0))return NextResponse.json({error:"Invalid review lookup."},{status:400,headers});
+ const requested=lookup?requestSchema.safeParse({
+   module:params.get("module"),contentId:params.get("contentId"),
+   revision:Number(params.get("revision"))
+ }):null;
+ if(lookup&&!requested?.success)return NextResponse.json({error:"Invalid review lookup."},{status:400,headers});
  const session=await adminSession();
  if(session.status!=="ready")return NextResponse.json({error:"Authorized editorial session required."},
    {status:session.status==="unauthorized"?401:session.status==="forbidden"?403:503,headers});
  if(!approvalEnabled())return NextResponse.json({enabled:false,reviews:[]},{headers});
- const {data,error}=await session.admin.from("admin_editorial_reviews")
-   .select("id,module,content_id,requested_revision,status,requested_at,reviewed_at,review_note,requested_by")
-   .order("requested_at",{ascending:false}).limit(150);
+ let query=session.admin.from("admin_editorial_reviews")
+   .select("id,module,content_id,requested_revision,status,requested_at,reviewed_at,review_note,requested_by");
+ if(lookup&&requested?.success){
+   query=query.eq("module",requested.data.module).eq("content_id",requested.data.contentId)
+     .eq("requested_revision",requested.data.revision);
+ }
+ const {data,error}=await query.order("requested_at",{ascending:false}).limit(lookup?1:150);
  if(error)return NextResponse.json({error:"Editorial review queue unavailable."},{status:503,headers});
  return NextResponse.json({enabled:true,role:session.role,reviews:data??[]},{headers});
 }
