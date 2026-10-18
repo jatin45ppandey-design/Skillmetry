@@ -31,6 +31,17 @@ describe("Post-merge Admin review exact-revision visibility",()=>{
     expect(endpoint).toContain("adminSession()");
     expect(endpoint).toContain("approvalEnabled()");
   });
+  it("keeps older editorial decisions accessible without unbounded queries",()=>{
+    const endpoint=read("frontend/src/app/api/admin/reviews/route.ts");
+    expect(endpoint).toContain('params.getAll("page").length>1');
+    expect(endpoint).toContain('.order("id",{ascending:true})');
+    expect(endpoint).toContain('ordered.range(page*150,page*150+150)');
+    expect(endpoint).toContain("nextPage:!lookup&&rows.length>150?page+1:null");
+    const view=read("frontend/src/components/admin-editorial-reviews.tsx");
+    expect(view).toContain("loadOlderReviews");
+    expect(view).toContain('fetch("/api/admin/reviews?page="+page');
+    expect(view).toContain("Load older reviews");
+  });
   it("checks one content revision rather than assuming it is in the first 150 reviews",()=>{
     const view=read("frontend/src/components/admin-editorial-reviews.tsx");
     expect(view).toContain('new URLSearchParams({module,contentId,revision:String(revision)})');
