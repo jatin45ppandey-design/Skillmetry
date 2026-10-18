@@ -18,7 +18,8 @@ export function AdminReviewRequest({module,contentId,revision,changed,role}:{
  useEffect(()=>{
    const controller=new AbortController();
    setReview(null);setEnabled(false);setMessage("");
-   void fetch("/api/admin/reviews",{cache:"no-store",signal:controller.signal}).then(async response=>{
+   const params=new URLSearchParams({module,contentId,revision:String(revision)});
+   void fetch("/api/admin/reviews?"+params.toString(),{cache:"no-store",signal:controller.signal}).then(async response=>{
      if(!response.ok)return;
      const body=await response.json() as {enabled?:boolean;reviews?:Review[]};
      if(controller.signal.aborted)return;
