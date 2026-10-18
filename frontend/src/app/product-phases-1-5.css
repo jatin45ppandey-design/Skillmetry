@@ -75,3 +75,11 @@
 @media(prefers-reduced-motion:reduce){
  .admin-studio-shell .sx-admin-review-request,.admin-studio-shell .sx-admin-review-row{animation:none!important;transition:none!important;}
 }
+
+
+/* Editorial history: older approvals remain available without overwhelming the editor. */
+.sx-admin-review-more{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;
+  padding:12px 14px;margin:12px 0;border:1px solid #d1dfca;background:#f3f7ed;border-radius:11px}
+.sx-admin-review-more p{margin:0;font-size:.76rem;line-height:1.45;color:#4c6852}
+.sx-admin-review-more .btn{min-height:40px}
+@media(max-width:560px){.sx-admin-review-more .btn{width:100%;justify-content:center}}
