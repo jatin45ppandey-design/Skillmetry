@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, Fingerprint } from "lucide-react";
+import { ArrowRight, Fingerprint } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { CareerChapterGallery } from "@/components/career-chapter-gallery";
 import { LandingJourneyPreview } from "@/components/landing-journey-preview";
@@ -37,7 +37,6 @@ export default function Home() {
               <Link href="/dashboard" className="mb-text-link">See the example workspace <ArrowRight aria-hidden="true" /></Link>
             </div>
             <p className="mb-hero__trust"><Fingerprint aria-hidden="true" /> Explore without an account. Private assessment history requires sign-in.</p>
-            <a href="#how-it-works" className="mb-hero__down">See how Skillmetry works <ArrowDown aria-hidden="true" /></a>
           </div>
           <LandingJourneyPreview />
         </section>

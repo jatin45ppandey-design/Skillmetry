@@ -9,7 +9,12 @@ export function LandingJourneyPreview() {
   const assessment = assessmentById["javascript-foundations"];
 
   return (
-    <section className="mb-loop-preview" aria-labelledby="mb-loop-title">
+    <section className="mb-loop-preview" aria-labelledby="mb-loop-title" data-ui>
+      <ol className="mb-loop-preview__tabs" aria-label="Skillmetry learning loop">
+        <li>Goal</li>
+        <li>Evidence</li>
+        <li>Next action</li>
+      </ol>
       <header className="mb-loop-preview__header">
         <div>
           <h2 id="mb-loop-title">Goal → evidence → next action</h2>

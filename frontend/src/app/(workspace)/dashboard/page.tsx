@@ -94,11 +94,11 @@ export default function Dashboard() {
     learning,
     context: illustrative ? "demo" : "authenticated"
   }), [attempts, illustrative, learning]);
-  const resource = useMemo(() => getPersonalizedResources({
+  const resource = useMemo(() => hasFocus ? getPersonalizedResources({
     learning,
     trustedScores: scores,
     maxResults: 1
-  })[0], [learning, scores]);
+  })[0] : undefined, [hasFocus, learning, scores]);
   const focus = hasFocus ? twin.insights.find(item => item.priority === "now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
   const groundedCloudAction = profileReady && hasFocus && !loading && cloudNextStatus === "ready" ? cloudNext : null;
@@ -106,18 +106,30 @@ export default function Dashboard() {
   const nextLabel = groundedCloudAction?.label ?? (!profileReady || !hasFocus ? "Choose a direction" :
     focus?.action.kind === "assessment" ? "Take the available assessment" :
       focus?.action.kind === "resources" ? "Open a learning resource" : "Open My Path");
-  const nextTitle = groundedCloudAction?.title ?? (!profileReady || !hasFocus ? "Choose what you want to learn." :
+  const nextTitle = groundedCloudAction?.title ?? (!profileReady || !hasFocus ? "Choose a direction." :
     loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ?
       "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
         "Check how far you have come." : detail ? `Work on ${detail}.` : "Make one useful move today.");
   const nextExplanation = groundedCloudAction?.explanation ?? (!profileReady || !hasFocus ?
-    "Select a career or one skill you care about. Skillmetry will show an understandable place to begin." :
+    "Skillmetry needs a career or skill goal before it can recommend an evidence-based next step." :
     loading ? "Your trusted quiz results are loading. Skillmetry will not guess your next action." :
       focus?.explanation ?? "Explore your pathway and choose a practical next step.");
   const lastAttempt = [...attempts].sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt))[0];
   const focusedSkill = focus?.skillId ? skillById[focus.skillId] : null;
   const relevantPrerequisites = focusedSkill?.prerequisites.map(id => skillById[id]).filter(Boolean) ?? [];
   const pathSkills = career?.skills.slice(0, 5) ?? [];
+  const actionBasis = !profileReady || !hasFocus
+    ? "No recommendation yet — choose a direction first."
+    : illustrative
+      ? "Based on illustrative demo evidence."
+      : "Based on your goal and the trusted evidence currently available.";
+  const evidenceSummary = loading
+    ? "Loading trusted evidence"
+    : evidenceUnavailable
+      ? "Evidence unavailable"
+      : attempts.length
+        ? `${attempts.length} ${illustrative ? "sample" : "trusted"} attempt${attempts.length === 1 ? "" : "s"}`
+        : "Not assessed yet";
   const resourceHref = resource ? (resource.resource.target.kind === "skill"
     ? `/resources?skill=${encodeURIComponent(resource.resource.target.skillId)}`
     : `/resources?tool=${encodeURIComponent(resource.resource.target.toolId)}`) : "/resources";
@@ -143,23 +155,25 @@ export default function Dashboard() {
 
   return (
     <div className="mb-dashboard">
-      <header className="mb-dashboard__welcome">
-        <div>
-          <h1>{name && name !== "Demo Student" ? `Welcome back, ${name.split(" ")[0]}.` : "Your learning workspace."}</h1>
-          <p>{career ? `You are exploring ${career.title}.` : "Start with a direction, then let evidence guide the next step."}</p>
-        </div>
-        <Link href="/settings"><Compass aria-hidden="true" /> Adjust goals</Link>
-      </header>
+      <div className="mb-dashboard__intro">
+        <header className="mb-dashboard__welcome">
+          <div>
+            <h1>{name && name !== "Demo Student" ? `Welcome back, ${name.split(" ")[0]}.` : "Your learning workspace."}</h1>
+            <p>{career ? `You are exploring ${career.title}.` : "Start with a direction, then let evidence guide the next step."}</p>
+          </div>
+          <Link href="/settings"><Compass aria-hidden="true" /> Adjust goals</Link>
+        </header>
 
-      {illustrative ? (
-        <aside className="mb-demo-notice" role="status">
-          <ShieldCheck aria-hidden="true" />
-          <span><strong>Illustrative demo.</strong> Sample results below are not attached to an account.</span>
-          <Link href="/auth/sign-in?next=/dashboard">Sign in for private evidence <ArrowRight aria-hidden="true" /></Link>
-        </aside>
-      ) : null}
+        {illustrative ? (
+          <aside className="mb-demo-notice" role="status" data-ui>
+            <ShieldCheck aria-hidden="true" />
+            <span><strong>Illustrative demo.</strong> Sample results below are not attached to an account.</span>
+            <Link href="/auth/sign-in?next=/dashboard">Sign in for private evidence <ArrowRight aria-hidden="true" /></Link>
+          </aside>
+        ) : null}
+      </div>
 
-      <section className="mb-now" aria-labelledby="mb-now-title" aria-busy={loading}>
+      <section className="mb-now" aria-labelledby="mb-now-title" aria-busy={loading} data-ui>
         <div className="mb-now__action">
           <p>Now</p>
           <h2 id="mb-now-title">{nextTitle}</h2>
@@ -167,18 +181,22 @@ export default function Dashboard() {
             onClick={loading ? event => event.preventDefault() : undefined}>
             {loading ? "Loading your next action…" : nextLabel}<ArrowRight aria-hidden="true" />
           </Link>
-          <small>{illustrative ? "Based on illustrative demo evidence." : "Based on your goals and available trusted quiz evidence."}</small>
+          <small>{actionBasis}</small>
         </div>
         <aside className="mb-now__why">
           <p>Why this</p>
           <h3>{detail ? `${detail} is the current focus.` : "A direction comes before a recommendation."}</h3>
           <p>{nextExplanation}</p>
+          <dl className="mb-now__facts">
+            <div><dt>Goal</dt><dd>{career?.title ?? "Not selected"}</dd></div>
+            <div><dt>Evidence</dt><dd>{evidenceSummary}</dd></div>
+          </dl>
           {cloudNextStatus === "unavailable" && user ? <small>Live overview unavailable. This fallback uses the trusted evidence already loaded in your workspace.</small> : null}
         </aside>
       </section>
 
       <div className="mb-dashboard__columns">
-        <section className="mb-dashboard-panel mb-path-panel" aria-labelledby="mb-path-title">
+        <section className="mb-dashboard-panel mb-path-panel" aria-labelledby="mb-path-title" data-ui>
           <header><div><p>My Path</p><h2 id="mb-path-title">{career?.title ?? "No career direction selected"}</h2></div><GitBranch aria-hidden="true" /></header>
           {relevantPrerequisites.length ? (
             <p className="mb-path-panel__reason">{focusedSkill?.label} depends on {relevantPrerequisites.map(item => item.label).join(" and ")}.</p>
@@ -188,11 +206,14 @@ export default function Dashboard() {
           {pathSkills.length ? (
             <ul className="mb-path-list">
               {pathSkills.map(item => {
-                const measured = Object.hasOwn(scores, item.skillId);
+                const score = scores[item.skillId];
+                const measured = typeof score === "number" && Number.isFinite(score);
                 return (
                   <li key={item.skillId}>
                     <span><strong>{skillById[item.skillId]?.label ?? item.skillId}</strong><small>{skillById[item.skillId]?.group}</small></span>
-                    <EvidenceStatus state={evidenceUnavailable ? "unavailable" : measured ? "measured" : "not-assessed"} score={scores[item.skillId]} />
+                    {evidenceUnavailable ? <EvidenceStatus state="unavailable" />
+                      : measured ? <EvidenceStatus state="measured" score={score} />
+                        : <EvidenceStatus state="not-assessed" />}
                   </li>
                 );
               })}
@@ -201,7 +222,7 @@ export default function Dashboard() {
           <Link className="mb-panel-link" href={career ? "/roadmap" : "/onboarding"}>{career ? "Explore My Path" : "Choose a direction"} <ArrowRight aria-hidden="true" /></Link>
         </section>
 
-        <section className="mb-dashboard-panel mb-evidence-panel" aria-labelledby="mb-evidence-title">
+        <section className="mb-dashboard-panel mb-evidence-panel" aria-labelledby="mb-evidence-title" data-ui>
           <header><div><p>My Evidence</p><h2 id="mb-evidence-title">What has actually been measured</h2></div><Fingerprint aria-hidden="true" /></header>
           <dl className="mb-evidence-counts">
             <div><dt>Skills assessed</dt><dd>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</dd></div>
@@ -220,7 +241,7 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <section className="mb-continue" aria-labelledby="mb-continue-title">
+      <section className="mb-continue" aria-labelledby="mb-continue-title" data-ui>
         <div><p>Continue Learning</p><h2 id="mb-continue-title">{continuation.title}</h2><p>{continuation.detail}</p><small>{continuation.note}</small></div>
         <Link href={continuation.href}>{continuation.label} <ArrowRight aria-hidden="true" /></Link>
         <BookOpen aria-hidden="true" className="mb-continue__icon" />

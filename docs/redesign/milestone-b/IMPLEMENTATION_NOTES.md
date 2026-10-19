@@ -10,6 +10,18 @@ Milestone B replaces the previous landing, dashboard, and shared workspace navig
 
 The implementation preserves the original palette (`#FBF5EA`, `#283C30`, `#C7E2BE`, `#F4B78D`, `#D5C1EB`, `#C6DDF2`, `#D9ED82`), all routes, API contracts, scoring rules, feature flags, authentication behavior, and backend logic. No dependencies, schemas, environment files, hosted services, or Milestone C surfaces were changed.
 
+## Final polish pass — 2026-10-19
+
+- Rebalanced the landing hero so its catalog-backed Goal → Evidence → Next Action proof appears in the first mobile viewport without weakening the desktop headline.
+- Turned the product preview, journey field, career browser, dashboard panels, and drawer into one restrained Evidence Notebook system using purposeful folio tabs, paper grids, chapter edges, and shallow offset layers.
+- Reduced the dashboard's poster-like scale. NOW and WHY form one compact decision instrument, while MY PATH and MY EVIDENCE now enter the 1440×900 first screen.
+- Kept the primary dashboard action visible at 320×720 (`y=537`, `50px` high) and preserved the five-area mobile navigation with five `76×56px` touch targets.
+- Fixed the landing career handoff: the selected catalog career is URL-encoded into onboarding, validated against the catalog, and selected in step two.
+- Removed the measured-score fallback to zero. A measured state now requires a finite score; missing or invalid values render as unavailable or not assessed.
+- Prevented no-goal states from presenting an evidence-based recommendation. The action and rationale now explicitly require a direction first.
+- Audited the scoped Milestone B CSS, removed the obsolete hero-down treatment, consolidated repeated brand rules, and retained only the fine boundaries and shallow depth that communicate real UI structure.
+- Updated source-contract tests for career carry-through, finite measured scores, and truthful no-goal recommendations.
+
 ## Implemented surfaces
 
 ### Landing
@@ -46,7 +58,7 @@ The implementation preserves the original palette (`#FBF5EA`, `#283C30`, `#C7E2B
 
 ## Render critique
 
-ROUND 3  
+ROUND FINAL
 Seen in one second: the learning decision.  
 Idea (one sentence): Skillmetry turns a chosen direction and trusted evidence into one honest next action.  
 Live thing: the career selector changes the catalog-backed path preview.  
@@ -56,7 +68,7 @@ Caps applied: design is capped at 6.5 because the landing intentionally has no p
 Top three remaining issues:  
 1. The page does not use four real photographs or moving footage; this is an intentional product-fidelity tradeoff, and the real interface remains the visual hero.  
 2. The 320 px career detail is necessarily tall; its controls remain readable and wrapped with no horizontal overflow.  
-3. The dashboard's WHY panel follows NOW below the fold on narrow phones; the action remains understandable from its title, explanation, and evidence label before scrolling.
+3. The dashboard's WHY detail continues below the first narrow-phone viewport, but the primary action and honest no-recommendation basis are visible before scrolling.
 
 Taste Skill final checks: source lint `0 FAIL, 0 WARN`; rendered inspector `0 FAIL, 5 WARN`. The five rendered warnings were the locked cream palette, a broad but purposeful type scale, no photography, no footage, and restrained rather than continuous motion.
 
@@ -67,15 +79,20 @@ The official `@playwright/cli` package was run through `npx` without adding a pr
 Verified at 1440×900, 768×1024, 390×844, and 320×720:
 
 - Landing and dashboard rendered at every target size.
-- `documentElement.scrollWidth - clientWidth` was `0` at the narrowest viewport.
+- `documentElement.scrollWidth` matched the viewport at all eight landing/dashboard captures; no horizontal overflow was detected.
 - The bottom navigation remained fixed with safe-area content clearance.
-- Landing CTAs reached `/onboarding` and `/dashboard`.
+- The 320×720 dashboard primary action was fully visible at `y=537` with a `50px` height.
+- The landing career selector produced `/onboarding?career=frontend-developer`; onboarding then exposed Frontend Developer with `aria-pressed="true"` in step two.
 - Mobile primary navigation and secondary drawer links reached their existing routes.
-- Drawer focus moved to Close, Escape removed the dialog, and focus returned to “Open tools and settings.”
-- `prefers-reduced-motion: reduce` reduced reveal durations to effectively zero.
+- The drawer exposed labelled dialog semantics; Escape removed it and focus returned to “Open tools and settings.”
+- The workspace skip link received first keyboard focus.
+- All five bottom-navigation targets measured `76×56px` at 390×844.
+- `prefers-reduced-motion: reduce` reduced animation and transition durations to `0.00001s`.
 - A fresh browser session reported zero console errors and zero console warnings after the application icon fix.
 
 The live browser review covered the anonymous illustrative state. Authenticated-without-evidence and server-unavailable branches were verified through implementation/source-contract tests rather than a signed-in account because no test credentials were introduced or used.
+
+No automated screen-reader session or third-party axe scan was introduced. Keyboard focus, semantic roles, target sizes, reduced motion, responsive overflow, and rendered contrast were checked directly in the browser; final assistive-technology review remains a manual approval item.
 
 ## Screenshots
 
@@ -93,8 +110,8 @@ The live browser review covered the anonymous illustrative state. Authenticated-
 
 - `npm run typecheck` — passed.
 - `npm run lint` — passed with 0 errors and 13 existing warnings in unrelated assessment, course, jobs, resources, admin-editor, and learning-activity files.
-- Focused Milestone B tests — 8 files passed, 45/45 tests passed.
-- `npm test` — 57 files passed, 251/251 tests passed.
+- Focused final-refinement tests — 3 files passed, 18/18 tests passed.
+- `npm test` — final rerun passed 57 files and 253/253 tests. The first full run had one transient 5-second subprocess timeout in `release-preflight`; that unchanged test passed in isolation and again in the clean full rerun.
 - `npm run build` — passed with Next.js 15.5.27; static generation completed 31/31 and build traces completed.
 - Taste Skill source lint — 0 failures, 0 warnings.
 - Playwright — responsive screenshots, navigation destinations, focus restoration, reduced motion, overflow, and console reviewed.
@@ -109,6 +126,15 @@ The live browser review covered the anonymous illustrative state. Authenticated-
 `image-to-code` was not used because the approved concept could be translated with functional React components directly; generating or flattening a replacement image would not improve fidelity or product behavior.
 
 ## Changed-file summary
+
+Final refinement changed nine source/test files plus this note and the nine requested screenshot artifacts:
+
+- Landing and career handoff: `frontend/src/app/page.tsx`, `frontend/src/components/landing-journey-preview.tsx`, `frontend/src/components/career-chapter-gallery.tsx`, `frontend/src/app/onboarding/page.tsx`.
+- Dashboard evidence honesty: `frontend/src/app/(workspace)/dashboard/page.tsx`, `frontend/src/components/evidence-status.tsx`.
+- Shared visual refinement: `frontend/src/app/milestone-b.css`.
+- Regression contracts: `tests/experience-v2.test.ts`, `tests/signal-interface.test.ts`.
+
+The broader Milestone B implementation remains as previously recorded:
 
 - Landing: `frontend/src/app/page.tsx`, `landing-journey-preview.tsx`, `career-chapter-gallery.tsx`, `landing-scroll-motion.tsx`.
 - Dashboard and navigation: `frontend/src/app/(workspace)/dashboard/page.tsx`, `workspace-shell.tsx`, `evidence-status.tsx`.

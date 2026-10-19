@@ -28,7 +28,7 @@ describe("Connected learning experience source contracts", () => {
     const streak = read("../frontend/src/components/learning-streak-card.tsx");
     expect(home).toContain("buildDigitalTwinSnapshot");
     expect(home).toContain("useAssessmentProfile");
-    expect(home).toContain("Object.hasOwn(scores, item.skillId)");
+    expect(home).toContain('typeof score === "number" && Number.isFinite(score)');
     expect(home).toContain('state="unavailable"');
     expect(streak).toContain("NEXT_PUBLIC_LEARNING_STREAK_ENABLED");
     expect(streak).toContain("/api/learning/streak");
@@ -54,5 +54,13 @@ describe("Connected learning experience source contracts", () => {
     for (const route of ["/lab", "/planner", "/missions", "/tutor", "/passport"]) {
       expect(shell).toContain('href: "' + route + '"');
     }
+  });
+
+  it("carries a selected landing career into onboarding", () => {
+    const gallery = read("../frontend/src/components/career-chapter-gallery.tsx");
+    const onboarding = read("../frontend/src/app/onboarding/page.tsx");
+    expect(gallery).toContain("/onboarding?career=${encodeURIComponent(selected.id)}");
+    expect(onboarding).toContain('new URLSearchParams(window.location.search).get("career")');
+    expect(onboarding).toContain("careers.find(item => item.id === requestedCareer)");
   });
 });

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ActivityIndicator, ActionSpinner } from "@/components/motion-ui";
 import { ArrowLeft, ArrowRight, BookOpen, Check, Compass, Info, SlidersHorizontal } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -34,6 +34,15 @@ export default function Onboarding() {
   const [hours, setHours] = useState(preferences.hoursPerWeek);
   const [advanced, setAdvanced] = useState(false);
   const selectedCareer = careers.find(item => item.id === learning.primaryCareerId);
+
+  useEffect(() => {
+    const requestedCareer = new URLSearchParams(window.location.search).get("career");
+    const matchingCareer = careers.find(item => item.id === requestedCareer);
+    if (!matchingCareer) return;
+    setIntent("career");
+    setLearning(current => ({ ...current, primaryCareerId: matchingCareer.id }));
+  }, []);
+
   const chooseCareer = (id: CareerId) => setLearning(current => ({
     ...current, primaryCareerId: id
   }));

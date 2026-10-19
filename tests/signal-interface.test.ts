@@ -26,7 +26,7 @@ describe("Learning Chapters interface boundaries", () => {
     expect(dashboard).toContain("buildDigitalTwinSnapshot");
     expect(dashboard).toContain("getPersonalizedResources");
     expect(dashboard).toContain("catalogCoverage.measuredSkillCount");
-    expect(dashboard).toContain("Object.hasOwn(scores, item.skillId)");
+    expect(dashboard).toContain('typeof score === "number" && Number.isFinite(score)');
     expect(dashboard).toContain("Illustrative demo.");
     expect(dashboard).toContain("Continue Learning");
     expect(dashboard).not.toContain("LearningStreakCard");
@@ -41,6 +41,16 @@ describe("Learning Chapters interface boundaries", () => {
     expect(graph).toContain("No measured score");
     expect(graph).toContain("Object.hasOwn(proficiency, id)");
     expect(graph).not.toContain("proficiency[id] ?? 0");
+  });
+
+  it("never invents a measured zero or a no-goal recommendation", () => {
+    const dashboard = read("../frontend/src/app/(workspace)/dashboard/page.tsx");
+    const evidenceStatus = read("../frontend/src/components/evidence-status.tsx");
+
+    expect(evidenceStatus).toContain("Number.isFinite(props.score)");
+    expect(evidenceStatus).not.toContain("score ?? 0");
+    expect(dashboard).toContain("No recommendation yet — choose a direction first.");
+    expect(dashboard).toContain("hasFocus ? getPersonalizedResources");
   });
 
   it("keeps primary and supporting features reachable without a permanent sidebar", () => {

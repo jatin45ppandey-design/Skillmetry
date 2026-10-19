@@ -1,16 +1,17 @@
-type EvidenceStatusProps = {
-  state: "not-assessed" | "measured" | "illustrative" | "unavailable";
-  score?: number;
-};
+type EvidenceStatusProps =
+  | { state: "measured"; score: number }
+  | { state: "not-assessed" | "illustrative" | "unavailable"; score?: never };
 
-export function EvidenceStatus({ state, score }: EvidenceStatusProps) {
-  const label = state === "measured"
-    ? `Measured ${score ?? 0}/100`
-    : state === "not-assessed"
+export function EvidenceStatus(props: EvidenceStatusProps) {
+  const measuredScore = props.state === "measured" && Number.isFinite(props.score) ? props.score : null;
+  const effectiveState = props.state === "measured" && measuredScore === null ? "unavailable" : props.state;
+  const label = effectiveState === "measured"
+    ? `Measured ${measuredScore}/100`
+    : effectiveState === "not-assessed"
       ? "Not assessed"
-      : state === "illustrative"
+      : effectiveState === "illustrative"
         ? "Illustrative example"
         : "Evidence unavailable";
 
-  return <span className={`mb-truth-state mb-truth-state--${state}`}>{label}</span>;
+  return <span className={`mb-truth-state mb-truth-state--${effectiveState}`}>{label}</span>;
 }

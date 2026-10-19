@@ -48,7 +48,9 @@ export function CareerChapterGallery() {
           <div><dt>Foundation</dt><dd>{selected.skills.filter(item => skillById[item.skillId]?.group === "Foundation").map(item => skillById[item.skillId]?.label).join(", ") || "No foundation skills listed"}</dd></div>
           <div><dt>Core & applied</dt><dd>{selected.skills.filter(item => skillById[item.skillId]?.group !== "Foundation").slice(0, 5).map(item => skillById[item.skillId]?.label).join(", ")}</dd></div>
         </dl>
-        <Link href="/onboarding">Choose this direction <ArrowRight aria-hidden="true" /></Link>
+        <Link href={`/onboarding?career=${encodeURIComponent(selected.id)}`}>
+          Choose this direction <ArrowRight aria-hidden="true" />
+        </Link>
         <small>A career direction is editable. It is not an assessment or hiring prediction.</small>
       </article>
     </div>
