@@ -1,0 +1,193 @@
+- generic [active] [ref=e1]:
+  - status
+  - main [ref=e2]:
+    - link "Skip to content" [ref=e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Skillmetry home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e12]:
+            - generic [ref=e13]:
+              - text: skillmetry
+              - generic [ref=e14]: .
+            - generic [ref=e15]: signal
+        - navigation "Public navigation" [ref=e16]:
+          - link "Explore careers" [ref=e17] [cursor=pointer]:
+            - /url: "#explore"
+          - link "The journey" [ref=e18] [cursor=pointer]:
+            - /url: "#chapters"
+          - link "Our approach" [ref=e19] [cursor=pointer]:
+            - /url: "#why"
+        - generic [ref=e20]:
+          - link "Sign in" [ref=e21] [cursor=pointer]:
+            - /url: /auth/sign-in
+          - link "Start exploring" [ref=e22] [cursor=pointer]:
+            - /url: /onboarding
+      - generic [ref=e26]:
+        - region [ref=e27]:
+          - generic [ref=e28]:
+            - paragraph [ref=e29]: THE NEXT STEP IN YOUR CAREER STARTS HERE
+            - heading "Not sure what to learn next?" [level=1] [ref=e31]:
+              - text: Not sure
+              - generic [ref=e32]: what to learn
+              - generic [ref=e34]: next?
+            - paragraph [ref=e35]: Choose a career, check what you know with a real quiz, and follow one useful learning step at a time. No guessed skill ratings. No overwhelming to-do lists.
+            - generic [ref=e36]:
+              - link "Find my starting point" [ref=e37] [cursor=pointer]:
+                - /url: /onboarding
+              - link "See an example journey" [ref=e43] [cursor=pointer]:
+                - /url: /dashboard
+            - paragraph [ref=e46]: Explore without an account. Quiz scores are saved securely only after sign-in.
+            - generic [ref=e50]:
+              - generic [ref=e51]: EXPLORE
+              - generic [ref=e55]: 01—03
+          - region "Interactive Skillmetry journey example" [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: THE SKILLMETRY JOURNEY
+              - generic [ref=e59]: Interactive example · not a real account
+            - group "Choose a journey step" [ref=e60]:
+              - button "01 Choose" [pressed] [ref=e61] [cursor=pointer]:
+                - generic [ref=e62]: "01"
+                - strong [ref=e66]: Choose
+              - button "02 Measure" [ref=e67] [cursor=pointer]:
+                - generic [ref=e68]: "02"
+                - strong [ref=e78]: Measure
+              - button "03 Grow" [ref=e79] [cursor=pointer]:
+                - generic [ref=e80]: "03"
+                - strong [ref=e85]: Grow
+            - generic [ref=e86]:
+              - generic [ref=e91]: EXAMPLE GOAL
+              - heading "Frontend Developer" [level=2] [ref=e92]
+              - paragraph [ref=e93]: Explore skills · change direction anytime
+              - strong [ref=e97]: Start with a direction
+              - paragraph [ref=e98]: A goal is a starting point, not a permanent label.
+              - link "Explore careers" [ref=e99] [cursor=pointer]:
+                - /url: /careers
+            - generic [ref=e103]:
+              - generic [ref=e107]: See a real workflow, not an invented skill score.
+              - generic [ref=e108]: 01 / 03
+        - region [ref=e109]:
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - generic [ref=e112]: CHAPTER 01 / DISCOVER
+              - heading [level=2] [ref=e113]:
+                - text: What could you
+                - emphasis [ref=e114]: build?
+            - paragraph [ref=e115]: Pick a career below. See what skills it involves before committing to a plan. You can change direction later.
+          - generic [ref=e116]:
+            - group "Preview career directions" [ref=e117]:
+              - button "FIELD NOTES / 03 ML Engineer Open preview" [ref=e118] [cursor=pointer]:
+                - generic [ref=e119]: FIELD NOTES / 03
+                - generic [ref=e135]: ML Engineer
+                - generic [ref=e136]: Open preview
+              - button "FIELD NOTES / 01 Frontend Developer Currently previewing" [pressed] [ref=e140] [cursor=pointer]:
+                - generic [ref=e141]: FIELD NOTES / 01
+                - generic [ref=e149]: Frontend Developer
+                - generic [ref=e150]: Currently previewing
+              - button "FIELD NOTES / 02 Backend Developer Open preview" [ref=e154] [cursor=pointer]:
+                - generic [ref=e155]: FIELD NOTES / 02
+                - generic [ref=e171]: Backend Developer
+                - generic [ref=e172]: Open preview
+              - button "FIELD NOTES / 04 Full Stack Developer Open preview" [ref=e176] [cursor=pointer]:
+                - generic [ref=e177]: FIELD NOTES / 04
+                - generic [ref=e185]: Full Stack Developer
+                - generic [ref=e186]: Open preview
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - generic [ref=e192]: THE PATH YOU ARE EXPLORING
+                - heading "Frontend Developer" [level=3] [ref=e193]
+                - paragraph [ref=e194]: Interfaces that feel effortless. Explore the foundational and applied skills in this curated pathway.
+                - generic [ref=e195]:
+                  - generic [ref=e196]: HTML
+                  - generic [ref=e197]: CSS
+                  - generic [ref=e198]: JavaScript
+                  - generic [ref=e199]: TypeScript
+                  - generic [ref=e200]: React
+                  - generic [ref=e201]: +3 more
+              - link "Build my learning profile" [ref=e202] [cursor=pointer]:
+                - /url: /onboarding
+                - text: Build my learning profile
+                - generic [aria-hidden] [ref=e203]: ↗
+            - paragraph [ref=e204]: This is a career preview, not a recommendation or an assessment of your skills. Your actual goals are selected during onboarding.
+        - region [ref=e205]:
+          - generic [ref=e206]:
+            - generic [ref=e207]: A PATH, NOT A PILE OF DASHBOARDS
+            - heading [level=2] [ref=e208]:
+              - text: One clear step.
+              - emphasis [ref=e209]: Then the next.
+          - generic [ref=e210]:
+            - article [ref=e211]:
+              - generic [ref=e212]: 01 / DISCOVER
+              - generic [ref=e217]:
+                - heading "Choose a direction." [level=3] [ref=e218]
+                - paragraph [ref=e219]: Begin with a role or the skills you want to explore. You don't need a perfect career plan to get started.
+              - link "Make a learning profile" [ref=e220] [cursor=pointer]:
+                - /url: /onboarding
+            - article [ref=e224]:
+              - generic [ref=e225]: 02 / UNDERSTAND
+              - generic [ref=e237]:
+                - heading "Let evidence speak." [level=3] [ref=e238]
+                - paragraph [ref=e239]: A supported quiz gives you a measured result. Unassessed skills stay unknown—not failures in disguise.
+              - link "See assessments" [ref=e240] [cursor=pointer]:
+                - /url: /assessments
+            - article [ref=e244]:
+              - generic [ref=e245]: 03 / GROW
+              - generic [ref=e252]:
+                - heading "Find the next move." [level=3] [ref=e253]
+                - paragraph [ref=e254]: Explore real prerequisite connections and curated learning materials that reflect your goals and available evidence.
+              - link "Explore the skill map" [ref=e255] [cursor=pointer]:
+                - /url: /roadmap
+        - region "Example learner journey" [ref=e259]:
+          - generic [ref=e260]:
+            - generic [ref=e261]: THIS IS WHAT YOU WILL ACTUALLY DO
+            - heading [level=2] [ref=e262]:
+              - text: Less guessing.
+              - emphasis [ref=e263]: More doing.
+            - paragraph [ref=e264]: "Think of Skillmetry as a quiet guide: choose what you want to learn, take a foundational quiz when available, and get a specific next step. Your progress is based on your own work, not a made-up career score."
+            - link "Build my path" [ref=e265] [cursor=pointer]:
+              - /url: /onboarding
+          - generic "Illustrative learning journey, not an actual student's results" [ref=e269]:
+            - text: EXAMPLE ONLY · FRONTEND DEVELOPER
+            - generic [ref=e270]:
+              - generic [ref=e271]: "1"
+              - generic [ref=e272]:
+                - strong [ref=e273]: Choose a direction
+                - paragraph [ref=e274]: Frontend Developer
+            - generic [ref=e278]:
+              - generic [ref=e279]: "2"
+              - generic [ref=e280]:
+                - strong [ref=e281]: See what quizzes can measure
+                - paragraph [ref=e282]: JavaScript and HTML foundations
+            - generic [ref=e292]:
+              - generic [ref=e293]: "3"
+              - generic [ref=e294]:
+                - strong [ref=e295]: Get a helpful next step
+                - paragraph [ref=e296]: Learn a topic, practise, or reassess
+            - paragraph [ref=e301]: No fictional score or career readiness percentage.
+        - region [ref=e302]:
+          - generic [ref=e303]: OUR POINT OF VIEW / 001
+          - heading "Not assessed doesn't mean not skilled." [level=2] [ref=e307]
+          - generic [ref=e308]:
+            - paragraph [ref=e309]: Skillmetry separates missing evidence from measured results. Your next move is explained through your selected goals, supported assessments and real skill prerequisites—not imaginary placement probabilities.
+            - link "Explore the Skill Twin" [ref=e310] [cursor=pointer]:
+              - /url: /twin
+        - region [ref=e314]:
+          - generic [ref=e315]: YOUR STORY ISN'T PREWRITTEN
+          - heading [level=2] [ref=e316]:
+            - text: Your next move
+            - emphasis [ref=e317]: starts here.
+          - link "Find my starting point" [ref=e318] [cursor=pointer]:
+            - /url: /onboarding
+      - generic [ref=e324]:
+        - link "Skillmetry home" [ref=e325] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e331]:
+            - generic [ref=e332]:
+              - text: skillmetry
+              - generic [ref=e333]: .
+            - generic [ref=e334]: signal
+        - paragraph [ref=e335]: Built to make learning a little clearer, one step at a time.
+        - generic [ref=e336]: Early MVP · Quiz outcomes aren't professional certifications or hiring predictions.
+        - link "Sign in ↗" [ref=e337] [cursor=pointer]:
+          - /url: /auth/sign-in

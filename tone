@@ -1,0 +1,146 @@
+ .env.example                                       |  14 [32m+[m[31m-[m
+ .gitignore                                         |   5 [32m+[m[31m-[m
+ AGENTS.md                                          |  73 [32m+[m[31m-[m
+ README.md                                          | 107 [32m++[m[31m-[m
+ backend/lib/assessments/grading.server.ts          |  31 [32m+[m
+ backend/lib/assessments/policy.server.ts           |  19 [32m+[m
+ backend/lib/assessments/question-bank.server.ts    | 109 [32m+++[m
+ backend/lib/assessments/schema.ts                  |  16 [32m+[m
+ backend/lib/supabase/admin.ts                      |  11 [32m+[m
+ backend/lib/supabase/config.server.ts              |  42 [32m++[m
+ backend/lib/supabase/request-auth.ts               |  14 [32m+[m
+ {src => backend}/lib/supabase/server.ts            |  10 [32m+[m[31m-[m
+ backend/package.json                               |  16 [32m+[m
+ {supabase => database/supabase}/config.toml        |  22 [32m+[m[31m-[m
+ .../supabase}/migrations/0001_skillmetry_core.sql  |   0
+ .../migrations/0002_auth_profile_security.sql      |   0
+ .../migrations/0003_seed_career_catalog.sql        |   0
+ .../20261011143435_secure_assessment_engine.sql    | 192 [32m+++++[m
+ ...1011180657_assessment_concurrency_hardening.sql | 305 [32m++++++++[m
+ .../20261012000000_add_full_stack_career.sql       |  24 [32m+[m
+ ...1012000001_enforce_trusted_attempt_metadata.sql |  22 [32m+[m
+ database/supabase/tests/assessment_rls.test.sql    | 292 [32m++++++++[m
+ .../supabase}/tests/profile_rls.test.sql           |   5 [32m+[m[31m-[m
+ docs/API.md                                        |  93 [32m++[m[31m-[m
+ docs/ARCHITECTURE.md                               |  99 [32m+[m[31m--[m
+ docs/BACKLOG.md                                    | 122 [32m++[m[31m--[m
+ docs/DECISIONS.md                                  |  38 [32m+[m[31m-[m
+ docs/PRD.md                                        | 122 [32m++[m[31m--[m
+ docs/SCORING.md                                    |  75 [32m+[m[31m-[m
+ docs/SECURITY.md                                   |  95 [32m+[m[31m--[m
+ docs/STATUS.md                                     | 126 [32m++[m[31m--[m
+ docs/SUPABASE_SETUP.md                             |  90 [32m+[m[31m--[m
+ eslint.config.mjs                                  |  29 [32m+[m[31m-[m
+ next-env.d.ts => frontend/next-env.d.ts            |   0
+ frontend/next.config.ts                            |  10 [32m+[m
+ frontend/package.json                              |  42 [32m++[m
+ postcss.config.js => frontend/postcss.config.js    |   0
+ frontend/src/app/(workspace)/assessments/page.tsx  | 117 [32m+++[m
+ frontend/src/app/(workspace)/careers/page.tsx      |  21 [32m+[m
+ frontend/src/app/(workspace)/dashboard/page.tsx    |  76 [32m++[m
+ {src => frontend/src}/app/(workspace)/error.tsx    |   0
+ frontend/src/app/(workspace)/jobs/page.tsx         |  19 [32m+[m
+ {src => frontend/src}/app/(workspace)/layout.tsx   |   0
+ {src => frontend/src}/app/(workspace)/loading.tsx  |   0
+ .../src}/app/(workspace)/missions/page.tsx         |  13 [32m+[m[31m-[m
+ frontend/src/app/(workspace)/passport/page.tsx     |  17 [32m+[m
+ frontend/src/app/(workspace)/resources/page.tsx    |  92 [32m+++[m
+ frontend/src/app/(workspace)/roadmap/page.tsx      | 117 [32m+++[m
+ frontend/src/app/(workspace)/settings/page.tsx     |  28 [32m+[m
+ frontend/src/app/(workspace)/simulator/page.tsx    |  34 [32m+[m
+ frontend/src/app/(workspace)/twin/page.tsx         |  13 [32m+[m
+ {src => frontend/src}/app/account/loading.tsx      |   0
+ {src => frontend/src}/app/account/page.tsx         |   4 [32m+[m[31m-[m
+ {src => frontend/src}/app/api/ai/missions/route.ts |   0
+ frontend/src/app/api/assessments/history/route.ts  |  33 [32m+[m
+ frontend/src/app/api/assessments/start/route.ts    |  95 [32m+++[m
+ frontend/src/app/api/assessments/submit/route.ts   | 122 [32m++++[m
+ .../src}/app/api/auth/sign-in/route.ts             |   4 [32m+[m[31m-[m
+ .../src}/app/api/auth/sign-out/route.ts            |   2 [32m+[m[31m-[m
+ .../src}/app/api/auth/sign-up/route.ts             |   4 [32m+[m[31m-[m
+ {src => frontend/src}/app/api/health/route.ts      |   0
+ .../src}/app/api/jobs/analyze/route.ts             |   0
+ {src => frontend/src}/app/api/profile/route.ts     |  88 [32m+[m[31m--[m
+ {src => frontend/src}/app/api/simulate/route.ts    |   9 [32m+[m[31m-[m
+ {src => frontend/src}/app/auth/callback/route.ts   |   4 [32m+[m[31m-[m
+ {src => frontend/src}/app/auth/sign-in/page.tsx    |   2 [32m+[m[31m-[m
+ {src => frontend/src}/app/auth/sign-up/page.tsx    |   2 [32m+[m[31m-[m
+ {src => frontend/src}/app/globals.css              | 786 [32m+++++++++++++++++++[m[31m--[m
+ frontend/src/app/layout.tsx                        |  34 [32m+[m
+ frontend/src/app/onboarding/page.tsx               |  42 [32m++[m
+ {src => frontend/src}/app/page.tsx                 |  46 [32m+[m[31m-[m
+ {src => frontend/src}/components/account-panel.tsx |  10 [32m+[m[31m-[m
+ {src => frontend/src}/components/auth-form.tsx     |   4 [32m+[m[31m-[m
+ {src => frontend/src}/components/auth-provider.tsx | 140 [32m++[m[31m--[m
+ {src => frontend/src}/components/brand.tsx         |   6 [32m+[m[31m-[m
+ .../src/components/career-direction-required.tsx   |  11 [32m+[m
+ frontend/src/components/digital-twin-workspace.tsx | 261 [32m+++++++[m
+ frontend/src/components/learning-goal-editor.tsx   |  64 [32m++[m
+ frontend/src/components/recommendation-panel.tsx   |  40 [32m++[m
+ frontend/src/components/roadmap-graph.tsx          |  77 [32m++[m
+ {src => frontend/src}/components/section-title.tsx |   0
+ frontend/src/components/skill-bars.tsx             |   6 [32m+[m
+ .../src}/components/workspace-shell.tsx            |  26 [32m+[m[31m-[m
+ {src => frontend/src}/components/workspace-ui.tsx  |   0
+ frontend/src/data/demo-assessments.ts              |   9 [32m+[m
+ frontend/src/hooks/use-assessment-profile.ts       |  27 [32m+[m
+ {src => frontend/src}/lib/supabase/client.ts       |   0
+ {src => frontend/src}/lib/supabase/config.ts       |   0
+ {src => frontend/src}/lib/supabase/middleware.ts   |   0
+ {src => frontend/src}/middleware.ts                |   0
+ frontend/src/store/use-skillmetry.ts               |  73 [32m++[m
+ tailwind.config.ts => frontend/tailwind.config.ts  |   0
+ frontend/tsconfig.json                             |   9 [32m+[m
+ next.config.ts                                     |   3 [31m-[m
+ package-lock.json                                  | 300 [32m++++++++[m
+ package.json                                       |  23 [32m+[m[31m-[m
+ scripts/validate-resource-links.mjs                |  41 [32m++[m
+ scripts/verify-assessment-flow.mjs                 | 180 [32m+++++[m
+ shared/data/assessment-catalog.ts                  |  41 [32m++[m
+ {src => shared}/data/catalog.ts                    |  27 [32m+[m[31m-[m
+ shared/data/learning-catalog.ts                    |  29 [32m+[m
+ shared/data/learning-resources.ts                  |  69 [32m++[m
+ shared/lib/assessments/grading.ts                  |  53 [32m++[m
+ shared/lib/digital-twin-intelligence.ts            | 109 [32m+++[m
+ shared/lib/profile-schema.ts                       |  67 [32m++[m
+ shared/lib/readiness.ts                            |  81 [32m+++[m
+ shared/lib/recommendations.ts                      | 226 [32m++++++[m
+ shared/lib/resource-intelligence.ts                | 237 [32m+++++++[m
+ shared/package.json                                |  13 [32m+[m
+ shared/types/auth.ts                               |  10 [32m+[m
+ shared/types/domain.ts                             | 134 [32m++++[m
+ src/app/(workspace)/assessments/page.tsx           |  30 [31m-[m
+ src/app/(workspace)/careers/page.tsx               |  18 [31m-[m
+ src/app/(workspace)/dashboard/page.tsx             |  26 [31m-[m
+ src/app/(workspace)/jobs/page.tsx                  |   9 [31m-[m
+ src/app/(workspace)/passport/page.tsx              |   5 [31m-[m
+ src/app/(workspace)/roadmap/page.tsx               |  32 [31m-[m
+ src/app/(workspace)/settings/page.tsx              |   6 [31m-[m
+ src/app/(workspace)/simulator/page.tsx             |  23 [31m-[m
+ src/app/(workspace)/twin/page.tsx                  |  24 [31m-[m
+ src/app/layout.tsx                                 |  16 [31m-[m
+ src/app/onboarding/page.tsx                        |  37 [31m-[m
+ src/components/roadmap-graph.tsx                   |  49 [31m--[m
+ src/components/skill-bars.tsx                      |   6 [31m-[m
+ src/lib/profile-schema.ts                          |  51 [31m--[m
+ src/lib/readiness.ts                               |  60 [31m--[m
+ src/store/use-skillmetry.ts                        |  56 [31m--[m
+ src/types/domain.ts                                |  25 [31m-[m
+ tests/answer-key-boundary.test.ts                  |  41 [32m++[m
+ tests/assessment-engine.test.ts                    |  80 [32m+++[m
+ tests/digital-twin-intelligence.test.ts            | 169 [32m+++++[m
+ tests/digital-twin-workspace.test.ts               |  30 [32m+[m
+ tests/migration-security.test.ts                   |  47 [32m+[m[31m-[m
+ tests/profile-schema.test.ts                       |  27 [32m+[m[31m-[m
+ tests/readiness.test.ts                            |  32 [32m+[m[31m-[m
+ tests/recommendations.test.ts                      |  48 [32m++[m
+ tests/resource-intelligence.test.ts                |  73 [32m++[m
+ tests/resource-navigation.test.ts                  |  14 [32m+[m
+ tests/restructure-boundaries.test.ts               |  51 [32m++[m
+ tests/server-only.ts                               |   2 [32m+[m
+ tests/signal-interface.test.ts                     |  47 [32m++[m
+ tests/store.test.ts                                |  44 [32m+[m[31m-[m
+ tsconfig.base.json                                 |  20 [32m+[m
+ tsconfig.json                                      |  26 [32m+[m[31m-[m
+ vitest.config.ts                                   |  15 [32m+[m[31m-[m
+ 145 files changed, 6440 insertions(+), 1299 deletions(-)
