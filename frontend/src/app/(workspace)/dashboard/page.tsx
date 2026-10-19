@@ -1,65 +1,88 @@
 "use client";
-import {ActivityIndicator} from "@/components/motion-ui";
 
 import Link from "next/link";
-import { useEffect,useMemo,useState } from "react";
-import { ArrowRight, ArrowUpRight, BookOpenCheck, Compass, Fingerprint, GitBranch,
-  LibraryBig, ShieldCheck, Sparkles, Target } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, BookOpen, Compass, Fingerprint, GitBranch, ShieldCheck } from "lucide-react";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
-import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
 import { buildDigitalTwinSnapshot } from "@skillmetry/shared/lib/digital-twin-intelligence";
+import { selectCourseContinuation, type ContinueLearning, type ResumeCourse, type SavedLessonActivity } from "@skillmetry/shared/lib/learning-continuation";
 import { getPersonalizedResources } from "@skillmetry/shared/lib/resource-intelligence";
+import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
 import { useSkillmetry } from "@/store/use-skillmetry";
-import { LearningStreakCard } from "@/components/learning-streak-card";
-import {useAuth} from "@/components/auth-provider";
-import {selectCourseContinuation,type ContinueLearning,type ResumeCourse,type SavedLessonActivity} from "@skillmetry/shared/lib/learning-continuation";
+import { useAuth } from "@/components/auth-provider";
+import { EvidenceStatus } from "@/components/evidence-status";
 
-type TrustedNextAction={kind:"assessment"|"learning"|"choose-goals";title:string;label:string;href:string;explanation:string};
+type TrustedNextAction = {
+  kind: "assessment" | "learning" | "choose-goals";
+  title: string;
+  label: string;
+  href: string;
+  explanation: string;
+};
+
+function formatAttemptDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Date unavailable" : new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+}
+
 export default function Dashboard() {
   const { name, preferences, onboardingCompleted, profileSource, cloudOwnerId } = useSkillmetry();
-  const {user}=useAuth();
-  const [cloudNext,setCloudNext]=useState<TrustedNextAction|null>(null);
-  const [resume,setResume]=useState<ContinueLearning|null>(null);
-  const [cloudNextStatus,setCloudNextStatus]=useState<"idle"|"loading"|"ready"|"unavailable">("idle");
-  useEffect(()=>{
-    const controller=new AbortController();setCloudNext(null);
-    if(!user){setCloudNextStatus("idle");return;}
+  const { user } = useAuth();
+  const [cloudNext, setCloudNext] = useState<TrustedNextAction | null>(null);
+  const [resume, setResume] = useState<ContinueLearning | null>(null);
+  const [cloudNextStatus, setCloudNextStatus] = useState<"idle" | "loading" | "ready" | "unavailable">("idle");
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setCloudNext(null);
+    if (!user) {
+      setCloudNextStatus("idle");
+      return () => controller.abort();
+    }
     setCloudNextStatus("loading");
-    void fetch("/api/learning/overview",{cache:"no-store",signal:controller.signal})
-      .then(async response=>{
-        const body=await response.json() as {nextAction?:TrustedNextAction;error?:string};
-        if(!response.ok||!body.nextAction)throw new Error(body.error??"Learning overview unavailable");
-        if(!controller.signal.aborted){setCloudNext(body.nextAction);setCloudNextStatus("ready");}
-      }).catch(()=>{if(!controller.signal.aborted)setCloudNextStatus("unavailable");});
-    return()=>controller.abort();
-  },[user?.id]);
-  useEffect(()=>{
-    const controller=new AbortController();
+    void fetch("/api/learning/overview", { cache: "no-store", signal: controller.signal })
+      .then(async response => {
+        const body = await response.json() as { nextAction?: TrustedNextAction; error?: string };
+        if (!response.ok || !body.nextAction) throw new Error(body.error ?? "Learning overview unavailable");
+        if (!controller.signal.aborted) {
+          setCloudNext(body.nextAction);
+          setCloudNextStatus("ready");
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setCloudNextStatus("unavailable");
+      });
+    return () => controller.abort();
+  }, [user]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     setResume(null);
-    if(!user)return;
-    void fetch("/api/learning/course-progress",{cache:"no-store",signal:controller.signal})
-      .then(async activity=>{
-        if(!activity.ok)return null;
-        const body=await activity.json() as {enabled?:boolean;progress?:SavedLessonActivity[];truncated?:boolean};
-        if(!body.enabled||body.truncated||!body.progress?.length)return null;
-        // Read only courses the learner has actually studied, not merely the first page
-        // of the published catalog. Bound the lookups to five recent courses.
-        const slugs=[...new Set(body.progress.map(row=>row.courseSlug))]
-          .filter(slug=>/^[a-z][a-z0-9-]{3,49}$/.test(slug)).slice(0,5);
-        const catalog=await Promise.all(slugs.map(slug=>
-          fetch("/api/content/courses?course="+encodeURIComponent(slug),
-            {cache:"no-store",signal:controller.signal})
-            .then(async response=>response.ok?
-              (await response.json() as {courses?:ResumeCourse[]}).courses??[]:[])
-            .catch(()=>[] as ResumeCourse[])
+    if (!user) return () => controller.abort();
+    void fetch("/api/learning/course-progress", { cache: "no-store", signal: controller.signal })
+      .then(async activity => {
+        if (!activity.ok) return null;
+        const body = await activity.json() as { enabled?: boolean; progress?: SavedLessonActivity[]; truncated?: boolean };
+        if (!body.enabled || body.truncated || !body.progress?.length) return null;
+        const slugs = [...new Set(body.progress.map(row => row.courseSlug))]
+          .filter(slug => /^[a-z][a-z0-9-]{3,49}$/.test(slug)).slice(0, 5);
+        const catalog = await Promise.all(slugs.map(slug =>
+          fetch(`/api/content/courses?course=${encodeURIComponent(slug)}`, { cache: "no-store", signal: controller.signal })
+            .then(async response => response.ok ? (await response.json() as { courses?: ResumeCourse[] }).courses ?? [] : [])
+            .catch(() => [] as ResumeCourse[])
         ));
-        return selectCourseContinuation(catalog.flat(),body.progress);
-      }).then(next=>{if(!controller.signal.aborted)setResume(next);}).catch(()=>{
-      // Resume is optional: do not hide verified assessment recommendations on failure.
-    });
-    return()=>controller.abort();
-  },[user?.id]);
-  const profileReady=onboardingCompleted && (!user || (profileSource==="student" && cloudOwnerId===user.id));
+        return selectCourseContinuation(catalog.flat(), body.progress);
+      })
+      .then(next => {
+        if (!controller.signal.aborted) setResume(next);
+      })
+      .catch(() => {
+        // Course continuation is optional and never replaces trusted assessment guidance.
+      });
+    return () => controller.abort();
+  }, [user]);
+
+  const profileReady = onboardingCompleted && (!user || (profileSource === "student" && cloudOwnerId === user.id));
   const { attempts, scores, illustrative, status } = useAssessmentProfile();
   const learning = preferences.learning;
   const career = profileReady ? careers.find(item => item.id === learning.primaryCareerId) ?? null : null;
@@ -67,136 +90,141 @@ export default function Dashboard() {
   const loading = !illustrative && status === "loading";
   const evidenceUnavailable = !illustrative && (status === "error" || status === "offline") && !attempts.length;
   const twin = useMemo(() => buildDigitalTwinSnapshot({
-    attempts, learning, context: illustrative ? "demo" : "authenticated"
+    attempts,
+    learning,
+    context: illustrative ? "demo" : "authenticated"
   }), [attempts, illustrative, learning]);
   const resource = useMemo(() => getPersonalizedResources({
-    learning, trustedScores: scores, maxResults: 1
+    learning,
+    trustedScores: scores,
+    maxResults: 1
   })[0], [learning, scores]);
-  const focus = hasFocus ? twin.insights.find(item=>item.priority==="now") ?? twin.insights[0] : null;
+  const focus = hasFocus ? twin.insights.find(item => item.priority === "now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
-  const groundedCloudAction=profileReady&&hasFocus&&!loading&&cloudNextStatus==="ready"?cloudNext:null;
-  const nextHref = groundedCloudAction?.href ?? (!profileReady || !hasFocus ? "/onboarding" :
-    focus?.action.href ?? "/roadmap");
-  const nextLabel = groundedCloudAction?.label ?? (!profileReady || !hasFocus ? "Find my starting point" :
-    focus?.action.kind === "assessment" ? "Take a foundational quiz" :
-    focus?.action.kind === "resources" ? "Explore a learning resource" : "Open my pathway");
+  const groundedCloudAction = profileReady && hasFocus && !loading && cloudNextStatus === "ready" ? cloudNext : null;
+  const nextHref = groundedCloudAction?.href ?? (!profileReady || !hasFocus ? "/onboarding" : focus?.action.href ?? "/roadmap");
+  const nextLabel = groundedCloudAction?.label ?? (!profileReady || !hasFocus ? "Choose a direction" :
+    focus?.action.kind === "assessment" ? "Take the available assessment" :
+      focus?.action.kind === "resources" ? "Open a learning resource" : "Open My Path");
   const nextTitle = groundedCloudAction?.title ?? (!profileReady || !hasFocus ? "Choose what you want to learn." :
     loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ?
-    "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
-    "Check how far you've come." : detail ? "Let's work on " + detail + "." : "Make one useful move today.");
+      "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
+        "Check how far you have come." : detail ? `Work on ${detail}.` : "Make one useful move today.");
   const nextExplanation = groundedCloudAction?.explanation ?? (!profileReady || !hasFocus ?
-    "Select a career or one skill you care about. We will show you an understandable place to begin." :
-    loading ? "Your trusted quiz results are loading. We won't guess your next action." :
-    focus?.explanation ?? "Explore your pathway and choose a practical next step.");
-  const attemptCount = attempts.length;
-  const careerSkills = career?.skills.slice(0,5) ?? [];
-  const lastAttempt = [...attempts].sort((a,b)=>Date.parse(b.completedAt)-Date.parse(a.completedAt))[0];
+    "Select a career or one skill you care about. Skillmetry will show an understandable place to begin." :
+    loading ? "Your trusted quiz results are loading. Skillmetry will not guess your next action." :
+      focus?.explanation ?? "Explore your pathway and choose a practical next step.");
+  const lastAttempt = [...attempts].sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt))[0];
+  const focusedSkill = focus?.skillId ? skillById[focus.skillId] : null;
+  const relevantPrerequisites = focusedSkill?.prerequisites.map(id => skillById[id]).filter(Boolean) ?? [];
+  const pathSkills = career?.skills.slice(0, 5) ?? [];
+  const resourceHref = resource ? (resource.resource.target.kind === "skill"
+    ? `/resources?skill=${encodeURIComponent(resource.resource.target.skillId)}`
+    : `/resources?tool=${encodeURIComponent(resource.resource.target.toolId)}`) : "/resources";
+  const continuation = resume && profileReady && !illustrative ? {
+    title: resume.courseTitle,
+    detail: `Next lesson: ${resume.lessonTitle}. ${resume.complete}/${resume.total} lessons marked studied.`,
+    note: "Lesson activity is self-reported and does not change quiz evidence.",
+    href: resume.href,
+    label: "Resume course"
+  } : resource ? {
+    title: resource.resource.title,
+    detail: resource.reason,
+    note: "Learning activity is unscored. Reassess when you want new measured evidence.",
+    href: resourceHref,
+    label: "Open this resource"
+  } : {
+    title: "Explore learning material",
+    detail: detail ? `Find curated material related to ${detail}.` : "Choose a direction to receive a more specific learning suggestion.",
+    note: "Learning activity is unscored and never manufactures proficiency.",
+    href: resourceHref,
+    label: "Browse resources"
+  };
 
-  return <div className="sx-learning-home">
-    <header className="sx-welcome">
-      <div>
-        <span className="sx-eyebrow"><Sparkles size={15} aria-hidden="true"/> YOUR LEARNING HOME</span>
-        <h1>Welcome {name && name !== "Demo Student" ? "back, " + name.split(" ")[0] : "to your path"}<span className="sx-dot">.</span></h1>
-        <p>{career ? "You're exploring " + career.title + ". Let's take the next step together." :
-          "No pressure to know everything. Just start with a direction."}</p>
-      </div>
-      <Link href="/settings" className="sx-subtle-link"><Compass size={17} aria-hidden="true"/> Adjust goals</Link>
-    </header>
-    {illustrative ? <div className="sx-demo-notice" role="status">
-      <ShieldCheck size={18} aria-hidden="true"/> This is a sample learning journey.
-      <Link href="/auth/sign-in?next=/dashboard">Sign in for your own verified results <ArrowRight size={16}/></Link>
-    </div> : null}
-
-    {loading?<div className="motion-action-status"><ActivityIndicator compact label="Loading your trusted assessment history…" detail="Your next action will be based on verified evidence."/></div>:null}
-    <section className="sx-next-step" aria-labelledby="sx-next-heading">
-      <div className="sx-next-content">
-        <span className="sx-eyebrow"><span className="sx-pulse-dot"/> YOUR NEXT USEFUL STEP</span>
-        <h2 id="sx-next-heading">{nextTitle}</h2>
-        <p>{nextExplanation}</p>
-        <Link className="sx-main-action" href={nextHref} aria-disabled={loading}
-          tabIndex={loading ? -1 : undefined} onClick={loading ? event => event.preventDefault() : undefined}>
-          {loading ? "Loading your learning plan" : nextLabel}<ArrowUpRight size={20} aria-hidden="true"/>
-        </Link>
-        <small>{cloudNextStatus==="unavailable"&&user?"Live recommendation unavailable; showing the available local evidence. " : ""}{!hasFocus ? "Career selection is flexible. Change your mind anytime." :
-          illustrative ? "Suggestions are based on illustrative demo data." :
-          "Based on your stated goals and available trusted quiz evidence."}</small>
-      </div>
-      <aside className="sx-next-evidence" aria-label={illustrative ? "Illustrative assessment snapshot" : "Trusted assessment snapshot"}>
-        <span className="sx-eyebrow">{illustrative ? "SAMPLE PROGRESS" : "YOUR EVIDENCE"}</span>
-        <div className="sx-next-evidence-numbers">
-          <div><strong>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</strong><span>Skills assessed</span></div>
-          <div><strong>{loading || evidenceUnavailable ? "—" : attemptCount}</strong><span>Quiz attempts</span></div>
+  return (
+    <div className="mb-dashboard">
+      <header className="mb-dashboard__welcome">
+        <div>
+          <h1>{name && name !== "Demo Student" ? `Welcome back, ${name.split(" ")[0]}.` : "Your learning workspace."}</h1>
+          <p>{career ? `You are exploring ${career.title}.` : "Start with a direction, then let evidence guide the next step."}</p>
         </div>
-        <p>{evidenceUnavailable ? "Assessment history is unavailable right now." :
-          lastAttempt && !loading ? "Verified attempts help prioritize learning without guessing your readiness." :
-          loading ? "Checking your trusted assessment history…" : "Your first quiz will create a measured baseline."}</p>
-        <Link href="/twin" className="sx-next-evidence-link">View progress <ArrowRight size={16} aria-hidden="true"/></Link>
-      </aside>
-    </section>
+        <Link href="/settings"><Compass aria-hidden="true" /> Adjust goals</Link>
+      </header>
 
-    <div className="sx-home-grid">
-      <section className="sx-home-panel" aria-labelledby="sx-path-heading">
-        <div className="sx-panel-heading"><span className="sx-eyebrow">YOUR DIRECTION</span><GitBranch size={21} aria-hidden="true"/></div>
-        <h2 id="sx-path-heading">{career ? career.title : "Build your path"}</h2>
-        <p>{career ? "These are some skills on this pathway. A blank score means not yet assessed, not that you're unskilled." :
-          "Start with any career or skill that interests you."}</p>
-        {career ? <div className="sx-skill-stack">
-          {careerSkills.map(item => <div key={item.skillId} className="sx-skill-row">
-            <span>{skillById[item.skillId]?.label ?? item.skillId}</span>
-            <strong>{Object.hasOwn(scores,item.skillId) ? scores[item.skillId] + "/100" : evidenceUnavailable ? "Evidence unavailable" : "Not assessed"}</strong>
-          </div>)}
-        </div> : null}
-        <Link href={career ? "/roadmap" : "/onboarding"} className="sx-inline-link">
-          {career ? "Explore my skill path" : "Choose my direction"} <ArrowRight size={17} aria-hidden="true"/>
-        </Link>
+      {illustrative ? (
+        <aside className="mb-demo-notice" role="status">
+          <ShieldCheck aria-hidden="true" />
+          <span><strong>Illustrative demo.</strong> Sample results below are not attached to an account.</span>
+          <Link href="/auth/sign-in?next=/dashboard">Sign in for private evidence <ArrowRight aria-hidden="true" /></Link>
+        </aside>
+      ) : null}
+
+      <section className="mb-now" aria-labelledby="mb-now-title" aria-busy={loading}>
+        <div className="mb-now__action">
+          <p>Now</p>
+          <h2 id="mb-now-title">{nextTitle}</h2>
+          <Link href={nextHref} aria-disabled={loading} tabIndex={loading ? -1 : undefined}
+            onClick={loading ? event => event.preventDefault() : undefined}>
+            {loading ? "Loading your next action…" : nextLabel}<ArrowRight aria-hidden="true" />
+          </Link>
+          <small>{illustrative ? "Based on illustrative demo evidence." : "Based on your goals and available trusted quiz evidence."}</small>
+        </div>
+        <aside className="mb-now__why">
+          <p>Why this</p>
+          <h3>{detail ? `${detail} is the current focus.` : "A direction comes before a recommendation."}</h3>
+          <p>{nextExplanation}</p>
+          {cloudNextStatus === "unavailable" && user ? <small>Live overview unavailable. This fallback uses the trusted evidence already loaded in your workspace.</small> : null}
+        </aside>
       </section>
-      <section className="sx-home-panel sx-latest-panel" aria-labelledby="sx-evidence-heading">
-        <div className="sx-panel-heading"><span className="sx-eyebrow">WHAT YOU HAVE ACTUALLY MEASURED</span><Fingerprint size={21} aria-hidden="true"/></div>
-        <h2 id="sx-evidence-heading">Latest quiz result</h2>
-        <div className="sx-latest-score" role="status"><strong>{lastAttempt&&!loading&&!evidenceUnavailable?lastAttempt.score+"/100":"—"}</strong><span>{lastAttempt&&!loading&&!evidenceUnavailable?(skillById[lastAttempt.skillId]?.label??lastAttempt.skillId):"No trusted quiz loaded"}</span></div>
-        <p>{lastAttempt && !loading && !evidenceUnavailable ?
-          "Your latest server-graded result. Open progress to review your actual assessment history." :
-          evidenceUnavailable ? "Trusted history could not be loaded. Please try again when online." : "Your first quiz will give you a real baseline. No scores are guessed."}</p>
-        <Link href="/twin" className="sx-inline-link">See my progress <ArrowRight size={17} aria-hidden="true"/></Link>
+
+      <div className="mb-dashboard__columns">
+        <section className="mb-dashboard-panel mb-path-panel" aria-labelledby="mb-path-title">
+          <header><div><p>My Path</p><h2 id="mb-path-title">{career?.title ?? "No career direction selected"}</h2></div><GitBranch aria-hidden="true" /></header>
+          {relevantPrerequisites.length ? (
+            <p className="mb-path-panel__reason">{focusedSkill?.label} depends on {relevantPrerequisites.map(item => item.label).join(" and ")}.</p>
+          ) : (
+            <p className="mb-path-panel__reason">{career ? "Start with the available foundations, then follow their prerequisites." : "Choose a flexible direction to see its skills and prerequisites."}</p>
+          )}
+          {pathSkills.length ? (
+            <ul className="mb-path-list">
+              {pathSkills.map(item => {
+                const measured = Object.hasOwn(scores, item.skillId);
+                return (
+                  <li key={item.skillId}>
+                    <span><strong>{skillById[item.skillId]?.label ?? item.skillId}</strong><small>{skillById[item.skillId]?.group}</small></span>
+                    <EvidenceStatus state={evidenceUnavailable ? "unavailable" : measured ? "measured" : "not-assessed"} score={scores[item.skillId]} />
+                  </li>
+                );
+              })}
+            </ul>
+          ) : <div className="mb-empty-state">Your path will appear after you choose a direction.</div>}
+          <Link className="mb-panel-link" href={career ? "/roadmap" : "/onboarding"}>{career ? "Explore My Path" : "Choose a direction"} <ArrowRight aria-hidden="true" /></Link>
+        </section>
+
+        <section className="mb-dashboard-panel mb-evidence-panel" aria-labelledby="mb-evidence-title">
+          <header><div><p>My Evidence</p><h2 id="mb-evidence-title">What has actually been measured</h2></div><Fingerprint aria-hidden="true" /></header>
+          <dl className="mb-evidence-counts">
+            <div><dt>Skills assessed</dt><dd>{loading || evidenceUnavailable ? "—" : twin.catalogCoverage.measuredSkillCount}</dd></div>
+            <div><dt>Quiz attempts</dt><dd>{loading || evidenceUnavailable ? "—" : attempts.length}</dd></div>
+          </dl>
+          <div className="mb-latest-evidence">
+            <p>Latest result</p>
+            {loading ? <span role="status">Loading trusted history…</span> : evidenceUnavailable ? <EvidenceStatus state="unavailable" /> : lastAttempt ? (
+              <>
+                <div><strong>{skillById[lastAttempt.skillId]?.label ?? lastAttempt.skillId}</strong><EvidenceStatus state="measured" score={lastAttempt.score} /></div>
+                <small>{illustrative ? "Illustrative sample attempt" : `Server-graded · ${formatAttemptDate(lastAttempt.completedAt)}`}</small>
+              </>
+            ) : <><EvidenceStatus state="not-assessed" /><small>Your first supported quiz will create a measured baseline.</small></>}
+          </div>
+          <Link className="mb-panel-link" href="/twin">View evidence & history <ArrowRight aria-hidden="true" /></Link>
+        </section>
+      </div>
+
+      <section className="mb-continue" aria-labelledby="mb-continue-title">
+        <div><p>Continue Learning</p><h2 id="mb-continue-title">{continuation.title}</h2><p>{continuation.detail}</p><small>{continuation.note}</small></div>
+        <Link href={continuation.href}>{continuation.label} <ArrowRight aria-hidden="true" /></Link>
+        <BookOpen aria-hidden="true" className="mb-continue__icon" />
       </section>
     </div>
-
-    {resume&&profileReady&&!illustrative?<aside className="sx-resume-learning" aria-label="Resume saved course activity">
-      <div><span className="sx-eyebrow">RESUME YOUR SAVED COURSE</span>
-        <h2>{resume.courseTitle}</h2>
-        <p>Next lesson: {resume.lessonTitle} · {resume.complete}/{resume.total} lessons marked studied.</p>
-        <small>Lesson activity is self-reported. Your quiz evidence is separate.</small>
-      </div>
-      <Link className="sx-main-action" href={resume.href}>Resume course <ArrowRight size={17} aria-hidden="true"/></Link>
-    </aside>:null}
-    <section className="sx-continue" aria-labelledby="sx-continue-title">
-      <div className="sx-section-heading"><div><span className="sx-eyebrow">KEEP MOVING</span>
-        <h2 id="sx-continue-title">How would you like to learn?</h2></div>
-        <p>Choose a small action. There is no need to use every tool at once.</p></div>
-      <div className="sx-quick-grid">
-        <Link className="sx-quick-card" href="/assessments">
-          <BookOpenCheck size={26} aria-hidden="true"/><h3>Check my knowledge</h3>
-          <p>Take a supported foundational quiz and get real feedback.</p><ArrowRight size={19} aria-hidden="true"/>
-        </Link>
-        <Link className="sx-quick-card" href="/lab">
-          <Target size={26} aria-hidden="true"/><h3>Try short practice</h3>
-          <p>Work through guided coding questions with explanations.</p><ArrowRight size={19} aria-hidden="true"/>
-        </Link>
-        <Link className="sx-quick-card" href="/planner">
-          <LibraryBig size={26} aria-hidden="true"/><h3>Plan my week</h3>
-          <p>See a study plan shaped by your available learning time.</p><ArrowRight size={19} aria-hidden="true"/>
-        </Link>
-      </div>
-    </section>
-    <aside className="sx-product-feedback-cta"><div><strong>Help make Skillmetry easier to use</strong><p>Try a few real tasks and optionally export anonymous usability notes. No feedback is sent automatically.</p></div><Link href="/feedback" className="btn btn-outline">Give product feedback <ArrowRight size={16} aria-hidden="true"/></Link></aside>
-    <details className="sx-streak-disclosure"><summary>Learning consistency & streaks</summary><LearningStreakCard/></details>
-    {resource ? <aside className="sx-resource-suggestion">
-      <div><span className="sx-eyebrow">ONE RESOURCE FOR YOU</span><strong>{resource.resource.title}</strong>
-        <p>{resource.reason}</p></div>
-      <Link href={resource.resource.target.kind === "skill" ?
-        "/resources?skill=" + encodeURIComponent(resource.resource.target.skillId) :
-        "/resources?tool=" + encodeURIComponent(resource.resource.target.toolId)}
-        className="sx-inline-link">View resource <ArrowRight size={17} aria-hidden="true"/></Link>
-    </aside> : null}
-  </div>;
+  );
 }

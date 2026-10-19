@@ -36,8 +36,8 @@ describe("Product roadmap staged source contracts",()=>{
  it("prefers live next learning action for signed-in accounts, with honest fallback",()=>{
    const home=read("frontend/src/app/(workspace)/dashboard/page.tsx");
    expect(home).toContain("/api/learning/overview");
-   expect(home).toContain('cloudNextStatus==="ready"');
-   expect(home).toContain("Live recommendation unavailable");
+   expect(home).toContain('cloudNextStatus === "ready"');
+   expect(home).toContain("Live overview unavailable");
    expect(home).not.toContain("Simulated assessment score");
  });
  it("keeps admin inventory metadata-only and restricted to editorial sessions",()=>{

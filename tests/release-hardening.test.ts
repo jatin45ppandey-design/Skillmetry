@@ -30,8 +30,8 @@ describe("Release hardening: bounded data and authenticated mutations",()=>{
    expect(api).toContain("params.getAll(\"course\").length>1");
    expect(api).toContain('query=query.eq("slug",course)');
    const home=read("frontend/src/app/(workspace)/dashboard/page.tsx");
-   expect(home).toContain("fetch(\"/api/content/courses?course=\"+encodeURIComponent(slug)");
-   expect(home).toContain("slice(0,5)");
+   expect(home).toContain("/api/content/courses?course=${encodeURIComponent(slug)}");
+   expect(home).toContain("slice(0, 5)");
    const client=read("frontend/src/app/(workspace)/courses/page.tsx");
    expect(client).toContain("loadMoreCourses");
    expect(client).toContain("Load more published courses");

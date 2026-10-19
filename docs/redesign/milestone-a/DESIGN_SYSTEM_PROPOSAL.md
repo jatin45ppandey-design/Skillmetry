@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Create a small, product-specific system for Direction A that can replace the current sequence of global phase overrides without changing business logic. The system should make truthful states easy to render and incorrect states hard to invent.
+Create a small, product-specific system for the approved Direction B Lite implementation that can replace the current sequence of global phase overrides without changing business logic. The notebook influence stays subtle: editorial composition and warm surfaces, without literal desk props or decorative stationery. The system should make truthful states easy to render and incorrect states hard to invent.
 
 This is a specification for later implementation, not a CSS change in Milestone A.
 
@@ -13,11 +13,13 @@ This is a specification for later implementation, not a CSS change in Milestone 
 Preserve the approved palette. Derive tints by mixing with paper/near-black during implementation; document the resulting contrast before use.
 
 ```text
-brand.paper       #F2E8CF
-brand.forest      #174C3C
-brand.mustard     #DDA03A
-brand.terracotta  #A44A2A
-brand.ink         #111111
+brand.paper       #FBF5EA
+brand.ink         #283C30
+brand.sage        #C7E2BE
+brand.apricot     #F4B78D
+brand.lilac       #D5C1EB
+brand.sky         #C6DDF2
+brand.citron      #D9ED82
 ```
 
 Proposed roles:
@@ -25,12 +27,12 @@ Proposed roles:
 | Role | Default |
 | --- | --- |
 | Page background | Paper |
-| Primary text | Near-black |
-| Primary action / active navigation | Forest |
-| Directional highlight / current step | Mustard |
-| Emphasis / caution / editorial accent | Terracotta |
-| Resting surface | Paper tint, white only when contrast is needed |
-| Border | Forest/paper mix with sufficient contrast |
+| Primary text | Ink |
+| Primary action / active navigation | Ink |
+| Directional highlight / current step | Citron |
+| Supporting product fields | Sage, apricot, lilac, or sky according to information role |
+| Resting surface | Paper or a paper-derived light surface |
+| Border | Ink/paper mix with sufficient contrast |
 
 Color is never the sole carrier of measured, unassessed, hypothetical, disabled, or error states.
 

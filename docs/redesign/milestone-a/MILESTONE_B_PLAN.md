@@ -2,7 +2,7 @@
 
 ## Goal
 
-Implement the approved Direction A foundation and prove it on the two highest-leverage surfaces: the public landing page and signed-in/illustrative Home. Preserve every backend contract and existing route.
+Implement the approved Direction B Lite foundation and prove it on the two highest-leverage surfaces: the public landing page and signed-in/illustrative Home. Preserve every backend contract and existing route.
 
 Milestone B begins only after explicit design approval.
 
@@ -52,7 +52,7 @@ Milestone B begins only after explicit design approval.
 
 ### B4. Landing
 
-- Replace repeated chapter/card composition with the Direction A hero.
+- Replace repeated chapter/card composition with the Direction B Lite hero.
 - Use a real, readable product fragment for Goal → Evidence/Assessment → Next action.
 - Keep copy grounded in server-graded quizzes and honest unknown states.
 - Use one primary CTA and one secondary explainer.
@@ -98,7 +98,7 @@ Milestone B begins only after explicit design approval.
 
 ## Review gates
 
-1. Approve Direction A and the five-area IA.
+1. Approve Direction B Lite and the five-area IA.
 2. Review shell and Landing at desktop/mobile before migrating Home.
 3. Review Home with at least signed-out illustrative, signed-in no-evidence, and signed-in measured-evidence states.
 4. Approve the Milestone B diff before any Milestone C work.

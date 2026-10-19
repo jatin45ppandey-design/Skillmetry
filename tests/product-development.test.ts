@@ -49,7 +49,7 @@ describe("Five-phase product journey: only published, trustworthy evidence",()=>
    const coursesPage=source("frontend/src/app/(workspace)/courses/page.tsx");
    const lab=source("frontend/src/app/(workspace)/lab/page.tsx");
    expect(dash).toContain("selectCourseContinuation");
-   expect(dash).toContain("RESUME YOUR SAVED COURSE");
+   expect(dash).toContain('label: "Resume course"');
    expect(coursesPage).toContain('href={"/lab?skill="+encodeURIComponent(course.skillId)}');
    expect(coursesPage).toContain('new URLSearchParams(window.location.search).get("course")');
    expect(lab).toContain('new URLSearchParams(window.location.search).get("skill")');

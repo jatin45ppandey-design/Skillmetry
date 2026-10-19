@@ -6,7 +6,7 @@ import {useEffect} from "react";
 export function LandingScrollMotion(){
  useEffect(()=>{
   if(!("IntersectionObserver" in window)||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-  const sections=document.querySelectorAll<HTMLElement>(".lc-site [data-reveal]");
+  const sections=document.querySelectorAll<HTMLElement>(".lc-site [data-reveal], .mb-landing [data-reveal]");
   const observer=new IntersectionObserver(entries=>{
     for(const entry of entries){
       if(!entry.isIntersecting)continue;

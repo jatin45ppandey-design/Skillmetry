@@ -4,55 +4,59 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Activity, ArrowUpRight, BookMarked, BriefcaseBusiness, Cloud, CloudOff,
-  Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu,
-  Settings2, Target, UserRound, WandSparkles, X, BookOpen
+  Activity, ArrowRight, BookMarked, BookOpen, BriefcaseBusiness, Cloud, CloudOff,
+  Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu, Settings2, Target,
+  UserRound, WandSparkles, X
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
 
 const primary = [
-  { href: "/dashboard", label: "Home", short: "Home", icon: Activity },
-  { href: "/careers", label: "Careers", short: "Explore", icon: Compass },
-  { href: "/roadmap", label: "My path", short: "My path", icon: GitBranch },
-  { href: "/assessments", label: "Quizzes", short: "Quiz", icon: BookOpen },
-  { href: "/twin", label: "Progress", short: "Progress", icon: Fingerprint }
+  { href: "/dashboard", label: "Home", icon: Activity, matches: ["/dashboard"] },
+  { href: "/roadmap", label: "My Path", icon: GitBranch, matches: ["/roadmap", "/careers"] },
+  { href: "/resources", label: "Learn", icon: BookMarked, matches: ["/resources", "/courses"] },
+  { href: "/assessments", label: "Practice", icon: Target, matches: ["/assessments", "/practice", "/lab", "/missions"] },
+  { href: "/twin", label: "Progress", icon: Fingerprint, matches: ["/twin", "/passport"] }
 ] as const;
 
-type SecondaryLink = { href: string; label: string; icon: typeof BookOpen };
+type SecondaryLink = { href: string; label: string; description: string; icon: typeof BookOpen };
 const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
-  { label: "LEARN & PRACTICE", items: [
-    { href: "/resources", label: "Learning resources", icon: BookMarked },
-    { href: "/courses", label: "Courses & lessons", icon: BookOpen },
-    { href: "/planner", label: "My weekly plan", icon: BookOpen },
-    { href: "/lab", label: "Guided coding practice", icon: Target },
-    { href: "/tutor", label: "Learning tutor", icon: BookOpen }
+  { label: "Path & learning", items: [
+    { href: "/careers", label: "Career directions", description: "Compare the 4 curated paths", icon: Compass },
+    { href: "/courses", label: "Courses & lessons", description: "Read structured learning material", icon: BookOpen },
+    { href: "/lab", label: "Guided coding practice", description: "Practise without changing quiz scores", icon: Target },
+    { href: "/missions", label: "Project challenges", description: "Work through learner-reported projects", icon: Target }
   ] },
-  { label: "BUILD & EXPLORE", items: [
-    { href: "/missions", label: "Project challenges", icon: Target },
-    { href: "/simulator", label: "Try learning scenarios", icon: FlaskConical },
-    { href: "/jobs", label: "Job description analyzer", icon: BriefcaseBusiness }
+  { label: "Planning & advanced tools", items: [
+    { href: "/planner", label: "Weekly planner", description: "Plan learning time", icon: BookOpen },
+    { href: "/tutor", label: "Learning tutor", description: "Open curated guidance", icon: BookOpen },
+    { href: "/jobs", label: "Job description analyzer", description: "Compare canonical skill requirements", icon: BriefcaseBusiness },
+    { href: "/simulator", label: "Learning scenarios", description: "Explore hypothetical changes", icon: FlaskConical },
+    { href: "/passport", label: "Career Passport", description: "Review private evidence presentation", icon: WandSparkles }
   ] },
-  { label: "MY SPACE", items: [
-    { href: "/passport", label: "Career passport", icon: WandSparkles },
-    { href: "/settings", label: "My goals & settings", icon: Settings2 }
+  { label: "Settings", items: [
+    { href: "/settings", label: "Goals & settings", description: "Update your learning direction", icon: Settings2 },
+    { href: "/feedback", label: "Product feedback", description: "Record optional usability notes", icon: BookOpen }
   ] }
- ];
+];
 const secondary = secondaryGroups.flatMap(group => group.items);
 
-function StudioLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
-  return (
-    <>
-      {primary.map(({ href, label, icon: Icon }) => (
-        <Link href={href} key={href} onClick={onNavigate}
-          aria-current={current === href ? "page" : undefined}
-          className={"studio-nav-link" + (current === href ? " is-current" : "")}>
-          <Icon size={17} aria-hidden="true" />{label}
-        </Link>
-      ))}
-    </>
-  );
+function isPrimaryCurrent(pathname: string, matches: readonly string[]) {
+  return matches.includes(pathname);
+}
+
+function PrimaryLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
+  return primary.map(({ href, label, icon: Icon, matches }) => {
+    const active = isPrimaryCurrent(current, matches);
+    return (
+      <Link href={href} key={href} onClick={onNavigate} aria-current={active ? "page" : undefined}
+        className={active ? "is-current" : undefined}>
+        <Icon aria-hidden="true" />
+        <span>{label}</span>
+      </Link>
+    );
+  });
 }
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
@@ -69,11 +73,15 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!drawerOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
+
     function onDrawerKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
         closeDrawer();
+        return;
       }
       if (event.key !== "Tab") return;
       const controls = drawerPanelRef.current?.querySelectorAll<HTMLElement>(
@@ -90,109 +98,85 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         first.focus();
       }
     }
+
     document.addEventListener("keydown", onDrawerKeyDown);
-    return () => document.removeEventListener("keydown", onDrawerKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onDrawerKeyDown);
+    };
   }, [drawerOpen, closeDrawer]);
+
   const { name, profileSource } = useSkillmetry();
   const { user, syncStatus } = useAuth();
-  const current = [...primary, ...secondary].find(item => item.href === pathname);
+  const primaryArea = primary.find(item => isPrimaryCurrent(pathname, item.matches));
+  const current = primaryArea ?? secondary.find(item => item.href === pathname);
   const accountHref = user ? "/account" : "/auth/sign-in";
   const cloudLabel = !user ? (profileSource === "demo" ? "Illustrative demo" : "Local profile")
-    : syncStatus === "offline" ? "Offline" : syncStatus === "error" ? "Sync issue"
-    : syncStatus === "saving" ? "Saving" : syncStatus === "loading" ? "Loading" : "Cloud synced";
+    : syncStatus === "offline" ? "Offline"
+      : syncStatus === "error" ? "Sync issue"
+        : syncStatus === "saving" ? "Saving…"
+          : syncStatus === "loading" ? "Loading…" : "Cloud synced";
   const CloudIcon = !user ? UserRound : syncStatus === "offline" || syncStatus === "error" ? CloudOff : Cloud;
   const isAssessmentPage = pathname === "/assessments";
 
   return (
-    <div className={"studio-app" + (isAssessmentPage ? " studio-app--assessment" : "")}>
-      <a href="#studio-main" className="studio-skip">Skip to main content</a>
-      <header className="studio-header">
-        <div className="studio-header-inner">
+    <div className={`studio-app mb-shell${isAssessmentPage ? " studio-app--assessment" : ""}`}>
+      <a href="#workspace-main" className="mb-skip-link">Skip to main content</a>
+      <header className="mb-shell-header">
+        <div className="mb-shell-header__inner">
           <Brand />
-          <nav className="studio-primary-nav" aria-label="Learning studio navigation">
-            <StudioLinks current={pathname} />
-            <details className="studio-more">
-              <summary className={"studio-nav-link" + (secondary.some(item => item.href === pathname) ? " is-current" : "")}>
-                More <span aria-hidden="true">⌄</span>
-              </summary>
-              <div className="studio-more-list">
-                {secondaryGroups.map(group => <div className="sx-more-group" key={group.label}>
-                  <span>{group.label}</span>
-                  {group.items.map(({ href, label, icon: Icon }) => (
-                    <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}>
-                      <Icon size={17} aria-hidden="true" /> {label}
-                    </Link>
-                  ))}
-                </div>)}
-              </div>
-            </details>
+          <nav className="mb-primary-nav" aria-label="Primary learning navigation">
+            <PrimaryLinks current={pathname} />
           </nav>
-          <div className="studio-header-actions">
-            <span className="studio-sync" title={cloudLabel}><CloudIcon size={14} aria-hidden="true" />{cloudLabel}</span>
-            <Link className="studio-avatar" href={accountHref} aria-label={user ? "Open account" : "Sign in"}>
-              {user ? <span>{(name || "S").slice(0, 1).toUpperCase()}</span> : <LogIn size={19} aria-hidden="true" />}
+          <div className="mb-shell-actions">
+            <span className="mb-sync-state" title={cloudLabel}><CloudIcon aria-hidden="true" />{cloudLabel}</span>
+            <Link className="mb-account-link" href={accountHref} aria-label={user ? "Open account" : "Sign in"}>
+              {user ? <span>{(name || "S").slice(0, 1).toUpperCase()}</span> : <LogIn aria-hidden="true" />}
             </Link>
-            <button type="button" className="studio-mobile-menu" ref={menuButtonRef} onClick={() => setDrawerOpen(true)}
-              aria-label="Open all navigation" aria-expanded={drawerOpen} aria-controls="studio-navigation-drawer">
-              <Menu size={22} aria-hidden="true" />
+            <button type="button" className="mb-menu-button" ref={menuButtonRef} onClick={() => setDrawerOpen(true)}
+              aria-label="Open tools and settings" aria-expanded={drawerOpen} aria-controls="mb-navigation-drawer">
+              <Menu aria-hidden="true" /><span>More</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="studio-contextbar">
-        <div className="studio-contextbar-inner">
-          <span className="studio-context-number">SKILLMETRY / YOUR SPACE</span>
-          <span className="studio-context-separator" aria-hidden="true">/</span>
-          <strong>{current?.label ?? "Learning Studio"}</strong>
-          <span className="studio-context-trail" aria-hidden="true">✳ &nbsp; learn at your own pace</span>
-        </div>
-      </div>
-
-      <main className="studio-main" id="studio-main">
-        <div className="studio-content" key={pathname}>{children}</div>
+      <main className="studio-main mb-shell-main" id="workspace-main">
+        <div className="studio-content mb-shell-content" key={pathname}>{children}</div>
       </main>
 
       {drawerOpen ? (
-        <div className="studio-drawer" id="studio-navigation-drawer" role="dialog" aria-modal="true" aria-label="All Skillmetry sections">
-          <button type="button" className="studio-drawer-backdrop" onClick={closeDrawer} aria-label="Close navigation" />
-          <aside className="studio-drawer-panel" ref={drawerPanelRef}>
-            <div className="studio-drawer-heading">
-              <Brand />
-              <button type="button" className="studio-icon-button" ref={closeButtonRef} onClick={closeDrawer} aria-label="Close navigation"><X size={19} /></button>
-            </div>
-            <span className="studio-drawer-caption">YOUR CHAPTERS</span>
-            <nav aria-label="All learning pages"><StudioLinks current={pathname} onNavigate={closeDrawer} /></nav>
-            <span className="studio-drawer-caption">MORE TO EXPLORE</span>
-            <nav aria-label="Additional learning pages">
-              {secondaryGroups.map(group => <div key={group.label} className="sx-drawer-group">
-                <span className="sx-drawer-group-label">{group.label}</span>
-                {group.items.map(({ href, label, icon: Icon }) => (
-                  <Link key={href} href={href} onClick={closeDrawer}
-                    className={"studio-nav-link" + (pathname === href ? " is-current" : "")}>
-                    <Icon size={17} aria-hidden="true" />{label}
-                  </Link>
-                ))}
-              </div>)}
-            </nav>
-            <Link className="studio-drawer-account" href={accountHref} onClick={() => setDrawerOpen(false)}>
-              <UserRound size={18} /> {user ? "My account" : "Sign in"} <ArrowUpRight size={16} />
+        <div className="mb-drawer" id="mb-navigation-drawer" role="dialog" aria-modal="true" aria-label="Skillmetry tools and settings">
+          <button type="button" className="mb-drawer__backdrop" onClick={closeDrawer} aria-label="Close navigation" />
+          <aside className="mb-drawer__panel" ref={drawerPanelRef}>
+            <header><Brand /><button type="button" ref={closeButtonRef} onClick={closeDrawer} aria-label="Close navigation"><X aria-hidden="true" /></button></header>
+            <nav className="mb-drawer__primary" aria-label="Primary learning areas"><PrimaryLinks current={pathname} onNavigate={closeDrawer} /></nav>
+            {secondaryGroups.map(group => (
+              <section key={group.label} className="mb-drawer__group">
+                <h2>{group.label}</h2>
+                <nav aria-label={group.label}>
+                  {group.items.map(({ href, label, description, icon: Icon }) => (
+                    <Link key={href} href={href} onClick={closeDrawer} aria-current={pathname === href ? "page" : undefined}>
+                      <Icon aria-hidden="true" />
+                      <span><strong>{label}</strong><small>{description}</small></span>
+                      <ArrowRight aria-hidden="true" />
+                    </Link>
+                  ))}
+                </nav>
+              </section>
+            ))}
+            <Link className="mb-drawer__account" href={accountHref} onClick={closeDrawer}>
+              <UserRound aria-hidden="true" /> {user ? "My account" : "Sign in"} <ArrowRight aria-hidden="true" />
             </Link>
           </aside>
         </div>
       ) : null}
 
-      <nav className="studio-bottom-nav" aria-label="Mobile learning navigation">
-        {primary.slice(0, 4).map(({ href, short, icon: Icon }) => (
-          <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}
-            className={pathname === href ? "is-current" : ""}>
-            <Icon size={20} aria-hidden="true" /><span>{short}</span>
-          </Link>
-        ))}
-        <button type="button" onClick={() => setDrawerOpen(true)} aria-label="Open more learning pages">
-          <Menu size={21} aria-hidden="true" /><span>More</span>
-        </button>
+      <nav className="mb-bottom-nav" aria-label="Mobile learning navigation">
+        <PrimaryLinks current={pathname} />
       </nav>
+
+      <span className="mb-current-area" aria-live="polite">{current?.label ?? "Learning workspace"}</span>
     </div>
   );
 }

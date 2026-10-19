@@ -1,6 +1,12 @@
 # Skillmetry Visual Direction
 
-## Decision
+## Milestone B approved override
+
+**Direction B Lite: Evidence Notebook** is the approved implementation direction for Milestone B. Keep the warm editorial composition, tactile paper-like surfaces, and Goal → Evidence → Next Action storytelling. Remove the literal desk scene, props, sticky notes, handwriting, artificial texture, fake learner data, and motivational copy. The real product interface remains the visual hero.
+
+The original Direction A recommendation below is retained as Milestone A decision history. It is not the current Milestone B implementation instruction.
+
+## Historical Milestone A decision
 
 **Recommend Direction A: Learning Field Guide.**
 
@@ -113,13 +119,15 @@ Do not implement the concept’s decorative motivational quote. It violates the 
 
 ## Palette
 
-Preserve the approved palette exactly as the brand foundation:
+Preserve the original Skillmetry palette exactly as the brand foundation. This palette supersedes the alternate mustard/terracotta proposal:
 
-- Warm paper: `#F2E8CF`
-- Forest: `#174C3C`
-- Golden mustard: `#DDA03A`
-- Terracotta: `#A44A2A`
-- Near-black: `#111111`
+- Warm paper: `#FBF5EA`
+- Ink / forest: `#283C30`
+- Sage: `#C7E2BE`
+- Apricot: `#F4B78D`
+- Lilac: `#D5C1EB`
+- Sky: `#C6DDF2`
+- Citron: `#D9ED82`
 
 Tints may be derived for backgrounds and borders, but no new hue should become a brand color. Semantic success/error/warning colors must remain distinguishable in text and iconography and cannot rely on hue alone.
 

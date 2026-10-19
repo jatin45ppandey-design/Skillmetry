@@ -7,17 +7,17 @@ const read = (path: string) => readFileSync(fileURLToPath(new URL(path, import.m
 describe("Learning Chapters interface boundaries", () => {
   it("preserves type roles while using scoped warm studio tokens", () => {
     const layout = read("../frontend/src/app/layout.tsx");
-    const studio = read("../frontend/src/app/studio.css");
-    const chapterLanding = read("../frontend/src/app/chapter-landing.css");
+    const milestone = read("../frontend/src/app/milestone-b.css");
 
     expect(layout).toContain("Bricolage_Grotesque");
     expect(layout).toContain("Instrument_Sans");
     expect(layout).toContain("IBM_Plex_Mono");
     expect(layout).toContain('import "./studio.css"');
     expect(layout).toContain('import "./studio-surfaces.css"');
-    expect(studio).toContain("--bg: #fbf5ea");
-    expect(chapterLanding).toContain("--paper: #fbf5ea");
-    expect(chapterLanding).toContain("prefers-reduced-motion");
+    expect(layout).toContain('import "./milestone-b.css"');
+    expect(milestone).toContain("--mb-paper: #fbf5ea");
+    expect(milestone).toContain("--mb-citron: #d9ed82");
+    expect(milestone).toContain("prefers-reduced-motion");
   });
 
   it("keeps the learning home grounded in real recommendation and evidence sources", () => {
@@ -26,9 +26,10 @@ describe("Learning Chapters interface boundaries", () => {
     expect(dashboard).toContain("buildDigitalTwinSnapshot");
     expect(dashboard).toContain("getPersonalizedResources");
     expect(dashboard).toContain("catalogCoverage.measuredSkillCount");
-    expect(dashboard).toContain("Object.hasOwn(scores,item.skillId)");
-    expect(dashboard).toContain("This is a sample learning journey");
-    expect(dashboard).toContain("LearningStreakCard");
+    expect(dashboard).toContain("Object.hasOwn(scores, item.skillId)");
+    expect(dashboard).toContain("Illustrative demo.");
+    expect(dashboard).toContain("Continue Learning");
+    expect(dashboard).not.toContain("LearningStreakCard");
     expect(dashboard).toContain('"/onboarding"');
     expect(dashboard).not.toContain("readiness(");
   });
@@ -48,9 +49,9 @@ describe("Learning Chapters interface boundaries", () => {
     for (const route of ["/dashboard", "/careers", "/roadmap", "/assessments", "/twin", "/resources", "/simulator", "/missions", "/jobs", "/passport", "/settings"]) {
       expect(shell).toContain('href: "' + route + '"');
     }
-    expect(shell).toContain("StudioLinks");
-    expect(shell).toContain("studio-more-list");
-    expect(shell).toContain("studio-drawer");
+    expect(shell).toContain("PrimaryLinks");
+    expect(shell).toContain("secondaryGroups");
+    expect(shell).toContain("mb-drawer");
     expect(shell).toContain('aria-label="Mobile learning navigation"');
   });
 
@@ -63,7 +64,8 @@ describe("Learning Chapters interface boundaries", () => {
     expect(gallery).toContain("aria-pressed={active}");
     expect(landing).toContain("CareerChapterGallery");
     expect(landing).toContain("Explore without an account");
-    expect(landing).toContain("EXAMPLE ONLY");
+    const preview = read("../frontend/src/components/landing-journey-preview.tsx");
+    expect(preview).toContain("Real catalog data · no fictional score");
   });
 
   it("requires deliberate confirmation before a trusted quiz submission", () => {

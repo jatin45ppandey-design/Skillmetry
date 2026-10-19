@@ -42,9 +42,9 @@ describe("V3 meaningful content and compact workspace contracts",()=>{
    const shell=read("../frontend/src/components/workspace-shell.tsx");
    // A global question/shortcut bar repeated the page title, wasting the first viewport.
    expect(shell).not.toContain("<LearningQuickBar/>");
-   expect(shell).toContain("studio-primary-nav");
-   expect(shell).toContain("studio-drawer");
-   expect(shell).toContain("studio-bottom-nav");
+   expect(shell).toContain("mb-primary-nav");
+   expect(shell).toContain("mb-drawer");
+   expect(shell).toContain("mb-bottom-nav");
    // All ordinary workspaces remain discoverable through primary or grouped navigation.
    for(const route of routes.filter(value=>value!=="practice")){
      expect(shell).toContain('href: "/'+route+'"');
@@ -60,7 +60,7 @@ describe("V3 meaningful content and compact workspace contracts",()=>{
    expect(account).toContain("No saved career setup yet");
    expect(account).toContain("Saved student profile");
    expect(dashboard).toContain("profileReady && Boolean");
-   expect(dashboard).toContain("sx-latest-panel");
+   expect(dashboard).toContain("mb-evidence-panel");
  });
  it("reduces oversized landing-style headings while retaining responsive controls",()=>{
    const css=read("../frontend/src/app/experience-v3.css");

@@ -18,9 +18,9 @@ describe("Connected learning experience source contracts", () => {
   it("makes the homepage outcome-first with a catalog-backed career demo", () => {
     const page = read("../frontend/src/app/page.tsx");
     const gallery = read("../frontend/src/components/career-chapter-gallery.tsx");
-    expect(page).toContain("Not sure ");
-    expect(page).toContain("what to learn");
-    expect(page).toContain("EXAMPLE ONLY");
+    expect(page).toContain("Know what to learn next.");
+    expect(page).toContain("Skills you have not assessed stay unknown—not zero.");
+    expect(page).toContain("LandingJourneyPreview");
     expect(gallery).toContain("careers.map");
   });
   it("uses only trusted quiz results for measured skill states", () => {
@@ -28,8 +28,8 @@ describe("Connected learning experience source contracts", () => {
     const streak = read("../frontend/src/components/learning-streak-card.tsx");
     expect(home).toContain("buildDigitalTwinSnapshot");
     expect(home).toContain("useAssessmentProfile");
-    expect(home).toContain("Object.hasOwn(scores,item.skillId)");
-    expect(home).toContain("Evidence unavailable");
+    expect(home).toContain("Object.hasOwn(scores, item.skillId)");
+    expect(home).toContain('state="unavailable"');
     expect(streak).toContain("NEXT_PUBLIC_LEARNING_STREAK_ENABLED");
     expect(streak).toContain("/api/learning/streak");
     expect(streak).not.toContain("localStorage.setItem");
@@ -48,7 +48,7 @@ describe("Connected learning experience source contracts", () => {
   });
   it("organizes advanced features without removing route access", () => {
     const shell = read("../frontend/src/components/workspace-shell.tsx");
-    for (const category of ["LEARN & PRACTICE", "BUILD & EXPLORE", "MY SPACE"]) {
+    for (const category of ["Path & learning", "Planning & advanced tools", "Settings"]) {
       expect(shell).toContain(category);
     }
     for (const route of ["/lab", "/planner", "/missions", "/tutor", "/passport"]) {

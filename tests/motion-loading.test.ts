@@ -40,11 +40,14 @@ describe("Meaningful loading, not fake progress",()=>{
    }
  });
  it("works with real process states, not simulated loading promises",()=>{
-   const routes=["planner","lab","missions","jobs","tutor","passport","assessments","dashboard","practice"];
+   const routes=["planner","lab","missions","jobs","tutor","passport","assessments","practice"];
    for(const route of routes){
      const s=read("../frontend/src/app/(workspace)/"+route+"/page.tsx");
      expect(s,route).toContain("ActivityIndicator");
    }
+   const dashboard=read("../frontend/src/app/(workspace)/dashboard/page.tsx");
+   expect(dashboard).toContain("aria-busy={loading}");
+   expect(dashboard).toContain("Loading trusted history…");
    const quiz=read("../frontend/src/app/(workspace)/assessments/page.tsx");
    expect(quiz).toContain("Grading and saving your answers");
    const settings=read("../frontend/src/app/(workspace)/settings/page.tsx");
