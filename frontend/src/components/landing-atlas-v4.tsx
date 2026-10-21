@@ -153,7 +153,7 @@ export function LandingAtlasV4() {
       <section id="atlas-blueprint" className="atlas-blueprint atlas-container" aria-labelledby="atlas-blueprint-title">
         <div className="atlas-section-intro atlas-section-intro--blueprint" data-reveal>
           <div><span className="atlas-section-number">02 / EXPLORE THE POSSIBILITIES</span><h2 id="atlas-blueprint-title">See how the <em>skills connect.</em></h2></div>
-          <p>Not a generic roadmap illustration. Every node and connection below comes from Skillmetry's actual career and prerequisite catalog.</p>
+          <p>Not a generic roadmap illustration. Every node and connection below comes from Skillmetry&apos;s actual career and prerequisite catalog.</p>
         </div>
         <div className="atlas-explorer" data-reveal>
           <aside className="atlas-explorer__sidebar" aria-label="Career directions">
@@ -197,7 +197,7 @@ export function LandingAtlasV4() {
 
       <section id="atlas-evidence" className="atlas-evidence" aria-labelledby="atlas-evidence-title">
         <div className="atlas-container atlas-evidence__layout">
-          <div className="atlas-evidence__copy" data-reveal><span className="atlas-section-number">03 / NO GUESSWORK</span><h2 id="atlas-evidence-title">A score means something. <em>So does its absence.</em></h2><p>Skillmetry doesn't confuse studying with demonstrated knowledge. Every state is shown for what it is.</p><Link href="/twin" className="atlas-quiet-link">Explore the Digital Twin <ArrowUpRight size={18} aria-hidden="true"/></Link></div>
+          <div className="atlas-evidence__copy" data-reveal><span className="atlas-section-number">03 / NO GUESSWORK</span><h2 id="atlas-evidence-title">A score means something. <em>So does its absence.</em></h2><p>Skillmetry doesn&apos;t confuse studying with demonstrated knowledge. Every state is shown for what it is.</p><Link href="/twin" className="atlas-quiet-link">Explore the Digital Twin <ArrowUpRight size={18} aria-hidden="true"/></Link></div>
           <div className="atlas-evidence__ledger" data-reveal>
             <div className="atlas-ledger__top"><span>THE EVIDENCE LEDGER</span><span>THREE DISTINCT STATES</span></div>
             <div className="atlas-ledger__row"><span className="atlas-ledger__symbol atlas-ledger__symbol--sage"><ShieldCheck aria-hidden="true"/></span><div><strong>Measured knowledge</strong><p>A number appears only after a completed server-graded assessment.</p></div><span className="atlas-ledger__tag">Quiz result</span></div>
@@ -209,7 +209,7 @@ export function LandingAtlasV4() {
       </section>
 
       <section id="atlas-learning" className="atlas-learning atlas-container" aria-labelledby="atlas-learning-title">
-        <div className="atlas-section-intro" data-reveal><div><span className="atlas-section-number">04 / TURN INSIGHT INTO ACTION</span><h2 id="atlas-learning-title">Don't just measure. <em>Keep moving.</em></h2></div><p>From one selected skill, take a useful action: learn the concept, practise it, or measure your understanding.</p></div>
+        <div className="atlas-section-intro" data-reveal><div><span className="atlas-section-number">04 / TURN INSIGHT INTO ACTION</span><h2 id="atlas-learning-title">Don&apos;t just measure. <em>Keep moving.</em></h2></div><p>From one selected skill, take a useful action: learn the concept, practise it, or measure your understanding.</p></div>
         <div className="atlas-learning__composition" data-reveal>
           <div className="atlas-learning__note"><span className="atlas-section-number">YOUR NEXT CHAPTER</span><div className="atlas-learning__icon"><MapIcon size={29} aria-hidden="true"/></div><h3>Follow the thread.</h3><p>Learning resources connect back to the skills in your chosen direction. Progress stays honest.</p><span className="atlas-learning__scribble" aria-hidden="true"><svg viewBox="0 0 200 38"><path d="M5 25Q52 5 91 24T190 15" fill="none" stroke="currentColor" strokeWidth="2"/></svg></span></div>
           <div className="atlas-learning__actions">
