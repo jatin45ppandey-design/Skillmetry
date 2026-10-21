@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, ChevronRight, CircleHelp, Compass, Fingerprint, Map, MousePointer2, Network, Route, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, ChevronRight, CircleHelp, Compass, Fingerprint, Map as MapIcon, MousePointer2, Network, Route, ShieldCheck, Sparkles } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LandingScrollMotion } from "@/components/landing-scroll-motion";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
@@ -211,7 +211,7 @@ export function LandingAtlasV4() {
       <section id="atlas-learning" className="atlas-learning atlas-container" aria-labelledby="atlas-learning-title">
         <div className="atlas-section-intro" data-reveal><div><span className="atlas-section-number">04 / TURN INSIGHT INTO ACTION</span><h2 id="atlas-learning-title">Don't just measure. <em>Keep moving.</em></h2></div><p>From one selected skill, take a useful action: learn the concept, practise it, or measure your understanding.</p></div>
         <div className="atlas-learning__composition" data-reveal>
-          <div className="atlas-learning__note"><span className="atlas-section-number">YOUR NEXT CHAPTER</span><div className="atlas-learning__icon"><Map size={29} aria-hidden="true"/></div><h3>Follow the thread.</h3><p>Learning resources connect back to the skills in your chosen direction. Progress stays honest.</p><span className="atlas-learning__scribble" aria-hidden="true"><svg viewBox="0 0 200 38"><path d="M5 25Q52 5 91 24T190 15" fill="none" stroke="currentColor" strokeWidth="2"/></svg></span></div>
+          <div className="atlas-learning__note"><span className="atlas-section-number">YOUR NEXT CHAPTER</span><div className="atlas-learning__icon"><MapIcon size={29} aria-hidden="true"/></div><h3>Follow the thread.</h3><p>Learning resources connect back to the skills in your chosen direction. Progress stays honest.</p><span className="atlas-learning__scribble" aria-hidden="true"><svg viewBox="0 0 200 38"><path d="M5 25Q52 5 91 24T190 15" fill="none" stroke="currentColor" strokeWidth="2"/></svg></span></div>
           <div className="atlas-learning__actions">
             <Link href={"/resources?skill="+encodeURIComponent(featuredSkill?.id??"javascript")} className="atlas-learning__action atlas-learning__action--sage"><span><BookOpen size={24} aria-hidden="true"/> LEARN</span><div><strong>Find a relevant resource</strong><p>Explore curated material for {featuredSkill?.label}.</p></div><ArrowUpRight aria-hidden="true"/></Link>
             <Link href={"/lab?skill="+encodeURIComponent(featuredSkill?.id??"javascript")} className="atlas-learning__action atlas-learning__action--sky"><span><MousePointer2 size={24} aria-hidden="true"/> PRACTISE</span><div><strong>Try it for yourself</strong><p>Build understanding without inventing a measured score.</p></div><ArrowUpRight aria-hidden="true"/></Link>
