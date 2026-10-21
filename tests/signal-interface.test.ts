@@ -66,16 +66,17 @@ describe("Learning Chapters interface boundaries", () => {
   });
 
   it("uses real career catalog data in the interactive landing preview", () => {
-    const gallery = read("../frontend/src/components/career-chapter-gallery.tsx");
+    const atlas = read("../frontend/src/components/landing-atlas-v4.tsx");
     const landing = read("../frontend/src/app/page.tsx");
 
-    expect(gallery).toContain('from "@skillmetry/shared/data/catalog"');
-    expect(gallery).toContain("careers.map");
-    expect(gallery).toContain("aria-pressed={active}");
-    expect(landing).toContain("CareerChapterGallery");
-    expect(landing).toContain("Explore without an account");
-    const preview = read("../frontend/src/components/landing-journey-preview.tsx");
-    expect(preview).toContain("Real catalog data · no fictional score");
+    expect(atlas).toContain('from "@skillmetry/shared/data/catalog"');
+    expect(atlas).toContain("careers.map");
+    expect(atlas).toContain("aria-pressed={career.id===careerId}");
+    expect(atlas).toContain("skill.prerequisites");
+    expect(atlas).toContain("assessmentCatalog.find");
+    expect(atlas).toContain("Illustrative · no learner results");
+    expect(atlas).toContain("No imaginary scores.");
+    expect(landing).toContain("LandingAtlasV4");
   });
 
   it("requires deliberate confirmation before a trusted quiz submission", () => {

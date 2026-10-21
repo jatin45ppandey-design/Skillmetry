@@ -14,6 +14,7 @@ import "./phase1-4-ux.css";
 import "./phase5-7-ux.css";
 import "./product-phases-1-5.css";
 import "./milestone-b.css";
+import "./landing-atlas-v4.css";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";

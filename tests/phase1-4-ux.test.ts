@@ -5,15 +5,16 @@ const file=(name:string)=>readFileSync(fileURLToPath(new URL("../"+name,import.m
 
 describe("Skillmetry UI/UX phases 1–4 release contracts",()=>{
  it("provides a catalog-backed landing journey and interactive career explorer",()=>{
-  const preview=file("frontend/src/components/landing-journey-preview.tsx");
   const landing=file("frontend/src/app/page.tsx");
-  const gallery=file("frontend/src/components/career-chapter-gallery.tsx");
-  expect(landing).toContain("<LandingJourneyPreview />");
-  expect(preview).toContain('assessmentById["javascript-foundations"]');
-  expect(preview).toContain("Real catalog data · no fictional score");
-  expect(gallery).toContain("aria-pressed={active}");
-  expect(gallery).toContain("onClick={() => setSelectedId(career.id)}");
-  expect(preview).not.toContain("20/100");
+  const atlas=file("frontend/src/components/landing-atlas-v4.tsx");
+  expect(landing).toContain("LandingAtlasV4");
+  expect(atlas).toContain("assessmentCatalog.find");
+  expect(atlas).toContain("Illustrative · no learner results");
+  expect(atlas).toContain("aria-pressed={career.id===careerId}");
+  expect(atlas).toContain("onClick={()=>chooseCareer(career.id)}");
+  expect(atlas).toContain("skill.prerequisites");
+  expect(atlas).toContain("Not assessed");
+  expect(atlas).not.toContain("20/100");
  });
  it("does not present local edits as a completed remote profile save",()=>{
   const settings=file("frontend/src/app/(workspace)/settings/page.tsx");
