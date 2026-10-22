@@ -17,13 +17,14 @@ describe("Connected learning experience source contracts", () => {
   });
   it("makes the homepage outcome-first with a catalog-backed career demo", () => {
     const page = read("../frontend/src/app/page.tsx");
-    const atlas = read("../frontend/src/components/landing-atlas-v4.tsx");
-    expect(page).toContain("LandingAtlasV4");
+    const atlas = read("../frontend/src/components/landing-home-v5.tsx");
+    expect(page).toContain("LandingHomeV5");
     expect(atlas).toContain('from "@skillmetry/shared/data/catalog"');
     expect(atlas).toContain('from "@skillmetry/shared/data/assessment-catalog"');
     expect(atlas).toContain("careers.map");
-    expect(atlas).toContain("No imaginary scores.");
-    expect(atlas).toContain("aria-pressed={career.id===careerId}");
+    expect(atlas).toContain("Example, not your profile");
+    expect(atlas).toContain("No score until you complete an assessment.");
+    expect(atlas).toContain("aria-pressed={career.id === careerId}");
     expect(atlas).toContain("Not assessed");
   });
   it("uses only trusted quiz results for measured skill states", () => {
@@ -60,7 +61,7 @@ describe("Connected learning experience source contracts", () => {
   });
 
   it("carries a selected landing career into onboarding", () => {
-    const gallery = read("../frontend/src/components/landing-atlas-v4.tsx");
+    const gallery = read("../frontend/src/components/landing-home-v5.tsx");
     const onboarding = read("../frontend/src/app/onboarding/page.tsx");
     expect(gallery).toContain('"/onboarding?career=" + encodeURIComponent(selectedCareer.id)');
     expect(onboarding).toContain('new URLSearchParams(window.location.search).get("career")');

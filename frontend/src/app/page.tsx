@@ -1,4 +1,5 @@
-import { LandingAtlasV4 } from "@/components/landing-atlas-v4";
+import { LandingHomeV5 } from "@/components/landing-home-v5";
+
 export default function Home() {
-  return <LandingAtlasV4 />;
+  return <LandingHomeV5 />;
 }

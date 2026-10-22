@@ -6,13 +6,14 @@ const file=(name:string)=>readFileSync(fileURLToPath(new URL("../"+name,import.m
 describe("Skillmetry UI/UX phases 1–4 release contracts",()=>{
  it("provides a catalog-backed landing journey and interactive career explorer",()=>{
   const landing=file("frontend/src/app/page.tsx");
-  const atlas=file("frontend/src/components/landing-atlas-v4.tsx");
-  expect(landing).toContain("LandingAtlasV4");
+  const atlas=file("frontend/src/components/landing-home-v5.tsx");
+  expect(landing).toContain("LandingHomeV5");
   expect(atlas).toContain("assessmentCatalog.find");
-  expect(atlas).toContain("Illustrative · no learner results");
-  expect(atlas).toContain("aria-pressed={career.id===careerId}");
-  expect(atlas).toContain("onClick={()=>chooseCareer(career.id)}");
-  expect(atlas).toContain("skill.prerequisites");
+  expect(atlas).toContain("onChange={event => selectCareer");
+  expect(atlas).toContain("Example, not your profile");
+  expect(atlas).toContain("aria-pressed={career.id === careerId}");
+  expect(atlas).toContain("onClick={() => selectCareer(career.id)}");
+  expect(atlas).toContain("selectedSkill?.prerequisites");
   expect(atlas).toContain("Not assessed");
   expect(atlas).not.toContain("20/100");
  });
