@@ -175,7 +175,7 @@
 }
 
 @media (max-width: 560px) {
-  .studio-app[data-route="roadmap"] :is(.roadmap-canvas, .roadmap-toolbar, .filter-tabs, .roadmap-stage-list) {
+  .studio-app[data-route="roadmap"] :is(.roadmap-canvas, .roadmap-toolbar, .filter-tabs, .roadmap-stage-list, .skill-detail-panel) {
     width: 100%;
     min-width: 0;
     max-width: 100%;

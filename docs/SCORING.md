@@ -42,7 +42,7 @@ Assessment version `2026.2` uses 75% as its pass threshold. The immutable attemp
 
 ## Hypothetical scenarios
 
-Scenario gains are illustrative planning assumptions. They apply only to an in-memory copy and only where a trusted baseline score exists. They never write an assessment attempt or change the actual Digital Twin.
+Scenario gains are illustrative planning assumptions. They apply only to an in-memory copy and only where a trusted baseline score exists. They never write an assessment attempt or change My Skill Progress.
 
 ## Legacy compatibility
 

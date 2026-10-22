@@ -15,7 +15,7 @@ Priority: P0 is the secure quiz-driven vertical slice. Later work must preserve 
 - [x] Store immutable server-graded attempts through an atomic trusted database function.
 - [x] Keep owner ID, score, result counts, pass state, and version out of client-submitted fields.
 
-### P0-02: Assessment-derived Digital Twin
+### P0-02: Assessment-derived My Skill Progress
 
 - [x] Use the latest valid completed quiz as each skill's current score.
 - [x] Preserve full retake history and show improvement or decline.
@@ -78,7 +78,7 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 - [x] D2: atomic additive owner-scoped question-level evidence migration and deterministic diagnostic insights with insufficient-evidence states.
 - [x] D2: per-topic targeted resource matching and independently authored unscored practice set.
 - [x] D3: one-question assessment navigation, flag/review palette, optional local answer draft restoration and timer.
-- [x] D3: topic breakdown, post-submission answer review, practice/assessment navigation and Digital Twin diagnostic insight surface.
+- [x] D3: topic breakdown, post-submission answer review, practice/assessment navigation and Topics to Improve surface in My Skill Progress.
 - [x] D2: expand practice to five independently authored exercises per topic; add question-specific explanation coverage.
 - [x] D2: directional topic-level comparison between current and previous version-2026.3 diagnostic attempts; missing comparison remains unknown.
 - [ ] Hosted/staging: owner-approved migration; run pgTAP and authenticated end-to-end review test.
@@ -88,7 +88,7 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 
 ## P3–P6 core MVP implementation (2026-10-16, staged)
 
-- [x] P3: separate learning activity from immutable quiz scores; show in Roadmap and Digital Twin.
+- [x] P3: separate learning activity from immutable quiz scores; show in My Learning Path and My Skill Progress.
 - [x] P4: deterministic weekly study plan, authenticated task API and labeled preview.
 - [x] P5: guided coding/SQL practice with server-only answers and optional private attempt history.
 - [x] P6: curated mission checklists, notes, HTTPS evidence links and self-reported submission flow.
@@ -102,7 +102,7 @@ The hosted assessment loop was verified on 2026-10-15. Future resource and advan
 
 - [x] P7: deterministic canonical job requirement extraction with measured-vs-unassessed score evidence and private opt-in saved role summaries.
 - [x] P8: guided tutor page with existing curated resources, authenticated opt-in AI endpoint, strict limits and external provider disabled by default.
-- [x] P9: printable private Career Passport; stage 7-day expiring, revocable, chosen-skill public shares with 256-bit opaque tokens and server-side hash lookup.
+- [x] P9: printable private Skill Summary; stage 7-day expiring, revocable, chosen-skill public shares with 256-bit opaque tokens and server-side hash lookup.
 - [x] P9: add immutable share snapshot controls and multi-user pgTAP RLS test cases for staging.
 - [x] P10: browser security headers, private route robots rules, CI static release checks, token-gated database readiness probe and incident runbook.
 - [ ] P7: save full job comparisons with explicit retention controls, external opportunity verification and wider semantic requirement coverage.
