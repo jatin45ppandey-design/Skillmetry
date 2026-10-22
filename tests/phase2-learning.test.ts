@@ -54,9 +54,11 @@ describe("Phase 2 complete learning system", () => {
     }
 
     const progressApi = readFileSync(`${root}/frontend/src/app/api/learning/course-progress/route.ts`, "utf8");
+    const coursesPage = readFileSync(`${root}/frontend/src/app/(workspace)/courses/page.tsx`, "utf8");
     expect(progressApi).toContain('SKILLMETRY_COURSE_PROGRESS_ENABLED==="true"');
     expect(progressApi).toContain("builtInCourseBySlug");
     expect(progressApi).not.toMatch(/skill[_-]?score|assessment_results|quiz_attempts/);
+    expect(coursesPage).toContain("safeParse({title:raw.title,summary:raw.summary,modules:raw.modules})");
   });
 
   it("normalizes, deduplicates, filters, and maps the preserved catalog plus reviewed Phase 2 additions", () => {

@@ -104,6 +104,10 @@ function ResourceExperience() {
   const topicOptions = useMemo(() => curriculumCatalog.topics.filter(topic => target === "all" || !target.startsWith("skill:") || topic.skillIds.some(skillId => skillId === target.slice(6))), [target]);
 
   useEffect(() => {
+    if (topicId !== "all" && !topicOptions.some(topic => topic.id === topicId)) setTopicId("all");
+  }, [topicId, topicOptions]);
+
+  useEffect(() => {
     const timeout = window.setTimeout(() => {
       const params = new URLSearchParams();
       if (target.startsWith("skill:")) params.set("skill", target.slice(6));

@@ -14,7 +14,7 @@ function parsePublishedCourses(rows:unknown[]):Published[]{
  return rows.flatMap(item=>{
    if(typeof item!=="object"||!item)return [];
    const raw=item as Record<string,unknown>;
-   const check=coursePayloadSchema.safeParse(raw);
+   const check=coursePayloadSchema.safeParse({title:raw.title,summary:raw.summary,modules:raw.modules});
    if(!check.success||typeof raw.slug!=="string"||typeof raw.skillId!=="string")return [];
    return [{...check.data,slug:raw.slug,skillId:raw.skillId,
      version:typeof raw.version==="number"?raw.version:0,
