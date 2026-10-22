@@ -18,6 +18,7 @@ const commonNodeFields = {
   difficulty: z.enum(["beginner", "intermediate", "advanced"]),
   order: z.number().int().nonnegative(),
   learningObjectives: z.array(nonEmptyText).min(1),
+  learningOutcomes: z.array(nonEmptyText).min(1),
   version: versionSchema,
   sources: z.array(sourceSchema).min(1)
 };
@@ -39,6 +40,8 @@ export const curriculumCatalogSchema = z.object({
     title: z.string().trim().min(2).max(120),
     description: nonEmptyText,
     prerequisiteTopicIds: z.array(relationshipIdSchema),
+    primaryResourceIds: z.array(canonicalIdSchema).min(1),
+    recommendedResourceIds: z.array(canonicalIdSchema),
     ...commonNodeFields
   }).strict()).min(1),
   subtopics: z.array(z.object({
@@ -53,6 +56,11 @@ export const curriculumCatalogSchema = z.object({
     subtopicId: relationshipIdSchema,
     title: z.string().trim().min(2).max(140),
     summary: nonEmptyText,
+    explanation: nonEmptyText,
+    example: nonEmptyText,
+    commonMistakes: z.array(nonEmptyText).min(1).max(6),
+    task: nonEmptyText,
+    estimatedMinutes: z.number().int().min(5).max(180),
     resourceIds: z.array(canonicalIdSchema),
     practiceIds: z.array(z.string().regex(/^assessment:[a-z][a-z0-9-]{2,63}$/)),
     ...commonNodeFields
@@ -155,6 +163,13 @@ export function validateCurriculumCatalog(
   for (const [index, topic] of catalog.topics.entries()) {
     for (const skillId of topic.skillIds) if (!skillIds.has(skillId)) addInvalid(`topics.${index}.skillIds`, skillId, "skill");
     for (const prerequisite of topic.prerequisiteTopicIds) if (!topicIds.has(prerequisite)) addInvalid(`topics.${index}.prerequisiteTopicIds`, prerequisite, "topic");
+    for (const resourceId of [...topic.primaryResourceIds, ...topic.recommendedResourceIds]) {
+      if (!knownResourceIds.has(resourceId)) addInvalid(`topics.${index}.resourceIds`, resourceId, "resource");
+    }
+    const topicResources = [...topic.primaryResourceIds, ...topic.recommendedResourceIds];
+    if (new Set(topicResources).size !== topicResources.length) issues.push({
+      code: "duplicate-id", path: `topics.${index}.resourceIds`, message: `Topic ${topic.id} repeats a resource relationship`
+    });
     if (!catalog.subtopics.some(subtopic => subtopic.topicId === topic.id)) issues.push({ code: "missing-relationship", path: `topics.${index}`, message: `Topic ${topic.id} has no subtopic` });
   }
   for (const [index, subtopic] of catalog.subtopics.entries()) {
@@ -164,6 +179,9 @@ export function validateCurriculumCatalog(
   for (const [index, lesson] of catalog.lessons.entries()) {
     if (!subtopicIds.has(lesson.subtopicId)) addInvalid(`lessons.${index}.subtopicId`, lesson.subtopicId, "subtopic");
     for (const resourceId of lesson.resourceIds) if (!knownResourceIds.has(resourceId)) addInvalid(`lessons.${index}.resourceIds`, resourceId, "resource");
+    if (new Set(lesson.resourceIds).size !== lesson.resourceIds.length) issues.push({
+      code: "duplicate-id", path: `lessons.${index}.resourceIds`, message: `Lesson ${lesson.id} repeats a resource relationship`
+    });
     for (const practiceId of lesson.practiceIds) if (!practiceIds.has(practiceId)) addInvalid(`lessons.${index}.practiceIds`, practiceId, "practice");
   }
   for (const [index, practice] of catalog.practices.entries()) {

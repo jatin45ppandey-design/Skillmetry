@@ -19,6 +19,7 @@
     "verify:assessment": "node --env-file-if-exists=frontend/.env.local scripts/verify-assessment-flow.mjs",
     "verify:release": "node scripts/verify-release.mjs",
     "verify:backend": "node scripts/verify-backend-gates.mjs",
+    "report:curriculum": "vite-node scripts/report-curriculum-coverage.ts",
     "release:preflight": "node --env-file-if-exists=frontend/.env.local scripts/release-preflight.mjs",
     "release:preflight:readonly": "node --env-file-if-exists=frontend/.env.local scripts/release-preflight.mjs --remote-readonly",
     "dev:admin": "node scripts/dev-admin.mjs",

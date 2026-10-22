@@ -7,7 +7,7 @@ import type { LearningResource } from "@skillmetry/shared/types/domain";
  * Candidates were selected for existing Skillmetry careers and skill/tool IDs.
  */
 const discoveryUrl = "https://github.com/liuchong/awesome-roadmaps";
-const verifiedOn = "2026-10-15";
+const verifiedOn = "2026-10-22";
 
 function discovered(entry: Omit<LearningResource, "lastVerified" | "verificationStatus" | "discoverySource"> & { verificationStatus?: LearningResource["verificationStatus"] }): LearningResource {
   const { verificationStatus = "verified", ...resource } = entry;

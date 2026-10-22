@@ -17,6 +17,7 @@ import "./milestone-b.css";
 import "./milestone-c-foundation.css";
 import "./milestone-c-learning.css";
 import "./milestone-c-tools.css";
+import "./phase2-learning.css";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";

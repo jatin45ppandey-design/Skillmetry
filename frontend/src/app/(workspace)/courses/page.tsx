@@ -7,7 +7,8 @@ import {coursePayloadSchema,type CoursePayload} from "@skillmetry/shared/lib/adm
 import {ActivityIndicator} from "@/components/motion-ui";
 import {useAuth} from "@/components/auth-provider";
 import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
-type Published=CoursePayload&{slug:string;skillId:string;version:number};
+import {getCurriculumLessonRoute} from "@skillmetry/shared/data/curriculum";
+type Published=CoursePayload&{slug:string;skillId:string;version:number;source?:"skillmetry-curriculum"|"admin-studio"};
 type CourseCompletion={courseSlug:string;lessonId:string;publishedRevision:number;completed:boolean};
 function parsePublishedCourses(rows:unknown[]):Published[]{
  return rows.flatMap(item=>{
@@ -16,7 +17,8 @@ function parsePublishedCourses(rows:unknown[]):Published[]{
    const check=coursePayloadSchema.safeParse(raw);
    if(!check.success||typeof raw.slug!=="string"||typeof raw.skillId!=="string")return [];
    return [{...check.data,slug:raw.slug,skillId:raw.skillId,
-     version:typeof raw.version==="number"?raw.version:0}];
+     version:typeof raw.version==="number"?raw.version:0,
+     source:raw.source==="skillmetry-curriculum"?raw.source:"admin-studio"}];
  });
 }
 export default function CoursesPage(){
@@ -35,7 +37,7 @@ export default function CoursesPage(){
  const [loadingMore,setLoadingMore]=useState(false);
  const handledDeepLink=useRef(false);
  const currentAccount=useRef<string|null>(null);
- useEffect(()=>{currentAccount.current=user?.id??null;return()=>{currentAccount.current=null;};},[user?.id]);
+ useEffect(()=>{currentAccount.current=user?.id??null;return()=>{currentAccount.current=null;};},[user]);
  useEffect(()=>{
    // Resolve a trusted published course directly even when it is beyond the first page.
    // Handle this once per page mount so "Hide lessons" and search remain user-controlled.
@@ -91,7 +93,7 @@ export default function CoursesPage(){
          if(body.truncated)setProgressError("Only the 500 most recent saved lesson entries are shown. Older activity is not counted here.");}
      }).catch(()=>{if(!controller.signal.aborted)setProgressError("Saved lesson activity could not be loaded. Try refreshing.");});
    return()=>controller.abort();
- },[user?.id]);
+ },[user]);
  async function markLesson(course:Published,lessonId:string,completed:boolean){
    if(!progressEnabled||!user||progressPending)return;
    const ownerId=user.id;
@@ -158,7 +160,7 @@ export default function CoursesPage(){
        const finished=new Set(progress.filter(row=>row.courseSlug===course.slug&&row.publishedRevision===course.version&&row.completed).map(row=>row.lessonId));
        const assessment=assessmentCatalog.find(a=>a.skillId===course.skillId);
        return <article className="course-card" id={"course-"+course.slug} key={course.slug}>
-       <header><span className="v3-kicker">{skillById[course.skillId]?.label??course.skillId} · VERSION {course.version}</span>
+       <header><span className="v3-kicker">{skillById[course.skillId]?.label??course.skillId} · {course.source==="skillmetry-curriculum"?"SKILLMETRY CURRICULUM":"PUBLISHED COURSE"} · VERSION {course.version}</span>
          <h2>{course.title}</h2><p>{course.summary}</p></header>
        <div className="course-card-count"><BookOpen size={17}/> {course.modules.length} modules · {totalLessons} lessons
          {progressEnabled?<span aria-label={`${finished.size} of ${totalLessons} lessons self-reported complete`}>
@@ -176,6 +178,8 @@ export default function CoursesPage(){
                <p>{lesson.summary}</p>
                {lesson.notes.length?<ul>{lesson.notes.map(note=><li key={note}>{note}</li>)}</ul>:null}
                <p><strong>Try:</strong> {lesson.task}</p>
+               {lesson.curriculum?<Link className="course-lesson-link" href={getCurriculumLessonRoute(`${course.skillId}:lesson:${lesson.id}`)??`/learn?skill=${encodeURIComponent(course.skillId)}`}>
+                 <BookOpen size={16}/> Open structured lesson <ArrowRight size={13}/></Link>:null}
                {progressEnabled?<button type="button" className="sx-lesson-completion"
                  disabled={Boolean(progressPending)} aria-pressed={finished.has(lesson.id)}
                  onClick={()=>void markLesson(course,lesson.id,!finished.has(lesson.id))}>

@@ -18,29 +18,30 @@ const resourceIds = new Set(learningResources.map(resource => resource.id));
 
 describe("normalized curriculum architecture", () => {
   it("connects every existing career and skill to a versioned topic, subtopic, lesson, and real resource", () => {
-    expect(CURRICULUM_VERSION).toBe("2026.1");
+    expect(CURRICULUM_VERSION).toBe("2026.2");
     expect(curriculumCatalog.careers).toHaveLength(careers.length);
     expect(curriculumCatalog.skills).toHaveLength(skills.length);
-    expect(curriculumCatalog.topics).toHaveLength(skills.length);
-    expect(curriculumCatalog.subtopics).toHaveLength(skills.length);
-    expect(curriculumCatalog.lessons).toHaveLength(skills.length);
+    expect(curriculumCatalog.topics).toHaveLength(skills.length * 3);
+    expect(curriculumCatalog.subtopics).toHaveLength(skills.length * 3);
+    expect(curriculumCatalog.lessons).toHaveLength(skills.length * 3);
 
     for (const skill of skills) {
       const curriculumSkill = curriculumCatalog.skills.find(entry => entry.skillId === skill.id);
       const lesson = curriculumCatalog.lessons.find(entry => entry.id === lessonIdForSkill(skill.id));
       expect(curriculumSkill?.prerequisiteSkillIds).toEqual(skill.prerequisites);
       expect(curriculumSkill?.topicIds).toContain(topicIdForSkill(skill.id));
-      expect(lesson?.learningObjectives).toContain(skill.description);
+      expect(curriculumSkill?.topicIds).toHaveLength(3);
+      expect(lesson?.learningObjectives.length).toBeGreaterThanOrEqual(2);
       expect(lesson?.resourceIds.length).toBeGreaterThanOrEqual(2);
       expect(lesson?.resourceIds.every(id => resourceIds.has(id))).toBe(true);
-      expect(getResourcesForCurriculumLesson(lessonIdForSkill(skill.id)).map(resource => resource.id)).toEqual(lesson?.resourceIds);
+      expect(new Set(getResourcesForCurriculumLesson(lessonIdForSkill(skill.id)).map(resource => resource.id))).toEqual(new Set(lesson?.resourceIds));
       expect(getResourcesForCurriculumTopic(topicIdForSkill(skill.id)).length).toBeGreaterThanOrEqual(2);
     }
 
     for (const career of careers) {
       const path = getCurriculumForCareer(career.id);
       expect(path?.skills.map(skill => skill.skillId)).toEqual(career.skills.map(skill => skill.skillId));
-      expect(path?.topics).toHaveLength(career.skills.length);
+      expect(path?.topics).toHaveLength(career.skills.length * 3);
     }
   });
 

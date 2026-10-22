@@ -5,12 +5,12 @@ import {hasSupabaseServerCredentials} from "@skillmetry/backend/lib/supabase/con
 import {createAdminClient} from "@skillmetry/backend/lib/supabase/admin";
 import {trustedSiteOrigin} from "@skillmetry/backend/lib/security/site-origin.server";
 import {coursePayloadSchema} from "@skillmetry/shared/lib/admin-courses";
+import {builtInCourseBySlug} from "@skillmetry/shared/data/built-in-courses";
 
 export const dynamic="force-dynamic";
 export const runtime="nodejs";
 const headers={"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"};
 const enabled=()=>process.env.SKILLMETRY_COURSE_PROGRESS_ENABLED==="true"
-  && process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED==="true"
   && hasSupabaseServerCredentials();
 const progressSchema=z.object({
   courseSlug:z.string().regex(/^[a-z][a-z0-9-]{3,49}$/),
@@ -52,6 +52,17 @@ export async function PUT(request:Request){
   const payload=progressSchema.safeParse(await request.json().catch(()=>null));
   if(!payload.success)return NextResponse.json({error:"Invalid lesson progress update."},{status:400,headers});
   const p=payload.data;
+  const builtIn=builtInCourseBySlug[p.courseSlug];
+  if(builtIn){
+    if(builtIn.version!==p.publishedRevision)return NextResponse.json({
+      error:"This course has a newer version. Reload lessons before updating progress."
+    },{status:409,headers});
+    if(!builtIn.modules.some(module=>module.lessons.some(lesson=>lesson.id===p.lessonId)))
+      return NextResponse.json({error:"Lesson is not part of the curriculum course."},{status:404,headers});
+  }else{
+    if(process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED!=="true")return NextResponse.json({
+      error:"Published course verification is not enabled on this deployment."
+    },{status:503,headers});
   const {data:course,error:courseError}=await createAdminClient().from("admin_courses")
     .select("published,published_revision").eq("slug",p.courseSlug)
     .not("published","is",null).maybeSingle();
@@ -63,6 +74,7 @@ export async function PUT(request:Request){
   const checked=coursePayloadSchema.safeParse(course.published);
   if(!checked.success||!checked.data.modules.some(m=>m.lessons.some(l=>l.id===p.lessonId)))
     return NextResponse.json({error:"Lesson is not part of the published course."},{status:404,headers});
+  }
   const completionTime=p.completed?new Date().toISOString():null;
   const table=auth.supabase.from("course_lesson_progress");
   const {data:existing,error:readError}=await table.select("lesson_id")

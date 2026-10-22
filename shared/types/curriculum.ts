@@ -33,6 +33,9 @@ export type CurriculumTopic = {
   difficulty: CurriculumDifficulty;
   order: number;
   learningObjectives: string[];
+  learningOutcomes: string[];
+  primaryResourceIds: string[];
+  recommendedResourceIds: string[];
   version: string;
   sources: CurriculumSource[];
 };
@@ -45,6 +48,7 @@ export type CurriculumSubtopic = {
   difficulty: CurriculumDifficulty;
   order: number;
   learningObjectives: string[];
+  learningOutcomes: string[];
   version: string;
   sources: CurriculumSource[];
 };
@@ -54,9 +58,15 @@ export type CurriculumLesson = {
   subtopicId: CurriculumSubtopicId;
   title: string;
   summary: string;
+  explanation: string;
+  example: string;
+  commonMistakes: string[];
+  task: string;
+  estimatedMinutes: number;
   difficulty: CurriculumDifficulty;
   order: number;
   learningObjectives: string[];
+  learningOutcomes: string[];
   resourceIds: string[];
   practiceIds: CurriculumPracticeId[];
   version: string;

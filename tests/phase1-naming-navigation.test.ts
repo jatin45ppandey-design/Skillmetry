@@ -19,7 +19,7 @@ describe("Phase 1 product language and navigation", () => {
     const styles = read("app/milestone-c-foundation.css");
     for (const label of ["Home", "My Path", "Learn", "Practice", "Progress"]) expect(shell).toContain(`label: "${label}"`);
     for (const label of ["My Learning Path", "Learning Resources", "Coding Practice", "Projects", "My Skill Progress", "Skill Summary"]) expect(shell).toContain(label);
-    expect(shell).toContain('aria-current={pathname === item.href ? "page" : undefined}');
+    expect(shell).toContain('aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? "page" : undefined}');
     expect(shell).toContain('aria-label="Breadcrumb"');
     expect(styles).toContain(".mb-area-nav");
     expect(styles).toContain("min-height: 44px");

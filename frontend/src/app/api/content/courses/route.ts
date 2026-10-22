@@ -3,6 +3,7 @@ import {hasSupabaseServerCredentials} from "@skillmetry/backend/lib/supabase/con
 import {createAdminClient} from "@skillmetry/backend/lib/supabase/admin";
 import {coursePayloadSchema} from "@skillmetry/shared/lib/admin-courses";
 import {skills} from "@skillmetry/shared/data/catalog";
+import {builtInCourses} from "@skillmetry/shared/data/built-in-courses";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 const headers={"Cache-Control":"public, max-age=0, must-revalidate","X-Content-Type-Options":"nosniff"};
@@ -17,8 +18,10 @@ export async function GET(request:Request){
    (course&&(skill!==null||page!==0))||
    params.getAll("page").length>1||!Number.isSafeInteger(page)||page>99||
    (skill&&!skills.some(s=>s.id===skill)))return NextResponse.json({error:"Unknown skill."},{status:400,headers});
+ const curated=builtInCourses.filter(item=>(!skill||item.skillId===skill)&&(!course||item.slug===course));
+ if(course&&curated.length)return NextResponse.json({courses:curated,source:"curriculum",nextPage:null},{headers});
  if(process.env.SKILLMETRY_ADMIN_STUDIO_ENABLED!=="true"||!hasSupabaseServerCredentials())
-   return NextResponse.json({courses:[],source:"curated",nextPage:null},{headers});
+   return NextResponse.json({courses:page===0?curated:[],source:"curriculum",nextPage:null},{headers});
  try{
    let query=createAdminClient().from("admin_courses")
      .select("slug,skill_id,published,published_revision").not("published","is",null)
@@ -27,14 +30,15 @@ export async function GET(request:Request){
    if(skill)query=query.eq("skill_id",skill);
    if(course)query=query.eq("slug",course);
    const {data,error}=await query;
-   if(error)return NextResponse.json({courses:[],source:"unavailable",nextPage:null},{status:503,headers});
+   if(error)return NextResponse.json({courses:page===0?curated:[],source:curated.length?"curriculum":"unavailable",nextPage:null},{status:curated.length?200:503,headers});
    const rows=(data??[]);
    const courses=rows.slice(0,50).flatMap(row=>{
      const parsed=coursePayloadSchema.safeParse(row.published);
      if(!parsed.success)return [];
      return [{slug:row.slug,skillId:row.skill_id,
-       version:row.published_revision,...parsed.data}];
+       version:row.published_revision,source:"admin-studio" as const,...parsed.data}];
    });
-   return NextResponse.json({courses,source:"published",nextPage:rows.length>50?page+1:null},{headers});
- }catch{return NextResponse.json({courses:[],source:"unavailable"},{status:503,headers});}
+   const combined=page===0?[...curated,...courses.filter(item=>!curated.some(entry=>entry.slug===item.slug))]:courses;
+   return NextResponse.json({courses:combined,source:curated.length?"curriculum-and-published":"published",nextPage:rows.length>50?page+1:null},{headers});
+ }catch{return NextResponse.json({courses:page===0?curated:[],source:curated.length?"curriculum":"unavailable",nextPage:null},{status:curated.length?200:503,headers});}
 }

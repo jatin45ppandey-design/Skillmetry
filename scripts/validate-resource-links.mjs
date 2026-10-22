@@ -4,7 +4,10 @@ const sources = await Promise.all([
   "../shared/data/learning-resources.ts",
   "../shared/data/curated-roadmaps.ts"
 ].map(path => readFile(new URL(path, import.meta.url), "utf8")));
-const urls = sources.flatMap(source => [...source.matchAll(/url: "([^"]+)"/g)].map(match => match[1]));
+const guideSource = await readFile(new URL("../shared/data/skill-learning-guides.ts", import.meta.url), "utf8");
+const guideLectureUrls = [...guideSource.matchAll(/"lecture":\s*\{[\s\S]*?"url":\s*"([^"]+)"[\s\S]*?\}/g)]
+  .map(match => match[1]);
+const urls = [...sources.flatMap(source => [...source.matchAll(/url: "([^"]+)"/g)].map(match => match[1])), ...guideLectureUrls];
 const duplicateUrls = urls.filter((url, index) => urls.indexOf(url) !== index);
 let invalid = 0;
 

@@ -1,7 +1,10 @@
 import { curatedRoadmaps } from "@skillmetry/shared/data/curated-roadmaps";
+import { curriculumBlueprintBySkill, curriculumTopicId, topicIdsForResource } from "@skillmetry/shared/data/curriculum-blueprints";
+import { skillById } from "@skillmetry/shared/data/catalog";
+import { skillLearningGuides } from "@skillmetry/shared/data/skill-learning-guides";
 import type { LearningResource } from "@skillmetry/shared/types/domain";
 
-const verifiedOn = "2026-10-12";
+const verifiedOn = "2026-10-22";
 
 function resource(entry: Omit<LearningResource, "lastVerified" | "verificationStatus">): LearningResource {
   return { ...entry, lastVerified: verifiedOn, verificationStatus: "verified" };
@@ -61,6 +64,11 @@ const originalLearningResources: readonly LearningResource[] = [
   resource({ id: "auth-owasp", target: { kind: "skill", skillId: "authentication" }, topic: "Authentication security", subtopics: ["passwords", "MFA", "sessions"], title: "Authentication Cheat Sheet", description: "OWASP guidance for secure authentication design and implementation.", provider: "OWASP Cheat Sheet Series", url: "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html", type: "documentation", difficulty: "intermediate", cost: "free", language: "English" }),
   resource({ id: "auth-mdn", target: { kind: "skill", skillId: "authentication" }, topic: "Web authentication", subtopics: ["authentication", "authorization", "cookies"], title: "Web Security", description: "MDN overview of key browser and web security concepts.", provider: "MDN Web Docs", url: "https://developer.mozilla.org/en-US/docs/Web/Security", type: "documentation", difficulty: "beginner", cost: "free", language: "English" }),
 
+  resource({ id: "python-hindi-course", target: { kind: "skill", skillId: "python" }, topic: "Python foundations in Hindi", subtopics: ["programming basics", "Python syntax", "practice"], title: "Introduction to Programming & Python", description: "A free Hindi beginner series from CodeWithHarry that introduces programming and Python from the ground up.", provider: "CodeWithHarry", url: "https://www.youtube.com/watch?v=7wnove7K-ZQ", type: "video", difficulty: "beginner", cost: "free", language: "Hindi" }),
+  resource({ id: "sql-hindi-course", target: { kind: "skill", skillId: "sql" }, topic: "SQL foundations in Hindi", subtopics: ["queries", "tables", "SQL scripts"], title: "SQL Tutorial for Beginners", description: "A free Hindi-friendly beginner course covering SQL concepts and hands-on query writing.", provider: "CodeWithHarry", url: "https://www.youtube.com/watch?v=yE6tIle64tU", type: "video", difficulty: "beginner", cost: "free", language: "Hindi" }),
+  resource({ id: "javascript-hindi-course", target: { kind: "skill", skillId: "javascript" }, topic: "JavaScript foundations in Hindi", subtopics: ["values", "functions", "DOM", "projects"], title: "JavaScript Tutorial in Hindi", description: "A free Hindi course covering JavaScript fundamentals, browser events, storage, and small projects.", provider: "CodeWithHarry", url: "https://www.youtube.com/watch?v=hKB-YGF14SY", type: "video", difficulty: "beginner", cost: "free", language: "Hindi" }),
+  resource({ id: "node-hindi-course", target: { kind: "skill", skillId: "node" }, topic: "Node.js foundations in Hindi", subtopics: ["modules", "HTTP server", "Express"], title: "Node.js Tutorial in Hindi", description: "A free Hindi crash course covering Node.js modules, HTTP servers, Express, and deployment concepts.", provider: "CodeWithHarry", url: "https://www.youtube.com/watch?v=BLl32FvcdVM", type: "video", difficulty: "beginner", cost: "free", language: "Hindi" }),
+
   resource({ id: "git-tutorial", target: { kind: "tool", toolId: "git" }, topic: "Git foundations", subtopics: ["repository", "commit", "branch"], title: "Git Tutorial", description: "Official introduction to Git repositories, commits, and collaboration basics.", provider: "Git", url: "https://git-scm.com/docs/gittutorial", type: "tutorial", difficulty: "beginner", cost: "free", language: "English" }),
   resource({ id: "git-pro-book", target: { kind: "tool", toolId: "git" }, topic: "Git workflows", subtopics: ["branches", "remotes", "history"], title: "Pro Git", description: "The free official Git book for deeper workflow and collaboration concepts.", provider: "Git", url: "https://git-scm.com/book/en/v2", type: "documentation", difficulty: "intermediate", cost: "free", language: "English" }),
   resource({ id: "github-skills", target: { kind: "tool", toolId: "github" }, topic: "GitHub collaboration", subtopics: ["issues", "pull requests", "workflow"], title: "GitHub Skills", description: "GitHub's guided, hands-on learning exercises for collaboration workflows.", provider: "GitHub", url: "https://skills.github.com/", type: "practice", difficulty: "beginner", cost: "free", language: "English" }),
@@ -70,4 +78,41 @@ const originalLearningResources: readonly LearningResource[] = [
 ] as const;
 
 /** Keep the original 50 resources intact, extending rather than replacing them. */
-export const learningResources: readonly LearningResource[] = [...originalLearningResources, ...curatedRoadmaps];
+const guideVideoResources: readonly LearningResource[] = Object.values(skillLearningGuides)
+  .map(guide => resource({
+    id: `${guide.skillId}-guided-video`,
+    target: { kind: "skill", skillId: guide.skillId as keyof typeof skillById },
+    topic: `${skillById[guide.skillId]?.label ?? guide.skillId} guided course`,
+    subtopics: guide.notes,
+    title: guide.lecture.title,
+    description: `A free English video-led course selected to support the ${skillById[guide.skillId]?.label ?? guide.skillId} learning path.`,
+    provider: "freeCodeCamp",
+    url: guide.lecture.url,
+    type: "video",
+    difficulty: "beginner",
+    cost: "free",
+    language: "English"
+  }));
+
+const sourceResources: readonly LearningResource[] = [...originalLearningResources, ...guideVideoResources, ...curatedRoadmaps];
+
+export const learningResources = sourceResources.map(resourceEntry => {
+  const skillIds = [...new Set([
+    ...(resourceEntry.target.kind === "skill" ? [resourceEntry.target.skillId] : []),
+    ...(resourceEntry.relatedSkillIds ?? [])
+  ])];
+  const explicitTopicIds = topicIdsForResource(resourceEntry.id);
+  const topicIds = explicitTopicIds.length ? explicitTopicIds : skillIds.map(skillId => {
+    const firstTopic = curriculumBlueprintBySkill[skillId]?.topics[0];
+    return firstTopic ? curriculumTopicId(skillId, firstTopic.slug) : null;
+  }).filter((value): value is NonNullable<typeof value> => Boolean(value));
+  return {
+    ...resourceEntry,
+    skillIds,
+    topicIds,
+    verifiedAt: resourceEntry.lastVerified,
+    availabilityStatus: resourceEntry.verificationStatus === "unavailable"
+      ? "unavailable" as const
+      : resourceEntry.verificationStatus === "unverified" ? "unverified" as const : "available" as const
+  };
+});

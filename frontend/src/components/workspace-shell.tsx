@@ -15,7 +15,7 @@ import { useSkillmetry } from "@/store/use-skillmetry";
 const primary = [
   { href: "/dashboard", label: "Home", icon: Activity, matches: ["/dashboard"] },
   { href: "/roadmap", label: "My Path", icon: GitBranch, matches: ["/roadmap", "/careers"] },
-  { href: "/resources", label: "Learn", icon: BookMarked, matches: ["/resources", "/courses"] },
+  { href: "/learn", label: "Learn", icon: BookMarked, matches: ["/learn", "/resources", "/courses"] },
   { href: "/assessments", label: "Practice", icon: Target, matches: ["/assessments", "/practice", "/lab", "/missions"] },
   { href: "/twin", label: "Progress", icon: Fingerprint, matches: ["/twin", "/passport"] }
 ] as const;
@@ -26,6 +26,7 @@ const areaNavigation = {
     { href: "/roadmap", label: "My Learning Path" }
   ],
   learn: [
+    { href: "/learn", label: "Skills & Topics" },
     { href: "/resources", label: "Learning Resources" },
     { href: "/courses", label: "Courses & Lessons" }
   ],
@@ -64,13 +65,13 @@ const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
 const secondary = secondaryGroups.flatMap(group => group.items);
 
 function isPrimaryCurrent(pathname: string, matches: readonly string[]) {
-  return matches.includes(pathname);
+  return matches.some(match => pathname === match || pathname.startsWith(`${match}/`));
 }
 
 function routeFamily(pathname: string) {
   if (["/assessments", "/practice", "/lab", "/missions"].includes(pathname)) return "practice";
   if (["/careers", "/roadmap"].includes(pathname)) return "path";
-  if (["/resources", "/courses"].includes(pathname)) return "learn";
+  if (pathname === "/learn" || pathname.startsWith("/learn/") || ["/resources", "/courses"].includes(pathname)) return "learn";
   if (["/twin", "/passport"].includes(pathname)) return "progress";
   if (["/planner", "/tutor", "/jobs", "/simulator"].includes(pathname)) return "tools";
   if (["/settings", "/feedback"].includes(pathname)) return "account";
@@ -179,8 +180,8 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         <nav className="mb-area-nav" aria-label={`${primaryArea?.label ?? "Section"} pages`}>
           <span>{primaryArea?.label}</span>
           <div>{localNavigation.map(item => <Link key={item.href} href={item.href}
-            aria-current={pathname === item.href ? "page" : undefined}
-            className={pathname === item.href ? "is-current" : undefined}>{item.label}</Link>)}</div>
+            aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? "page" : undefined}
+            className={pathname === item.href || pathname.startsWith(`${item.href}/`) ? "is-current" : undefined}>{item.label}</Link>)}</div>
         </nav>
       ) : current && !primaryArea ? (
         <nav className="mb-route-context" aria-label="Breadcrumb">

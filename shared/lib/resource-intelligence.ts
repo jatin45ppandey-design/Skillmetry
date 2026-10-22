@@ -189,9 +189,11 @@ export function filterLearningResources(filter: ResourceFilter = {}) {
         : (resource.target.kind === "tool" && resource.target.toolId === filter.target.toolId) || Boolean(resource.relatedToolIds?.includes(filter.target.toolId));
       if (!match) return false;
     }
+    if (filter.topicId && !resource.topicIds?.includes(filter.topicId)) return false;
     if (filter.careerId && !resourceMatchesCareer(resource, filter.careerId)) return false;
     if (filter.difficulties && !filter.difficulties.includes(resource.difficulty)) return false;
     if (filter.types && !filter.types.includes(resource.type)) return false;
+    if (filter.languages && !filter.languages.includes(resource.language ?? "English")) return false;
     return !(filter.costs && !filter.costs.includes(resource.cost));
   });
 }

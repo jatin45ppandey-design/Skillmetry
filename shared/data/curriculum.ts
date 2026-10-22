@@ -1,35 +1,37 @@
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { careers, skills } from "@skillmetry/shared/data/catalog";
+import {
+  curriculumBlueprintBySkill,
+  curriculumLessonId,
+  curriculumSubtopicId,
+  curriculumTopicId,
+  skillCurriculumBlueprints
+} from "@skillmetry/shared/data/curriculum-blueprints";
 import { learningResources } from "@skillmetry/shared/data/learning-resources";
 import { assertValidCurriculumCatalog } from "@skillmetry/shared/lib/curriculum";
-import type {
-  CurriculumCatalog,
-  CurriculumDifficulty,
-  CurriculumLessonId,
-  CurriculumSubtopicId,
-  CurriculumTopicId
-} from "@skillmetry/shared/types/curriculum";
+import type { CurriculumCatalog, CurriculumLessonId, CurriculumTopicId } from "@skillmetry/shared/types/curriculum";
 import type { SkillId } from "@skillmetry/shared/types/domain";
 
-export const CURRICULUM_VERSION = "2026.1";
-const internalSource = [{ kind: "internal-catalog" as const, label: "Skillmetry canonical catalog" }];
+export const CURRICULUM_VERSION = "2026.2";
+const internalSource = [{ kind: "internal-catalog" as const, label: "Skillmetry original curriculum" }];
 
-export function topicIdForSkill(skillId: SkillId): CurriculumTopicId {
-  return `${skillId}:topic:foundations`;
+function supplementalVideoIds(skillId: SkillId) {
+  return learningResources
+    .filter(resource => resource.type === "video" && resource.target.kind === "skill" && resource.target.skillId === skillId)
+    .slice(0, 1)
+    .map(resource => resource.id);
 }
 
-export function subtopicIdForSkill(skillId: SkillId): CurriculumSubtopicId {
-  return `${skillId}:subtopic:core-concepts`;
+export function topicIdForSkill(skillId: SkillId): CurriculumTopicId {
+  return curriculumTopicId(skillId, curriculumBlueprintBySkill[skillId].topics[0].slug);
+}
+
+export function subtopicIdForSkill(skillId: SkillId) {
+  return curriculumSubtopicId(skillId, curriculumBlueprintBySkill[skillId].topics[0].slug);
 }
 
 export function lessonIdForSkill(skillId: SkillId): CurriculumLessonId {
-  return `${skillId}:lesson:foundations-overview`;
-}
-
-function difficultyForGroup(group: "Foundation" | "Core" | "Applied"): CurriculumDifficulty {
-  if (group === "Foundation") return "beginner";
-  if (group === "Core") return "intermediate";
-  return "advanced";
+  return curriculumLessonId(skillId, curriculumBlueprintBySkill[skillId].topics[0].lesson.slug);
 }
 
 const practices = assessmentCatalog.map(assessment => ({
@@ -42,53 +44,70 @@ const practices = assessmentCatalog.map(assessment => ({
   availability: "available" as const
 }));
 
+const topics = skillCurriculumBlueprints.flatMap(skill => skill.topics.map((entry, order) => ({
+  id: curriculumTopicId(skill.skillId, entry.slug),
+  skillIds: [skill.skillId],
+  title: entry.title,
+  description: entry.description,
+  prerequisiteTopicIds: order === 0
+    ? (skills.find(item => item.id === skill.skillId)?.prerequisites ?? []).map(prerequisite => topicIdForSkill(prerequisite))
+    : [curriculumTopicId(skill.skillId, skill.topics[order - 1].slug)],
+  difficulty: entry.difficulty,
+  order,
+  learningObjectives: [...entry.objectives],
+  learningOutcomes: [...entry.outcomes],
+  primaryResourceIds: [entry.resourceIds[0]],
+  recommendedResourceIds: [...new Set([...entry.resourceIds.slice(1), ...supplementalVideoIds(skill.skillId)])],
+  version: CURRICULUM_VERSION,
+  sources: internalSource
+})));
+
+const subtopics = skillCurriculumBlueprints.flatMap(skill => skill.topics.map((entry, order) => ({
+  id: curriculumSubtopicId(skill.skillId, entry.slug),
+  topicId: curriculumTopicId(skill.skillId, entry.slug),
+  title: entry.subtopicTitle,
+  description: entry.description,
+  difficulty: entry.difficulty,
+  order,
+  learningObjectives: [...entry.objectives],
+  learningOutcomes: [...entry.outcomes],
+  version: CURRICULUM_VERSION,
+  sources: internalSource
+})));
+
+const lessons = skillCurriculumBlueprints.flatMap(skill => skill.topics.map((entry, order) => ({
+  id: curriculumLessonId(skill.skillId, entry.lesson.slug),
+  subtopicId: curriculumSubtopicId(skill.skillId, entry.slug),
+  title: entry.lesson.title,
+  summary: entry.lesson.summary,
+  explanation: entry.lesson.explanation,
+  example: entry.lesson.example,
+  commonMistakes: [...entry.lesson.commonMistakes],
+  task: entry.lesson.task,
+  estimatedMinutes: entry.lesson.estimatedMinutes,
+  difficulty: entry.difficulty,
+  order,
+  learningObjectives: [...entry.objectives],
+  learningOutcomes: [...entry.outcomes],
+  resourceIds: [...new Set([...entry.resourceIds, ...supplementalVideoIds(skill.skillId)])],
+  practiceIds: order === skill.topics.length - 1
+    ? practices.filter(practice => practice.skillId === skill.skillId).map(practice => practice.id)
+    : [],
+  version: CURRICULUM_VERSION,
+  sources: internalSource
+})));
+
 const rawCatalog = {
   version: CURRICULUM_VERSION,
   careers: careers.map(career => ({ careerId: career.id, skillIds: career.skills.map(item => item.skillId) })),
   skills: skills.map(skill => ({
     skillId: skill.id,
     prerequisiteSkillIds: [...skill.prerequisites],
-    topicIds: [topicIdForSkill(skill.id)]
+    topicIds: curriculumBlueprintBySkill[skill.id].topics.map(entry => curriculumTopicId(skill.id, entry.slug))
   })),
-  topics: skills.map((skill, order) => ({
-    id: topicIdForSkill(skill.id),
-    skillIds: [skill.id],
-    title: `${skill.label} foundations`,
-    description: skill.description,
-    prerequisiteTopicIds: skill.prerequisites.map(topicIdForSkill),
-    difficulty: difficultyForGroup(skill.group),
-    order,
-    learningObjectives: [skill.description],
-    version: CURRICULUM_VERSION,
-    sources: internalSource
-  })),
-  subtopics: skills.map((skill, order) => ({
-    id: subtopicIdForSkill(skill.id),
-    topicId: topicIdForSkill(skill.id),
-    title: `${skill.label} core concepts`,
-    description: `Study the concepts and vocabulary needed to apply ${skill.label} in the existing Skillmetry learning path.`,
-    difficulty: difficultyForGroup(skill.group),
-    order,
-    learningObjectives: [skill.description],
-    version: CURRICULUM_VERSION,
-    sources: internalSource
-  })),
-  lessons: skills.map((skill, order) => ({
-    id: lessonIdForSkill(skill.id),
-    subtopicId: subtopicIdForSkill(skill.id),
-    title: `${skill.label} foundations overview`,
-    summary: `Use the existing curated material to build a practical foundation in ${skill.label}.`,
-    difficulty: difficultyForGroup(skill.group),
-    order,
-    learningObjectives: [skill.description],
-    resourceIds: learningResources.filter(resource =>
-      (resource.target.kind === "skill" && resource.target.skillId === skill.id)
-      || resource.relatedSkillIds?.includes(skill.id)
-    ).map(resource => resource.id),
-    practiceIds: practices.filter(practice => practice.skillId === skill.id).map(practice => practice.id),
-    version: CURRICULUM_VERSION,
-    sources: internalSource
-  })),
+  topics,
+  subtopics,
+  lessons,
   practices
 } satisfies CurriculumCatalog;
 
@@ -108,15 +127,31 @@ export function getCurriculumForCareer(careerId: string) {
     const skill = curriculumCatalog.skills.find(entry => entry.skillId === skillId);
     return skill ? [skill] : [];
   });
-  const topics = curriculumSkills.flatMap(skill => skill.topicIds).flatMap(topicId => {
-    const topic = curriculumCatalog.topics.find(entry => entry.id === topicId);
-    return topic ? [topic] : [];
+  const careerTopics = curriculumSkills.flatMap(skill => skill.topicIds).flatMap(topicId => {
+    const entry = curriculumTopicById[topicId];
+    return entry ? [entry] : [];
   });
-  return {
-    career,
-    skills: curriculumSkills,
-    topics
-  };
+  return { career, skills: curriculumSkills, topics: careerTopics };
+}
+
+export function getCurriculumForSkill(skillId: string) {
+  const skill = curriculumCatalog.skills.find(entry => entry.skillId === skillId);
+  if (!skill) return null;
+  const skillTopics = skill.topicIds.flatMap(topicId => {
+    const entry = curriculumTopicById[topicId];
+    return entry ? [entry] : [];
+  });
+  const path = skillTopics.map(topic => {
+    const topicSubtopics = curriculumCatalog.subtopics.filter(subtopic => subtopic.topicId === topic.id);
+    return {
+      topic,
+      subtopics: topicSubtopics.map(subtopic => ({
+        subtopic,
+        lessons: curriculumCatalog.lessons.filter(lesson => lesson.subtopicId === subtopic.id)
+      }))
+    };
+  });
+  return { skill, topics: path };
 }
 
 export function getCurriculumLessonResources(lessonId: string) {
@@ -124,4 +159,36 @@ export function getCurriculumLessonResources(lessonId: string) {
   if (!lesson) return [];
   const resourceIds = new Set(lesson.resourceIds);
   return learningResources.filter(resource => resourceIds.has(resource.id));
+}
+
+export function getCurriculumLessonRoute(lessonId: string) {
+  const lesson = curriculumLessonById[lessonId];
+  if (!lesson) return null;
+  const subtopic = curriculumSubtopicById[lesson.subtopicId];
+  const topic = subtopic ? curriculumTopicById[subtopic.topicId] : null;
+  const skillId = topic?.skillIds[0];
+  if (!topic || !skillId) return null;
+  return `/learn/${encodeURIComponent(skillId)}/${encodeURIComponent(topic.id.split(":topic:")[1])}/${encodeURIComponent(lesson.id.split(":lesson:")[1])}`;
+}
+
+export function getCurriculumLessonByRoute(skillId: string, topicSlug: string, lessonSlug: string) {
+  const topic = curriculumTopicById[`${skillId}:topic:${topicSlug}`];
+  const lesson = curriculumLessonById[`${skillId}:lesson:${lessonSlug}`];
+  if (!topic || !lesson || !topic.skillIds.includes(skillId)) return null;
+  const subtopic = curriculumSubtopicById[lesson.subtopicId];
+  if (!subtopic || subtopic.topicId !== topic.id) return null;
+  const resources = getCurriculumLessonResources(lesson.id);
+  const skillPath = getCurriculumForSkill(skillId);
+  const orderedLessons = skillPath?.topics.flatMap(entry => entry.subtopics.flatMap(item => item.lessons)) ?? [];
+  const index = orderedLessons.findIndex(entry => entry.id === lesson.id);
+  return {
+    topic,
+    subtopic,
+    lesson,
+    resources,
+    previous: index > 0 ? orderedLessons[index - 1] : null,
+    next: index >= 0 && index < orderedLessons.length - 1 ? orderedLessons[index + 1] : null,
+    position: index + 1,
+    total: orderedLessons.length
+  };
 }

@@ -16,7 +16,7 @@ const noGoals: LearningPreferences = { primaryCareerId: null, selectedSkillIds: 
 
 describe("learning resource catalog", () => {
   it("covers all canonical skills plus Git, GitHub, and Postman with stable unique HTTPS resources", () => {
-    expect(learningResources).toHaveLength(61);
+    expect(learningResources).toHaveLength(83);
     expect(learningResources.filter(resource => resource.type === "roadmap")).toHaveLength(10);
     expect(learningResources.filter(resource => resource.discoverySource?.label === "awesome-roadmaps")).toHaveLength(11);
     expect(new Set(learningResources.map(resource => resource.id)).size).toBe(learningResources.length);
@@ -32,6 +32,10 @@ describe("learning resource catalog", () => {
       expect(entry.relatedSkillIds?.every(id => skillIds.has(id)) ?? true).toBe(true);
       expect(entry.careerIds?.every(id => careerIds.has(id)) ?? true).toBe(true);
       expect(entry.verificationStatus).not.toBe("unavailable");
+      expect(entry.skillIds).toBeDefined();
+      expect(entry.topicIds).toBeDefined();
+      expect(entry.verifiedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(["available", "unverified"]).toContain(entry.availabilityStatus);
       if (entry.discoverySource) {
         expect(entry.discoverySource.url).toBe("https://github.com/liuchong/awesome-roadmaps");
         expect(entry.provider.length).toBeGreaterThan(0);
@@ -44,6 +48,7 @@ describe("learning resource catalog", () => {
     expect(pythonBeginners.length).toBeGreaterThanOrEqual(2);
     expect(pythonBeginners.every(resource => (resource.target.kind === "skill" && resource.target.skillId === "python") || resource.relatedSkillIds?.includes("python"))).toBe(true);
     expect(filterLearningResources({ types: ["practice"], costs: ["free"] }).every(resource => resource.type === "practice" && resource.cost === "free")).toBe(true);
+    expect(filterLearningResources({ languages: ["Hindi"] })).toHaveLength(4);
     expect(isSafeResourceUrl("http://docs.python.org/3/tutorial/introduction.html")).toBe(false);
     expect(isSafeResourceUrl("https://example.com/learning")).toBe(false);
     expect(isSafeResourceUrl("https://github.com/unrelated/non-curated")).toBe(false);

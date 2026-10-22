@@ -112,6 +112,9 @@ export type LearningResource = {
   url: string;
   /** Additional relevance tags: the original primary target remains stable. */
   relatedSkillIds?: readonly SkillId[];
+  /** Normalized Phase 2 relationships, derived without replacing the stable target. */
+  skillIds?: readonly SkillId[];
+  topicIds?: readonly string[];
   relatedToolIds?: readonly ToolId[];
   careerIds?: readonly CareerId[];
   /** Original creator is provider; discovery attribution is not ownership. */
@@ -121,15 +124,19 @@ export type LearningResource = {
   cost: ResourceCost;
   language?: string;
   estimatedMinutes?: number;
+  verifiedAt?: string;
+  availabilityStatus?: "available" | "unverified" | "unavailable";
   lastVerified: string;
   verificationStatus: ResourceVerificationStatus;
 };
 export type ResourceFilter = {
   target?: LearningResourceTarget;
+  topicId?: `${string}:topic:${string}`;
   careerId?: CareerId;
   difficulties?: readonly ResourceDifficulty[];
   types?: readonly ResourceType[];
   costs?: readonly ResourceCost[];
+  languages?: readonly string[];
 };
 export type ResourceAvailability = { available: true } | { available: false; fallbackMessage: string };
 export type ResourceRecommendation = {
