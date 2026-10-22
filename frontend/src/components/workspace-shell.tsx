@@ -46,6 +46,16 @@ function isPrimaryCurrent(pathname: string, matches: readonly string[]) {
   return matches.includes(pathname);
 }
 
+function routeFamily(pathname: string) {
+  if (["/assessments", "/practice", "/lab", "/missions"].includes(pathname)) return "practice";
+  if (["/careers", "/roadmap"].includes(pathname)) return "path";
+  if (["/resources", "/courses"].includes(pathname)) return "learn";
+  if (["/twin", "/passport"].includes(pathname)) return "progress";
+  if (["/planner", "/tutor", "/jobs", "/simulator"].includes(pathname)) return "tools";
+  if (["/settings", "/feedback"].includes(pathname)) return "account";
+  return "home";
+}
+
 function PrimaryLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
   return primary.map(({ href, label, icon: Icon, matches }) => {
     const active = isPrimaryCurrent(current, matches);
@@ -120,7 +130,8 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const isAssessmentPage = pathname === "/assessments";
 
   return (
-    <div className={`studio-app mb-shell${isAssessmentPage ? " studio-app--assessment" : ""}`}>
+    <div className={`studio-app mb-shell${isAssessmentPage ? " studio-app--assessment" : ""}`}
+      data-route={pathname.slice(1) || "home"} data-area={routeFamily(pathname)}>
       <a href="#workspace-main" className="mb-skip-link">Skip to main content</a>
       <header className="mb-shell-header">
         <div className="mb-shell-header__inner">

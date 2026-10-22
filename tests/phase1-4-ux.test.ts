@@ -10,9 +10,10 @@ describe("Skillmetry UI/UX phases 1–4 release contracts",()=>{
   const gallery=file("frontend/src/components/career-chapter-gallery.tsx");
   expect(landing).toContain("<LandingJourneyPreview />");
   expect(preview).toContain('assessmentById["javascript-foundations"]');
-  expect(preview).toContain("Real catalog data · no fictional score");
+  expect(preview).toContain("Catalog data · no fictional score");
   expect(gallery).toContain("aria-pressed={active}");
-  expect(gallery).toContain("onClick={() => setSelectedId(career.id)}");
+  expect(gallery).toContain("setSelectedId(career.id);");
+  expect(gallery).toContain('setSelectedSkillId(career.skills[0]?.skillId ?? "");');
   expect(preview).not.toContain("20/100");
  });
  it("does not present local edits as a completed remote profile save",()=>{

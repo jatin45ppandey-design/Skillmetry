@@ -1,0 +1,190 @@
+/* Milestone C — path, evidence, learning, and practice families. */
+.studio-app[data-area="path"] .mb-shell-content::after,
+.studio-app[data-area="progress"] .mb-shell-content::after,
+.studio-app[data-area="learn"] .mb-shell-content::after,
+.studio-app[data-area="practice"] .mb-shell-content::after {
+  position: absolute;
+  z-index: -1;
+  top: 12px;
+  right: -32px;
+  width: clamp(90px, 13vw, 180px);
+  height: 7px;
+  content: "";
+  background: var(--mc-sage);
+  box-shadow: 0 9px 0 var(--mc-sky), 0 18px 0 var(--mc-lilac);
+  opacity: .52;
+}
+
+/* Path: readable staged list is primary; the graph remains an optional tool. */
+.studio-app[data-route="roadmap"] .roadmap-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 22px;
+  align-items: start;
+}
+
+.roadmap-stage-list {
+  display: grid;
+  gap: 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--mc-rule);
+}
+
+.roadmap-stage-list > button {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 82px;
+  width: 100%;
+  padding: 13px 14px 13px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--mc-rule);
+  color: var(--mc-ink);
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
+.roadmap-stage-list > button:hover { background: rgb(199 226 190 / .22); }
+.roadmap-stage-list > button.selected { background: rgb(217 237 130 / .3); }
+.roadmap-stage-list > button > span:nth-child(2) { display: grid; gap: 5px; }
+.roadmap-stage-list strong { font-size: 1rem; }
+.roadmap-stage-list small { color: rgb(40 60 48 / .66); font-size: .74rem; }
+.roadmap-stage-number { color: rgb(40 60 48 / .48); font: 500 .72rem var(--font-technical), monospace; }
+
+.roadmap-graph-explorer {
+  margin-top: 20px;
+  border: 1px solid var(--mc-rule);
+  background: rgb(255 253 247 / .58);
+}
+
+.roadmap-graph-explorer > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  cursor: pointer;
+}
+
+.roadmap-graph-explorer > summary span { display: inline-flex; gap: 9px; align-items: center; font-weight: 700; }
+.roadmap-graph-explorer > summary svg { width: 17px; }
+.roadmap-graph-explorer > summary small { color: rgb(40 60 48 / .65); }
+.roadmap-graph-frame { padding: 0 10px 10px; }
+.roadmap-graph-frame .flow-wrap { height: 560px; border-radius: 2px 28px 2px 2px; }
+.roadmap-unassessed-note { margin: 12px 0 0; color: rgb(40 60 48 / .64); font-size: .72rem; }
+
+.studio-app[data-route="roadmap"] .skill-detail-panel {
+  position: sticky;
+  top: 92px;
+  height: auto;
+  max-height: calc(100vh - 116px);
+  overflow: auto;
+  border-radius: 3px 34px 3px 3px;
+}
+
+.studio-app[data-route="careers"] .sx-career-workspace {
+  gap: 22px;
+}
+
+.studio-app[data-route="careers"] .sx-career-options {
+  border-top: 1px solid var(--mc-rule);
+}
+
+.studio-app[data-route="careers"] .sx-career-option {
+  border-radius: 0;
+  border-width: 0 0 1px;
+}
+
+.studio-app[data-route="careers"] .sx-career-option[aria-pressed="true"] {
+  background: linear-gradient(90deg, rgb(199 226 190 / .52), transparent);
+}
+
+.studio-app[data-route="careers"] .sx-career-inspector {
+  border-radius: 4px 44px 4px 4px;
+  box-shadow: var(--mc-shadow);
+}
+
+/* Assessments and practice use a focused paper surface. */
+.studio-app[data-area="practice"] .section-head { border-bottom-color: rgb(244 183 141 / .72); }
+.studio-app[data-route="assessments"] .assessment-layout { gap: 22px; }
+.studio-app[data-route="assessments"] .assessment-picker { border-radius: 3px 34px 3px 3px; }
+.studio-app[data-route="assessments"] .assessment-paper { border-radius: 3px 48px 3px 3px; box-shadow: var(--mc-shadow); }
+.studio-app[data-route="assessments"] .question-list label { border-radius: 3px 16px 3px 3px; }
+
+.practice-topic-picker {
+  display: grid;
+  grid-template-columns: minmax(220px, .62fr) minmax(0, 1.38fr);
+  gap: clamp(24px, 5vw, 72px);
+  padding: clamp(24px, 4vw, 46px);
+  border: 1px solid var(--mc-rule);
+  border-radius: 3px 52px 3px 3px;
+  background: rgb(255 253 247 / .74);
+  box-shadow: var(--mc-shadow);
+}
+
+.practice-topic-picker header h2 { margin: 8px 0 12px; font: 740 clamp(1.9rem, 4vw, 3.25rem)/1 var(--font-display), sans-serif; letter-spacing: -.04em; }
+.practice-topic-picker header p { color: rgb(40 60 48 / .7); line-height: 1.65; }
+.practice-topic-groups { display: grid; gap: 22px; }
+.practice-topic-groups article > div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid var(--mc-rule); }
+.practice-topic-groups article > div small { color: rgb(40 60 48 / .62); font-family: var(--font-technical), monospace; }
+.practice-topic-groups nav { display: grid; }
+.practice-topic-groups nav a { display: flex; justify-content: space-between; gap: 12px; padding: 11px 4px; border-bottom: 1px dashed rgb(40 60 48 / .18); color: var(--mc-ink); text-decoration: none; }
+.practice-topic-groups nav a:hover { padding-left: 10px; background: rgb(198 221 242 / .28); }
+.practice-topic-groups nav svg { width: 16px; }
+
+/* Evidence and Learn retain distinct accents but share the same document grammar. */
+.studio-app[data-route="twin"] .twin-context-strip { border-left: 4px solid var(--mc-lilac); }
+.studio-app[data-route="twin"] .twin-view-nav { display: flex; gap: 4px; margin: 14px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--mc-rule); }
+.studio-app[data-route="twin"] .twin-view-nav a { padding: 9px 14px; color: var(--mc-ink); font-weight: 700; text-decoration: none; }
+.studio-app[data-route="twin"] .twin-view-nav a:hover { background: rgb(213 193 235 / .28); }
+.studio-app[data-route="twin"] .twin-main-grid { gap: 22px; }
+.studio-app[data-route="twin"] :is(.twin-skill-matrix, .twin-detail-panel) { border-radius: 3px 40px 3px 3px; }
+.studio-app[data-route="twin"] .twin-skill-card { border-radius: 3px 18px 3px 3px; }
+.studio-app[data-route="twin"] .twin-skill-card.selected { box-shadow: inset 4px 0 0 var(--mc-lilac); }
+
+.studio-app[data-area="learn"] .section-head,
+.studio-app[data-route="courses"] .course-student-head { border-bottom-color: rgb(198 221 242 / .9); }
+.studio-app[data-route="resources"] .resource-overview { border-radius: 3px 46px 3px 3px; }
+.studio-app[data-route="resources"] .resource-card { border-radius: 3px 24px 3px 3px; }
+.studio-app[data-route="courses"] .course-card-grid { gap: 18px; }
+.studio-app[data-route="courses"] .course-card { border-radius: 3px 34px 3px 3px; box-shadow: 0 12px 32px rgb(40 60 48 / .06); }
+.studio-app[data-route="courses"] .course-empty { border-radius: 3px 42px 3px 3px; background: rgb(198 221 242 / .2); }
+
+.studio-app[data-route="lab"] .sx-lab-workspace { gap: 22px; }
+.studio-app[data-route="lab"] .sx-lab-library { border-radius: 3px 30px 3px 3px; }
+.studio-app[data-route="lab"] .sx-lab-stage { border-radius: 3px 44px 3px 3px; box-shadow: var(--mc-shadow); }
+.studio-app[data-route="missions"] .mission-work-card { border-radius: 3px 30px 3px 3px; }
+.studio-app[data-route="missions"] .mission-work-card:nth-child(3n + 2) { border-top-color: var(--mc-apricot); }
+.studio-app[data-route="missions"] .mission-work-card:nth-child(3n) { border-top-color: var(--mc-lilac); }
+
+@media (max-width: 1100px) {
+  .studio-app[data-area="path"] .mb-shell-content::after,
+  .studio-app[data-area="progress"] .mb-shell-content::after,
+  .studio-app[data-area="learn"] .mb-shell-content::after,
+  .studio-app[data-area="practice"] .mb-shell-content::after { display: none; }
+}
+
+@media (max-width: 900px) {
+  .studio-app[data-route="roadmap"] .roadmap-layout,
+  .practice-topic-picker { grid-template-columns: 1fr; }
+  .studio-app[data-route="roadmap"] .roadmap-canvas { order: 0; }
+  .studio-app[data-route="roadmap"] .recommendation-panel { order: 1; }
+  .studio-app[data-route="roadmap"] .roadmap-aside .skill-detail-panel { order: 2; }
+  .studio-app[data-route="roadmap"] .skill-detail-panel { position: static; max-height: none; }
+  .studio-app[data-route="twin"] .twin-main-grid { align-items: stretch; }
+}
+
+@media (max-width: 560px) {
+  .studio-app[data-route="roadmap"] :is(.roadmap-canvas, .roadmap-toolbar, .filter-tabs, .roadmap-stage-list) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .studio-app[data-route="roadmap"] .filter-tabs { flex-wrap: wrap; overflow: visible; border-radius: 18px; }
+  .studio-app[data-route="roadmap"] .filter-tabs button { flex: 1 1 calc(50% - 6px); justify-content: center; }
+  .roadmap-stage-list > button { grid-template-columns: 30px minmax(0, 1fr); }
+  .roadmap-stage-list .status-pill { grid-column: 2; justify-self: start; }
+  .roadmap-graph-explorer > summary { align-items: flex-start; flex-direction: column; }
+  .practice-topic-picker { padding: 22px 18px; border-radius: 3px 28px 3px 3px; }
+}

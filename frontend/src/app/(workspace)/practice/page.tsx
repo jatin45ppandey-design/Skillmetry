@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense,useEffect,useMemo,useState } from "react";
-import { BookOpenCheck,CheckCircle2,RotateCcw } from "lucide-react";
+import { ArrowRight,BookOpenCheck,CheckCircle2,RotateCcw } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import {ActivityIndicator, ActionSpinner, ContentSkeleton} from "@/components/motion-ui";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
@@ -13,6 +13,7 @@ type PracticeQuestion = {id:string;prompt:string;choices:string[]};
 type PracticeResult = {correctCount:number;totalQuestions:number;review:{
   id:string;prompt:string;selectedIndex:number;correctIndex:number;choices:string[];explanation:string
 }[];trust:string};
+type DiagnosticEntry=[assessmentId:keyof typeof diagnosticTopics,topics:(typeof diagnosticTopics)[keyof typeof diagnosticTopics]];
 
 function PracticeContent() {
   const params=useSearchParams();
@@ -59,7 +60,10 @@ function PracticeContent() {
   return <><SectionTitle eyebrow="Focused practice" title={topic?topic.label:"Choose a diagnostic topic"}
       description="Exercises for learning, not certification. Practice never changes server-graded scores or your Digital Twin."
       action={<Link className="btn btn-quiet" href={assessment?`/assessments?assessment=${assessment.id}`:"/assessments"}>Back to assessments</Link>}/>
-    {!assessment||!topic?<p className="auth-error">This practice topic does not exist. Return to assessments and choose a valid topic.</p>:null}
+    {!assessment||!topic?<section className="practice-topic-picker" aria-labelledby="practice-topic-heading">
+      <header><span className="eyebrow">Practice index</span><h2 id="practice-topic-heading">Choose a skill topic</h2><p>Each set contains five guided exercises with explanations. Practice is unscored and never changes trusted assessment evidence.</p></header>
+      <div className="practice-topic-groups">{(Object.entries(diagnosticTopics) as DiagnosticEntry[]).flatMap(([assessmentId,topics])=>{const item=assessmentCatalog.find(candidate=>candidate.id===assessmentId);return item?[<article key={assessmentId}><div><strong>{item.title}</strong><small>{item.skillId}</small></div><nav aria-label={`${item.title} practice topics`}>{topics.map(itemTopic=><Link key={itemTopic.id} href={`/practice?assessment=${encodeURIComponent(assessmentId)}&topic=${encodeURIComponent(itemTopic.id)}`}><span>{itemTopic.label}</span><ArrowRight aria-hidden="true"/></Link>)}</nav></article>]:[];})}</div>
+    </section>:null}
     {loading?<ContentSkeleton kind="cards" label="Loading targeted practice questions…"/>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
     {pending?<ActivityIndicator compact label="Checking answers against the practice rubric…"/>:null}

@@ -75,7 +75,7 @@ describe("Learning Chapters interface boundaries", () => {
     expect(landing).toContain("CareerChapterGallery");
     expect(landing).toContain("Explore without an account");
     const preview = read("../frontend/src/components/landing-journey-preview.tsx");
-    expect(preview).toContain("Real catalog data · no fictional score");
+    expect(preview).toContain("Catalog data · no fictional score");
   });
 
   it("requires deliberate confirmation before a trusted quiz submission", () => {

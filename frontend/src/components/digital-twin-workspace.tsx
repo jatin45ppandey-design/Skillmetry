@@ -130,7 +130,7 @@ function SkillDetail({ skill, onSelectSkill }: { skill: SkillTwinSnapshot; onSel
   const history = skill.history;
   const assessmentHref = skill.assessment.available ? `/assessments?assessment=${encodeURIComponent(skill.assessment.assessmentId)}` : null;
 
-  return <section className="twin-detail-panel" aria-live="polite">
+  return <section className="twin-detail-panel" id="twin-history" aria-live="polite">
     <div className="twin-detail-top"><span className="eyebrow">Skill evidence</span><StatusPill tone={stateTone(skill.evidenceState)}>{stateLabels[skill.evidenceState]}</StatusPill></div>
     <h2>{skill.label}</h2>
     <p className="twin-detail-description">{skillById[skill.skillId]?.description}</p>
@@ -236,7 +236,13 @@ export function DigitalTwinWorkspace() {
       <p>{illustrative ? "Illustrative demo results are kept separate from signed-in student records." : status === "loading" ? "Loading server-graded assessment history. Unknown skills are not estimated while it loads." : status === "error" || status === "offline" ? message ?? "Assessment history is currently unavailable. No score is estimated." : "Scores reflect the latest completed server-graded quiz. They are not professional readiness or mastery claims."}</p>
     </section>
 
-    <section className="twin-overview" aria-label="Digital Twin overview">
+    <nav className="twin-view-nav" aria-label="Digital Twin sections">
+      <a href="#twin-overview">Overview</a>
+      <a href="#twin-skills-title">Skills</a>
+      <a href="#twin-history">History</a>
+    </nav>
+
+    <section className="twin-overview" id="twin-overview" aria-label="Digital Twin overview">
       <div className="twin-overview-copy"><span className="eyebrow">Evidence-based Digital Twin</span><h2>See what your quizzes actually measure.</h2><p>Coverage, scores, and next actions are kept separate so missing evidence never becomes a false weakness.</p></div>
       <div className="twin-evidence-metrics">
         <EvidenceMetric label="Trusted skill evidence" value={`${twin.catalogCoverage.measuredSkillCount} / ${twin.catalogCoverage.catalogSkillCount}`} detail="canonical skills measured" />

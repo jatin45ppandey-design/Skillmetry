@@ -17,7 +17,9 @@ describe("Meaningful loading, not fake progress",()=>{
  it("shows navigation progress but expires a stuck indicator",()=>{
    const nav=read("../frontend/src/components/navigation-progress.tsx");
    expect(nav).toContain("setTimeout");
+   expect(nav).toContain("180");
    expect(nav).toContain("12000");
+   expect(nav).toContain('data-route-pending');
    expect(nav).toContain("popstate");
    expect(nav).toContain("event.metaKey");
    expect(nav).toContain("event.ctrlKey");

@@ -100,8 +100,8 @@ export default function Onboarding() {
             })}
           </div>
           <label className="field sx-name-input">What should we call you?
-            <input autoComplete="given-name" className="input input-large" maxLength={64}
-              placeholder="Your first name" value={localName} onChange={e => setLocalName(e.target.value)}/>
+            <input autoComplete="given-name" className="input input-large" maxLength={64} name="displayName"
+              placeholder="Your first name…" value={localName} onChange={e => setLocalName(e.target.value)}/>
           </label>
           <div className="form-actions"><span/><button className="btn btn-primary"
             type="button" disabled={!localName.trim()} onClick={() => setStep(2)}>
@@ -133,7 +133,7 @@ export default function Onboarding() {
             <small>These are career prerequisites, not scores or an assessment of you.</small>
           </div> : null}
           <label className="field sx-hours-field">How many hours can you spend learning each week?
-            <select className="input" value={hours} onChange={e => setHours(Number(e.target.value))}>
+            <select className="input" name="hoursPerWeek" value={hours} onChange={e => setHours(Number(e.target.value))}>
               {[2,4,6,8,10,12,15].map(value=><option value={value} key={value}>{value} hours / week</option>)}
             </select>
           </label>

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Apply the approved Direction A system to the remaining product in dependency order, preserving trusted evidence, staged-feature, privacy, and owner-only boundaries.
+Apply the approved Direction B Lite — Evidence Notebook system to the remaining product in dependency order, preserving trusted evidence, staged-feature, privacy, and owner-only boundaries.
 
 Milestone C starts only after Milestone B is approved and stable.
 
@@ -128,7 +128,7 @@ For each route family, verify:
 
 ## Definition of complete
 
-- All route families use the approved Direction A system without becoming visually identical.
+- All route families use the approved Direction B Lite system without becoming visually identical.
 - The five-area IA is consistent across desktop and mobile.
 - Primary flows can be completed without encountering unexplained preview/disabled states.
 - Every product claim is traceable to an existing capability or explicitly illustrative content.

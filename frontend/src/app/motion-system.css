@@ -1,6 +1,8 @@
 /* Accessible Skillmetry motion: calm, indeterminate, meaning-first. */
+:root{--motion-press:140ms;--motion-select:220ms;--motion-content:280ms;--motion-page:260ms;--motion-ease:cubic-bezier(.2,.8,.2,1)}
 @keyframes skillmetry-motion-turn{to{transform:rotate(360deg)}}
 @keyframes skillmetry-motion-sweep{0%{transform:translateX(-115%)}100%{transform:translateX(115%)}}
+@keyframes skillmetry-route-sweep{0%{transform:translateX(-110%)}100%{transform:translateX(350%)}}
 @keyframes skillmetry-motion-pulse{0%,80%,100%{opacity:.3;transform:scale(.72)}40%{opacity:1;transform:scale(1)}}
 @keyframes skillmetry-motion-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .motion-spin{animation:skillmetry-motion-turn 1s linear infinite;flex:none}
@@ -15,10 +17,10 @@
 .motion-status-dots i{height:5px;width:5px;border-radius:50%;background:#659574;animation:skillmetry-motion-pulse 1.2s ease-in-out infinite}
 .motion-status-dots i:nth-child(2){animation-delay:.14s}.motion-status-dots i:nth-child(3){animation-delay:.28s}
 .motion-success{display:flex;align-items:center;gap:10px;padding:12px 15px;border-radius:14px;background:#e5f0dd;color:#30583c;border:1px solid #bdd4b9;animation:skillmetry-motion-enter .25s ease}
-.motion-route-progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:2147483000;pointer-events:none;opacity:0;transition:opacity .16s}
+.motion-route-progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:40;overflow:hidden;pointer-events:none;opacity:0;background:#dce8d5;transition:opacity .16s}
 .motion-route-progress.is-opening{opacity:1}
-.motion-route-progress-track{display:block;width:100%;height:100%;background:linear-gradient(90deg,transparent 0%,#70aa78 37%,#325a41 68%,transparent 100%);transform:translateX(-115%)}
-.motion-route-progress.is-opening .motion-route-progress-track{animation:skillmetry-motion-sweep 1.3s ease-in-out infinite}
+.motion-route-progress-track{display:block;width:42%;height:100%;background:#325a41;transform:translateX(-115%)}
+.motion-route-progress.is-opening .motion-route-progress-track{animation:skillmetry-route-sweep 1.3s ease-in-out infinite}
 .motion-skeleton{background:#f9fbf5;border:1px solid #d9e3d6;border-radius:20px;padding:clamp(17px,2.5vw,30px);min-height:245px;display:grid;align-content:start;gap:13px}
 .motion-skeleton--auth{max-width:540px;margin:clamp(18px,5vw,80px) auto;min-height:360px}
 .motion-skeleton--dashboard{min-height:360px}
@@ -35,8 +37,20 @@
 .motion-action-status{margin:12px 0}
 .motion-stage{animation:skillmetry-motion-enter .22s ease-out}
 button:disabled .motion-spin{opacity:.9}
+[data-route-pending="true"]{cursor:progress}
+a[data-route-pending="true"]{transform:translateY(1px) scale(.985)}
+.studio-app :is(a,button),.auth-shell :is(a,button),.onboarding-shell :is(a,button){transition:transform var(--motion-press) ease,background-color var(--motion-select) ease,border-color var(--motion-select) ease,color var(--motion-select) ease,opacity var(--motion-select) ease}
+.studio-app :is(a,button):active,.auth-shell :is(a,button):active,.onboarding-shell :is(a,button):active{transform:translateY(1px) scale(.985)}
+.studio-app :is([aria-pressed="true"],[aria-selected="true"],input:checked+label){transition-duration:var(--motion-select)}
+.studio-app .studio-content>*,.auth-card,.onboarding-card{animation:skillmetry-page-enter var(--motion-page) var(--motion-ease) both}
+.studio-app :is(.resource-card,.course-card,.sx-quick-card,.twin-skill-card,.roadmap-node-card){transition:transform var(--motion-select) var(--motion-ease),background-color var(--motion-select) ease,border-color var(--motion-select) ease}
+.studio-app :is(.resource-card,.course-card,.sx-quick-card):hover{transform:translateY(-3px)}
+.studio-app dialog{opacity:1;transform:translateY(0) scale(1);transition:opacity 240ms ease,transform 240ms var(--motion-ease),overlay 240ms ease allow-discrete,display 240ms ease allow-discrete}
+.studio-app dialog::backdrop{background:rgb(40 60 48/.38);transition:background-color 240ms ease,overlay 240ms ease allow-discrete,display 240ms ease allow-discrete}
+@starting-style{.studio-app dialog[open]{opacity:0;transform:translateY(10px) scale(.985)}.studio-app dialog[open]::backdrop{background:transparent}}
+@keyframes skillmetry-page-enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:680px){.motion-skeleton-grid{grid-template-columns:1fr 1fr}.motion-skeleton-card{min-height:110px;padding:12px}.motion-skeleton-card:nth-child(3){display:none}.motion-status{gap:9px;padding:11px}.motion-status-dots{display:none}}
-@media(prefers-reduced-motion:reduce){.motion-spin,.motion-route-progress-track,.motion-shimmer:after,.motion-status-dots i{animation:none!important}.motion-status,.motion-success,.motion-stage{animation:none!important}.motion-route-progress{transition:none}.motion-shimmer:after{display:none}}
+@media(prefers-reduced-motion:reduce){.motion-spin,.motion-route-progress-track,.motion-shimmer:after,.motion-status-dots i{animation:none!important}.motion-status,.motion-success,.motion-stage,.studio-app .studio-content>*,.auth-card,.onboarding-card{animation:none!important}.motion-route-progress{transition:none}.motion-shimmer:after{display:none}.studio-app :is(a,button,.resource-card,.course-card,.sx-quick-card,.twin-skill-card,.roadmap-node-card),.auth-shell :is(a,button),.onboarding-shell :is(a,button),.studio-app dialog{transition-duration:.01ms!important;transform:none!important}}
 
 .motion-root-loading{min-height:55vh;padding:clamp(26px,6vw,90px);max-width:1450px;margin:0 auto}
 .auth-form .motion-status,.auth-confirmation .motion-status{margin:6px 0}
