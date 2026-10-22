@@ -1,6 +1,7 @@
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import { learningResources } from "@skillmetry/shared/data/learning-resources";
+import { curriculumCatalog } from "@skillmetry/shared/data/curriculum";
 import { isCanonicalSkillId, isToolId, toolById } from "@skillmetry/shared/data/learning-catalog";
 import { buildRecommendations } from "@skillmetry/shared/lib/recommendations";
 import type {
@@ -143,6 +144,23 @@ function collectTargets(input: PersonalizedResourceInput) {
 
 export function getResourcesForSkill(skillId: SkillId) {
   return learningResources.filter(resource => (resource.target.kind === "skill" && resource.target.skillId === skillId) || resource.relatedSkillIds?.includes(skillId));
+}
+
+/** Resolves the normalized curriculum relationship without duplicating resource records. */
+export function getResourcesForCurriculumLesson(lessonId: string) {
+  const lesson = curriculumCatalog.lessons.find(entry => entry.id === lessonId);
+  if (!lesson) return [];
+  const resourceIds = new Set(lesson.resourceIds);
+  return learningResources.filter(resource => resourceIds.has(resource.id));
+}
+
+/** Returns resources for every lesson under a topic, retaining catalog order. */
+export function getResourcesForCurriculumTopic(topicId: string) {
+  const subtopicIds = new Set(curriculumCatalog.subtopics.filter(entry => entry.topicId === topicId).map(entry => entry.id));
+  const resourceIds = new Set(curriculumCatalog.lessons
+    .filter(entry => subtopicIds.has(entry.subtopicId))
+    .flatMap(entry => entry.resourceIds));
+  return learningResources.filter(resource => resourceIds.has(resource.id));
 }
 
 /** Docker intentionally returns the canonical Docker skill resources. */

@@ -2,6 +2,7 @@ import {describe,it,expect} from "vitest";
 import {readFileSync} from "node:fs";
 import {fileURLToPath} from "node:url";
 import {skills} from "@skillmetry/shared/data/catalog";
+import {CURRICULUM_VERSION,subtopicIdForSkill,topicIdForSkill} from "@skillmetry/shared/data/curriculum";
 import {coursePayloadSchema,saveCourseSchema,startingCourse} from "@skillmetry/shared/lib/admin-courses";
 const read=(p:string)=>readFileSync(fileURLToPath(new URL(p,import.meta.url)),"utf8");
 describe("Courses, modules and published learning",()=>{
@@ -11,6 +12,18 @@ describe("Courses, modules and published learning",()=>{
     expect(saveCourseSchema.safeParse({slug:"course-"+skill.id,skillId:skill.id,
       expectedRevision:0,publish:false,draft}).success,skill.id).toBe(true);
   }
+ });
+ it("accepts optional curriculum metadata without invalidating existing course drafts",()=>{
+   const draft=startingCourse("JavaScript");
+   draft.modules[0].lessons[0].curriculum={
+     topicId:topicIdForSkill("javascript"),subtopicId:subtopicIdForSkill("javascript"),
+     version:CURRICULUM_VERSION,learningObjectives:["Explain JavaScript program behavior."],
+     sourceAttribution:[{label:"Skillmetry canonical catalog"}]
+   };
+   expect(saveCourseSchema.safeParse({slug:"course-javascript",skillId:"javascript",
+     expectedRevision:0,publish:false,draft}).success).toBe(true);
+   expect(saveCourseSchema.safeParse({slug:"course-python",skillId:"python",
+     expectedRevision:0,publish:false,draft}).success).toBe(false);
  });
  it("rejects insecure videos, duplicate lesson IDs and malformed courses",()=>{
    const draft=startingCourse("JavaScript");
