@@ -236,14 +236,14 @@ export function DigitalTwinWorkspace() {
       <p>{illustrative ? "Illustrative demo results are kept separate from signed-in student records." : status === "loading" ? "Loading server-graded assessment history. Unknown skills are not estimated while it loads." : status === "error" || status === "offline" ? message ?? "Assessment history is currently unavailable. No score is estimated." : "Scores reflect the latest completed server-graded quiz. They are not professional readiness or mastery claims."}</p>
     </section>
 
-    <nav className="twin-view-nav" aria-label="Digital Twin sections">
+    <nav className="twin-view-nav" aria-label="My Skill Progress sections">
       <a href="#twin-overview">Overview</a>
       <a href="#twin-skills-title">Skills</a>
       <a href="#twin-history">History</a>
     </nav>
 
-    <section className="twin-overview" id="twin-overview" aria-label="Digital Twin overview">
-      <div className="twin-overview-copy"><span className="eyebrow">Evidence-based Digital Twin</span><h2>See what your quizzes actually measure.</h2><p>Coverage, scores, and next actions are kept separate so missing evidence never becomes a false weakness.</p></div>
+    <section className="twin-overview" id="twin-overview" aria-label="My Skill Progress overview">
+      <div className="twin-overview-copy"><span className="eyebrow">My Skill Progress</span><h2>See what your quizzes actually measure.</h2><p>Coverage, scores, and next actions are kept separate so missing evidence never becomes a false weakness.</p></div>
       <div className="twin-evidence-metrics">
         <EvidenceMetric label="Trusted skill evidence" value={`${twin.catalogCoverage.measuredSkillCount} / ${twin.catalogCoverage.catalogSkillCount}`} detail="canonical skills measured" />
         <EvidenceMetric label="Catalog coverage" value={`${twin.catalogCoverage.catalogCoveragePercent}%`} detail="skills with quiz evidence" />

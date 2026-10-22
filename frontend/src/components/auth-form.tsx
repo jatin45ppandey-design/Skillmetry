@@ -62,7 +62,7 @@ export function AuthForm({ mode, configured, nextPath, initialError, oauthProvid
   }
 
   return <form className="auth-form" onSubmit={submit}>
-    <div className="auth-form-heading"><span className="auth-lock"><LockKeyhole aria-hidden="true"/></span><div><span className="eyebrow">Private cloud workspace</span><h1>{isSignUp ? "Create your Skillmetry account" : "Welcome back"}</h1><p>{isSignUp ? "Save your career goal and create trusted assessment history." : "Load your career profile and server-graded results."}</p></div></div>
+    <div className="auth-form-heading"><span className="auth-lock"><LockKeyhole aria-hidden="true"/></span><div><span className="eyebrow">My Account</span><h1>{isSignUp ? "Create your Skillmetry account" : "Welcome back"}</h1><p>{isSignUp ? "Save your career goal and create trusted assessment history." : "Load your career profile and server-graded results."}</p></div></div>
     {error ? <div className="auth-error" role="alert"><AlertCircle aria-hidden="true"/><span>{error}</span></div> : null}
     {oauthProviders.length ? <>
       <div className="auth-social-options" role="group" aria-label="Other sign-in methods">

@@ -27,7 +27,7 @@ export function DiagnosticTwinInsights(){
   if(!user||process.env.NEXT_PUBLIC_DIAGNOSTIC_ASSESSMENTS_ENABLED!=="true")return null;
   const visibleInsights=insightOwner===user.id?insights:[];
   return <section className="diagnostic-twin-panel">
-    <div className="resource-section-head"><div><span className="eyebrow">Diagnostic intelligence</span><h2>Learn from topic evidence</h2></div></div>
+    <div className="resource-section-head"><div><span className="eyebrow">Topics to Improve</span><h2>Learn from topic evidence</h2></div></div>
     {loading && insightOwner!==user.id ? <ActivityIndicator compact label="Loading your private topic diagnosis…"/>:null}
     {error?<p className="note">Topic evidence is temporarily unavailable; trusted overall scores remain unchanged.</p>:null}
     {!loading&&!error&&!visibleInsights.length?<p className="note">Complete a 2026.3 assessment to unlock topic recommendations. Unassessed areas remain unknown.</p>:null}

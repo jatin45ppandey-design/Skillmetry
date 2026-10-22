@@ -105,6 +105,54 @@
   transform: scaleX(1);
 }
 
+.mb-area-nav,
+.mb-route-context {
+  width: min(1260px, calc(100% - clamp(32px, 5vw, 72px)));
+  min-height: 50px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid var(--mc-rule);
+  color: rgb(40 60 48 / .7);
+  font-size: .82rem;
+}
+
+.mb-area-nav > span {
+  flex: none;
+  font-weight: 760;
+  color: var(--mc-ink);
+}
+
+.mb-area-nav > div {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+}
+
+.mb-area-nav a,
+.mb-route-context a,
+.mb-route-context span {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.mb-area-nav a:is(:hover, .is-current),
+.mb-route-context a:hover {
+  color: var(--mc-ink);
+  background: rgb(199 226 190 / .55);
+}
+
+.mb-area-nav a.is-current { font-weight: 760; }
+.mb-route-context { gap: 2px; }
+.mb-route-context svg { width: 15px; }
+.mb-route-context span { color: var(--mc-ink); font-weight: 720; }
+
 /* Onboarding and authentication are editorial entry pages, not floating SaaS cards. */
 .onboarding-shell,
 .auth-shell {
@@ -211,6 +259,11 @@
   .onboarding-layout { grid-template-columns: 1fr; gap: 24px; }
   .onboarding-aside { padding-top: 14px; }
   .onboarding-aside h1 { max-width: 13ch; font-size: clamp(2.65rem, 7.8vw, 3.75rem); }
+  .mb-area-nav,
+  .mb-route-context { width: min(100% - 32px, 760px); align-items: flex-start; gap: 4px; padding-block: 6px; }
+  .mb-area-nav { flex-direction: column; }
+  .mb-area-nav > span { padding-inline: 10px; }
+  .mb-area-nav > div { width: 100%; }
 }
 
 @media (max-width: 480px) {
@@ -219,6 +272,9 @@
   .studio-app .section-head h1 { font-size: clamp(1.9rem, 10vw, 2.65rem); }
   .onboarding-shell, .auth-shell { background-image: none; }
   .onboarding-card, .auth-card { border-radius: 3px 26px 3px 3px; padding: 24px 20px; }
+  .mb-area-nav,
+  .mb-route-context { width: calc(100% - 24px); }
+  .mb-area-nav a { flex: 1 1 auto; justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

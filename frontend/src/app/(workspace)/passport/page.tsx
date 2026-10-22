@@ -61,12 +61,12 @@ export default function Passport(){
   finally{setPending(false);}
  }
  if(!preferences.learning.primaryCareerId)return <>
-   <SectionTitle eyebrow="Private preview" title="Career Passport"
+   <SectionTitle eyebrow="Private preview" title="Skill Summary"
      description="Your optional presentation of truthful foundational assessment evidence."/>
-   <CareerDirectionRequired feature="Career Passport"/>
+   <CareerDirectionRequired feature="Skill Summary"/>
  </>;
  return <>
-  <SectionTitle eyebrow="Chapter 10 / Career passport" title="Your learning evidence, your choice"
+  <SectionTitle eyebrow="Skill Summary" title="Your learning evidence, your choice"
    description="Preview your recorded quizzes, download a private report through browser print, or explicitly select what to share."
    action={<Link href="/account" className="btn btn-outline">Account & data export</Link>}/>
   <section className="panel workflow-passport-print" style={{maxWidth:860}}>

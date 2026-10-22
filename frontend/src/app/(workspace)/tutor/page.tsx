@@ -26,7 +26,7 @@ function TutorContent(){
   finally{setPending(false);}
  }
  return <>
-  <SectionTitle eyebrow="Chapter 09 / Learning companion" title="Ask for your next learning step"
+  <SectionTitle eyebrow="Study Help" title="Ask for your next learning step"
    description="Explore curated explanations and references; choose explicitly whether to send your question to an external AI provider."/>
   <div className={"sx-tutor-layout"+(answer||pending?" has-answer":"")}>
    <form className="panel sx-tutor-form" onSubmit={ask}>
@@ -50,7 +50,7 @@ function TutorContent(){
       <p className="workflow-answer">{answer.answer}</p>
       <h3>Reviewed learning resources</h3>
       {answer.resources.length?answer.resources.map(r=><p key={r.id}><a href={r.url} target="_blank" rel="noopener noreferrer">
-       {r.title} · {r.provider}</a></p>):<p>Visit the learning shelf for the current catalog.</p>}
+       {r.title} · {r.provider}</a></p>):<p>Visit Learning Resources for the current catalog.</p>}
       <p className="note">{answer.disclaimer}</p><Link href="/lab" className="btn btn-outline">Practice this skill</Link></>}
    </section>:null}
   </div>

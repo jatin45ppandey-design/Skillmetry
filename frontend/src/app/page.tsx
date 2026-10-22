@@ -108,7 +108,7 @@ export default function Home() {
             <div className={styles.evidenceCopy} data-reveal>
               <h2 id="evidence-title">Evidence has a clear status.</h2>
               <p>A blank is not a failure, and completed learning is not automatically proof. Skillmetry shows the boundary instead of hiding it.</p>
-              <Link href="/twin" className={styles.textLink}>See the Digital Twin <ArrowRight aria-hidden="true" /></Link>
+              <Link href="/twin" className={styles.textLink}>See My Skill Progress <ArrowRight aria-hidden="true" /></Link>
             </div>
             <div className={styles.evidenceLedger} data-ui data-reveal aria-label="Evidence state examples">
               <div className={`${styles.ledgerRow} ${styles.ledgerMeasured}`} data-ui>

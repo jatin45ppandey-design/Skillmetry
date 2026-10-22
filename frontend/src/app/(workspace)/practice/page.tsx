@@ -58,7 +58,7 @@ function PracticeContent() {
   }
 
   return <><SectionTitle eyebrow="Focused practice" title={topic?topic.label:"Choose a diagnostic topic"}
-      description="Exercises for learning, not certification. Practice never changes server-graded scores or your Digital Twin."
+      description="Exercises for learning, not certification. Practice never changes server-graded scores in My Skill Progress."
       action={<Link className="btn btn-quiet" href={assessment?`/assessments?assessment=${assessment.id}`:"/assessments"}>Back to assessments</Link>}/>
     {!assessment||!topic?<section className="practice-topic-picker" aria-labelledby="practice-topic-heading">
       <header><span className="eyebrow">Practice index</span><h2 id="practice-topic-heading">Choose a skill topic</h2><p>Each set contains five guided exercises with explanations. Practice is unscored and never changes trusted assessment evidence.</p></header>

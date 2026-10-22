@@ -50,7 +50,7 @@ export default function Jobs(){
    finally{setPending(false);}
  }
  return <>
-  <SectionTitle eyebrow="Chapter 08 / Career intelligence" title="Turn a job description into a learning map"
+  <SectionTitle eyebrow="Job Skill Checker" title="Turn a job description into a learning map"
     description="Match stated requirements against Skillmetry's canonical skills and your server-graded quiz evidence. No imagined employability percentages."/>
   <div className={"sx-jobs-layout"+(result||pending?" has-results":"")}>
    <form className="panel sx-jobs-form" onSubmit={analyze}>
@@ -88,7 +88,7 @@ export default function Jobs(){
         </Link>
         <Link href={"/tutor?skill="+encodeURIComponent(req.skillId)}>Understand this skill</Link>
       </article>)}
-      {result.requirements.length?<p className="note">Need help understanding a requirement? Open its skill explanation in the learning tutor; no job text is sent automatically.</p>:null}
+      {result.requirements.length?<p className="note">Need help understanding a requirement? Open its skill explanation in Study Help; no job text is sent automatically.</p>:null}
       <h3>Related career pathways</h3>
       {result.matchingCareers.filter(x=>x.matchedSkillCount>0).map(c=><p key={c.id}>{c.title}: {c.matchedSkillCount} matching requirements</p>)}
       <p className="note">{result.notice}</p>

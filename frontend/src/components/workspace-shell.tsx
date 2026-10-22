@@ -20,20 +20,41 @@ const primary = [
   { href: "/twin", label: "Progress", icon: Fingerprint, matches: ["/twin", "/passport"] }
 ] as const;
 
+const areaNavigation = {
+  path: [
+    { href: "/careers", label: "Career Directions" },
+    { href: "/roadmap", label: "My Learning Path" }
+  ],
+  learn: [
+    { href: "/resources", label: "Learning Resources" },
+    { href: "/courses", label: "Courses & Lessons" }
+  ],
+  practice: [
+    { href: "/assessments", label: "Assessments" },
+    { href: "/practice", label: "Topic Practice" },
+    { href: "/lab", label: "Coding Practice" },
+    { href: "/missions", label: "Projects" }
+  ],
+  progress: [
+    { href: "/twin", label: "My Skill Progress" },
+    { href: "/passport", label: "Skill Summary" }
+  ]
+} as const;
+
 type SecondaryLink = { href: string; label: string; description: string; icon: typeof BookOpen };
 const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
   { label: "Path & learning", items: [
     { href: "/careers", label: "Career directions", description: "Compare the 4 curated paths", icon: Compass },
     { href: "/courses", label: "Courses & lessons", description: "Read structured learning material", icon: BookOpen },
-    { href: "/lab", label: "Guided coding practice", description: "Practise without changing quiz scores", icon: Target },
-    { href: "/missions", label: "Project challenges", description: "Work through learner-reported projects", icon: Target }
+    { href: "/lab", label: "Coding Practice", description: "Practise without changing quiz scores", icon: Target },
+    { href: "/missions", label: "Projects", description: "Work through learner-reported projects", icon: Target }
   ] },
   { label: "Planning & advanced tools", items: [
-    { href: "/planner", label: "Weekly planner", description: "Plan learning time", icon: BookOpen },
-    { href: "/tutor", label: "Learning tutor", description: "Open curated guidance", icon: BookOpen },
-    { href: "/jobs", label: "Job description analyzer", description: "Compare canonical skill requirements", icon: BriefcaseBusiness },
-    { href: "/simulator", label: "Learning scenarios", description: "Explore hypothetical changes", icon: FlaskConical },
-    { href: "/passport", label: "Career Passport", description: "Review private evidence presentation", icon: WandSparkles }
+    { href: "/planner", label: "Weekly Study Plan", description: "Plan learning time", icon: BookOpen },
+    { href: "/tutor", label: "Study Help", description: "Open curated guidance", icon: BookOpen },
+    { href: "/jobs", label: "Job Skill Checker", description: "Compare canonical skill requirements", icon: BriefcaseBusiness },
+    { href: "/simulator", label: "Compare Study Plans", description: "Explore hypothetical changes", icon: FlaskConical },
+    { href: "/passport", label: "Skill Summary", description: "Review private evidence presentation", icon: WandSparkles }
   ] },
   { label: "Settings", items: [
     { href: "/settings", label: "Goals & settings", description: "Update your learning direction", icon: Settings2 },
@@ -120,6 +141,8 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const { user, syncStatus } = useAuth();
   const primaryArea = primary.find(item => isPrimaryCurrent(pathname, item.matches));
   const current = primaryArea ?? secondary.find(item => item.href === pathname);
+  const family = routeFamily(pathname);
+  const localNavigation = family in areaNavigation ? areaNavigation[family as keyof typeof areaNavigation] : null;
   const accountHref = user ? "/account" : "/auth/sign-in";
   const cloudLabel = !user ? (profileSource === "demo" ? "Illustrative demo" : "Local profile")
     : syncStatus === "offline" ? "Offline"
@@ -151,6 +174,19 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
+
+      {localNavigation ? (
+        <nav className="mb-area-nav" aria-label={`${primaryArea?.label ?? "Section"} pages`}>
+          <span>{primaryArea?.label}</span>
+          <div>{localNavigation.map(item => <Link key={item.href} href={item.href}
+            aria-current={pathname === item.href ? "page" : undefined}
+            className={pathname === item.href ? "is-current" : undefined}>{item.label}</Link>)}</div>
+        </nav>
+      ) : current && !primaryArea ? (
+        <nav className="mb-route-context" aria-label="Breadcrumb">
+          <Link href="/dashboard">Home</Link><ArrowRight aria-hidden="true"/><span aria-current="page">{current.label}</span>
+        </nav>
+      ) : null}
 
       <main className="studio-main mb-shell-main" id="workspace-main">
         <div className="studio-content mb-shell-content" key={pathname}>{children}</div>

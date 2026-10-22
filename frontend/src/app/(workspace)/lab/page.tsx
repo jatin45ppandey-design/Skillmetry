@@ -64,7 +64,7 @@ export default function Lab(){
     finally{setPending(false);}
   }
   return <>
-    <SectionTitle eyebrow="Chapter 06 / Coding lab" title="Practice with small, safe challenges"
+    <SectionTitle eyebrow="Coding Practice" title="Practice with small, safe challenges"
       description="Predict outputs, debug concepts and fill missing syntax. No arbitrary code is executed, and practice never changes trusted quiz results."
       action={<Link href="/planner" className="btn btn-quiet">Study planner</Link>}/>
     {!saved?<p className="workflow-notice">Practice is available without cloud storage. Sign in after the approved workflow rollout to save your private practice history.</p>:null}

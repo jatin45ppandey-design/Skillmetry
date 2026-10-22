@@ -6,7 +6,7 @@ import { SectionTitle } from "@/components/section-title";
 export default function Twin() {
   return <>
     <SectionTitle
-      eyebrow="Digital skill twin"
+      eyebrow="My Skill Progress"
       title="Your evidence, made useful"
       description="Understand what trusted quizzes measure, what remains unknown, and which valid next step fits your selected learning goals."
     />

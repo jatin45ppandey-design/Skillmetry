@@ -131,7 +131,7 @@ export default function CoursesPage(){
    <header className="course-student-head"><div><span className="v3-kicker">STRUCTURED LEARNING</span>
      <h1>Learn through small, practical lessons.</h1>
      <p>Follow a course, watch hosted video lessons or read concise notes, then try each exercise at your own pace.</p></div>
-     <Link href="/resources" className="btn btn-outline">Open the learning desk <ArrowRight size={16}/></Link>
+     <Link href="/resources" className="btn btn-outline">Open Learning Resources <ArrowRight size={16}/></Link>
    </header>
    <div className="course-student-filter"><label htmlFor="course-skill">Filter by skill</label>
      <select id="course-skill" value={selected} onChange={e=>{setSelected(e.target.value);setOpenCourse(null);}}>

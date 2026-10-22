@@ -41,7 +41,7 @@ describe("Milestone C product experience", () => {
 
   it("surfaces evidence-first overview, skills and history navigation", () => {
     const twin = read("frontend/src/components/digital-twin-workspace.tsx");
-    expect(twin).toContain("Digital Twin sections");
+    expect(twin).toContain("My Skill Progress sections");
     expect(twin).toContain('href="#twin-overview"');
     expect(twin).toContain('href="#twin-skills-title"');
     expect(twin).toContain('href="#twin-history"');

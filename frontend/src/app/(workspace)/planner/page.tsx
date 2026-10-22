@@ -55,7 +55,7 @@ export default function Planner() {
   const upcoming=visible.find(t=>t.status==="in_progress")??visible.find(t=>t.status==="todo");
   const nextTaskHref=upcoming?(upcoming.kind==="reassess"?"/assessments":upcoming.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(upcoming.skillId)):"/roadmap";
   return <>
-    <SectionTitle eyebrow="Chapter 05 / Learning planner" title="Your weekly learning rhythm"
+    <SectionTitle eyebrow="Weekly Study Plan" title="Your weekly learning rhythm"
       description="A practical plan based on selected goals, available study hours and real quiz evidence. Task completion is activity—not a skill score."
       action={<Link href="/roadmap" className="btn btn-quiet">Back to roadmap</Link>}/>
     {!user?<p className="workflow-notice" role="status">Illustrative local plan. <Link href="/auth/sign-in?next=/planner">Sign in</Link> to save activity after the workflow rollout.</p>

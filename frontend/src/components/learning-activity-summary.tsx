@@ -16,6 +16,6 @@ export function LearningActivitySummary(){
     {activity.status==="ready"&&!Object.keys(activity.bySkill).length?<p>No private learning activity recorded yet.</p>:null}
     <div className="workflow-inline-actions"><Link className="btn btn-outline" href="/planner">Study plan</Link>
       <Link className="btn btn-outline" href="/lab">Code practice</Link>
-      <Link className="btn btn-outline" href="/missions">Project missions</Link></div>
+      <Link className="btn btn-outline" href="/missions">Projects</Link></div>
   </section>;
 }
