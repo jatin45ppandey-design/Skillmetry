@@ -203,14 +203,14 @@ export function LandingHomeV5() {
         <div className="sm-container sm-proof__layout">
           <div data-reveal className="sm-proof__copy">
             <span className="sm-overline">Progress you can trust</span>
-            <h2 id="sm-proof-title">Unknown isn't <em>zero.</em></h2>
+            <h2 id="sm-proof-title">Unknown isn&apos;t <em>zero.</em></h2>
             <p>Study time is useful. Quiz results are evidence. Skillmetry keeps them distinct so you always know where you stand.</p>
             <Link href="/twin" className="sm-text-link">See how progress works <ArrowUpRight size={17} aria-hidden="true" /></Link>
           </div>
           <div className="sm-proof__sheet" data-reveal>
             <div className="sm-proof__item"><span className="sm-proof__symbol"><CircleHelp size={21} aria-hidden="true" /></span><div><strong>Not assessed</strong><p>No trusted quiz result yet.</p></div><span className="sm-proof__value">Unknown</span></div>
             <div className="sm-proof__item"><span className="sm-proof__symbol sm-proof__symbol--green"><Check size={21} aria-hidden="true" /></span><div><strong>Assessed knowledge</strong><p>Only completed, server-graded quizzes provide a score.</p></div><span className="sm-proof__value">Measured</span></div>
-            <div className="sm-proof__item"><span className="sm-proof__symbol sm-proof__symbol--orange"><Code2 size={21} aria-hidden="true" /></span><div><strong>Learning activity</strong><p>Resources and practice don't change your quiz score.</p></div><span className="sm-proof__value">Unscored</span></div>
+            <div className="sm-proof__item"><span className="sm-proof__symbol sm-proof__symbol--orange"><Code2 size={21} aria-hidden="true" /></span><div><strong>Learning activity</strong><p>Resources and practice don&apos;t change your quiz score.</p></div><span className="sm-proof__value">Unscored</span></div>
           </div>
         </div>
       </section>
