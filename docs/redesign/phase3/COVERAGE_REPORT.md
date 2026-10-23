@@ -11,7 +11,7 @@ Generated from the canonical catalogs with `npm run report:phase3` and `npm run 
 | Projects | 12/12 specified projects, three for each of four careers |
 | Resources | 83 reviewed, 82 accepted, one explicitly unverified, zero unavailable |
 | Default assessments | Four active skills: Python, SQL, JavaScript and HTML |
-| Expanded assessment catalog | Nine staged skills, 90 base questions |
+| Expanded assessment catalog | Nine total base banks and 90 base questions; five additional skill tracks remain rollout-gated |
 | Topic diagnostics | Four staged banks, 120 pool questions, 15 server-selected questions per attempt |
 
 Assessment breadth is not represented as 18 assessed skills. The remaining skills have learning and practice coverage but no fabricated numerical proficiency. The five expanded assessment tracks beyond the four defaults remain staged, and diagnostic recommendations only appear from real topic evidence when the diagnostic rollout is enabled.
