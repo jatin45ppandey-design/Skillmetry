@@ -1,5 +1,5 @@
-.p3-practice-index{grid-template-columns:1fr;gap:22px;min-width:0}
-.p3-practice-index>header{max-width:760px}
+.studio-app[data-route="practice"] .practice-topic-picker{grid-template-columns:1fr;gap:22px;min-width:0}
+.studio-app[data-route="practice"] .practice-topic-picker>header{max-width:760px}
 .p3-practice-filters{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(2,minmax(150px,.65fr));gap:12px}
 .p3-practice-filters label{display:grid;gap:7px;color:#526b58;font-size:.78rem;font-weight:700}
 .p3-practice-filters :is(input,select){min-width:0;min-height:44px;padding:10px 12px;border:1px solid var(--mc-rule);border-radius:9px;background:#fffef9;color:#294b35;font:inherit}
@@ -33,5 +33,5 @@
 
 @media(max-width:900px){.p3-topic-grid,.p3-revision-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.p3-practice-filters{grid-template-columns:1fr 1fr}.p3-practice-filters label:first-child{grid-column:1/-1}}
 @media(max-width:620px){.p3-topic-grid,.p3-revision-grid,.p3-diagnostic-practice>div,.p3-revision-timeline{grid-template-columns:1fr}.p3-practice-filters{grid-template-columns:1fr}.p3-practice-filters label:first-child{grid-column:auto}.p3-project-brief{grid-template-columns:1fr}.p3-project-brief nav{grid-column:auto}.p3-practice-actions>.btn,.p3-result-actions>.btn{flex:1 1 100%;justify-content:center}.p3-saved-revision article{grid-template-columns:1fr;gap:5px}}
-@media(max-width:360px){.p3-practice-index,.p3-revision-focus,.p3-revision-section{padding:16px 13px}.p3-topic-grid article,.p3-revision-grid article{padding:16px}.p3-question-nav button{width:42px;height:42px}}
+@media(max-width:360px){.studio-app[data-route="practice"] .practice-topic-picker,.p3-revision-focus,.p3-revision-section{padding:16px 13px}.p3-topic-grid article,.p3-revision-grid article{padding:16px}.p3-question-nav button{width:42px;height:42px}}
 @media(prefers-reduced-motion:reduce){.p3-topic-grid *,.p3-revision-grid *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}

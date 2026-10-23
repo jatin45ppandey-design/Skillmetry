@@ -96,8 +96,8 @@ function PracticeContent() {
       description="Apply one lesson at a time with hints and reviewed explanations. Practice activity stays separate from trusted quiz scores."
       action={<Link className="btn btn-quiet" href={hasSelection?"/practice":"/assessments"}>{hasSelection?<><ArrowLeft aria-hidden="true"/>All topics</>:"Verified assessments"}</Link>}/>
 
-    {!hasSelection?<section className="practice-topic-picker p3-practice-index" aria-labelledby="practice-topic-heading">
-      <header><span className="eyebrow">54 curriculum topics</span><h2 id="practice-topic-heading">Choose a focused practice set</h2>
+    {!hasSelection?<section className="practice-topic-picker" aria-labelledby="practice-topic-heading">
+      <header><span className="eyebrow">54 curriculum topics</span><h2 id="practice-topic-heading">Choose a skill topic to practice</h2>
         <p>Every Phase 2 lesson now has three guided concept checks. Coding and SQL exercises are also available in Coding Practice.</p></header>
       <div className="p3-practice-filters">
         <label>Search topics<input type="search" name="topic-query" autoComplete="off" value={query} onChange={event=>setQuery(event.target.value)} placeholder="e.g. joins or accessibility…"/></label>

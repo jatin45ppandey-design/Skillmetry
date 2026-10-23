@@ -20,7 +20,7 @@ describe("Phase 3 project specifications",()=>{
     }
   });
   it("adds only idempotent catalog seeds and retains owner-scoped mission RLS",()=>{
-    const seed=readFileSync("database/supabase/migrations/202610230001_phase3_project_catalog.sql","utf8");
+    const seed=readFileSync("database/supabase/migrations/20261023070032_phase3_project_catalog.sql","utf8");
     const workflows=readFileSync("database/supabase/migrations/202610160004_learning_workflows.sql","utf8");
     for(const id of ["frontend-component-library","backend-service-observability"]){
       expect(seed).toContain(`'${id}'`);expect(missions.some(item=>item.id===id)).toBe(true);
