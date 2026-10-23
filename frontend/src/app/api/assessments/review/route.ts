@@ -5,6 +5,7 @@ import { getAssessmentDefinition, orderedGradedQuestions } from "@skillmetry/bac
 import { buildTopicDiagnosis, getTopicResources, recommendedWeakTopics, type DiagnosticReview } from "@skillmetry/shared/lib/diagnostic-intelligence";
 import { DIAGNOSTIC_VERSION } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { curriculumTopicForDiagnostic, revisionTopicContext } from "@skillmetry/shared/lib/revision";
 
 export async function GET(request: NextRequest) {
   const auth = await authenticatedRequest();
@@ -42,10 +43,15 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     available:true,attemptId:attempt.id,
     topics,
-    priorityTopics:recommendedWeakTopics(topics).map(topic=>({
-      ...topic,resources:getTopicResources(assessmentId,topic.id),
-      practiceHref:`/practice?assessment=${encodeURIComponent(assessmentId)}&topic=${encodeURIComponent(topic.id)}`
-    })),
+    priorityTopics:recommendedWeakTopics(topics).map(topic=>{
+      const curriculumTopic=curriculumTopicForDiagnostic(assessmentId,topic.id);
+      const context=curriculumTopic?revisionTopicContext(curriculumTopic.id):null;
+      return {...topic,resources:getTopicResources(assessmentId,topic.id),
+        practiceHref:context?.practiceHref??`/practice?assessment=${encodeURIComponent(assessmentId)}&topic=${encodeURIComponent(topic.id)}`,
+        lessonHref:context?.lessonHref??null,
+        revisionHref:context?`/revision?topic=${encodeURIComponent(context.topicId)}&assessment=${encodeURIComponent(assessmentId)}`:null,
+        prerequisiteTopics:context?.prerequisites??[]};
+    }),
     review:reviews.map(item=>({
       ...item,prompt:byId.get(item.questionId)?.prompt ?? "",
       choices:byId.get(item.questionId)?.choices ?? []

@@ -125,7 +125,7 @@ const authored: Record<DiagnosticAssessmentId,{map:number[];qs:string[][]}> = {
       [
         "typeof '42'?|number|string|object|undefined|1",
         "Boolean([])?|false|true|undefined|error|1",
-        "NaN===NaN?|true|false|undefined|error|1",
+        "What does NaN === NaN evaluate to?|true|false|undefined|error|1",
         "Object.is(0,-0)?|true|false|undefined|error|1"
       ],
       [

@@ -4,9 +4,10 @@ import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
+import {skillById} from "@skillmetry/shared/data/catalog";
 
 type Exercise={id:string;skillId:string;title:string;kind:"choice"|"fill";prompt:string;snippet:string;
- difficulty:string;choices?:readonly string[]};
+ difficulty:string;choices?:readonly string[];hint:string;topicId:string|null;lessonHref:string|null;executionMode:"reference-check"};
 type History={exercise_id:string;is_correct:boolean;completed_at:string};
 type Feedback={exerciseId:string;correct:boolean;answer:string;explanation:string;trust:string;persisted:boolean};
 
@@ -21,6 +22,8 @@ export default function Lab(){
   const [pending,setPending]=useState(false);
   const [error,setError]=useState<string|null>(null);
   const [saved,setSaved]=useState(false);
+  const [runtimeMessage,setRuntimeMessage]=useState("This guided lab does not execute submitted source code.");
+  const [showHint,setShowHint]=useState(false);
   const [filter,setFilter]=useState("all");
   const [query,setQuery]=useState("");
   const linkedSkillApplied=useRef(false);
@@ -36,9 +39,11 @@ export default function Lab(){
   const load=useCallback(async()=>{
     try{
       const response=await fetch("/api/learning/lab",{cache:"no-store"});
-      const body=await response.json() as {exercises?:Exercise[];history?:History[];persistenceActive?:boolean;error?:string};
+      const body=await response.json() as {exercises?:Exercise[];history?:History[];persistenceActive?:boolean;
+        runtime?:{available:boolean;reason:string};error?:string};
       if(!response.ok)throw new Error(body.error??"Unable to load the practice lab.");
       setExercises(body.exercises??[]);setHistory(body.history??[]);setSaved(Boolean(body.persistenceActive));
+      setRuntimeMessage(body.runtime?.reason??"This guided lab does not execute submitted source code.");
       setActive(previous=>previous??body.exercises?.[0]?.id??null);
     }catch(e){setError(e instanceof Error?e.message:"Practice lab unavailable");}
     finally{setLoading(false);}
@@ -48,7 +53,7 @@ export default function Lab(){
     (x.title+" "+x.skillId+" "+x.difficulty).toLowerCase().includes(query.trim().toLowerCase()));
   const current=visible.find(x=>x.id===active)??visible[0];
   const matchingAssessment=current?assessmentCatalog.find(a=>a.skillId===current.skillId):null;
-  function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);}
+  function choose(id:string){setActive(id);setFeedback(null);setText("");setChoice(null);setError(null);setShowHint(false);}
   async function submit(){
     if(!current||pending||feedback)return;
     setPending(true);setError(null);
@@ -66,21 +71,22 @@ export default function Lab(){
   return <>
     <SectionTitle eyebrow="Coding Practice" title="Practice with small, safe challenges"
       description="Predict outputs, debug concepts and fill missing syntax. No arbitrary code is executed, and practice never changes trusted quiz results."
-      action={<Link href="/planner" className="btn btn-quiet">Study planner</Link>}/>
+      action={<Link href="/revision" className="btn btn-quiet">Revision queue</Link>}/>
     {!saved?<p className="workflow-notice">Practice is available without cloud storage. Sign in after the approved workflow rollout to save your private practice history.</p>:null}
+    <p className="workflow-notice" role="status"><strong>Runtime unavailable.</strong> {runtimeMessage}</p>
     {error?<div className="auth-error" role="alert"><p>{error}</p>
       <button type="button" className="btn btn-outline" onClick={()=>void load()}>Try loading again</button></div>:null}
     {loading?<div className="motion-action-status"><ActivityIndicator label="Getting guided exercises ready…" compact/></div>:null}
     <div className="workflow-inline-actions"><label className="workflow-task-status">Filter exercises
-      <select className="workflow-input" value={filter} onChange={event=>{const value=event.target.value;setFilter(value);
+      <select className="workflow-input" name="exercise-skill-filter" value={filter} onChange={event=>{const value=event.target.value;setFilter(value);
         setActive(exercises.find(x=>value==="all"||x.skillId===value)?.id??null);
         setFeedback(null);setChoice(null);setText("");}}>
-        <option value="all">All skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{id}</option>)}
+        <option value="all">All 18 skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{skillById[id]?.label??id}</option>)}
       </select></label><span className="note">{history.length} recent saved attempts (unscored)</span></div>
     {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
     <div className="workflow-lab-grid sx-lab-workspace">
       <section className="panel sx-lab-library" aria-label="Challenge library"><h2>Challenge library <small>{visible.length} available</small></h2>
-        <label className="sx-lab-search">Find an exercise<input type="search" value={query} placeholder="Search skill or challenge" onChange={e=>{setQuery(e.target.value);setFeedback(null);setChoice(null);setText("");}}/></label>
+        <label className="sx-lab-search">Find an exercise<input type="search" name="exercise-query" autoComplete="off" value={query} placeholder="e.g. SQL joins or React state…" onChange={e=>{setQuery(e.target.value);setFeedback(null);setChoice(null);setText("");}}/></label>
         {visible.length===0?<p role="status">No matching exercises. <button type="button" className="text-button" onClick={()=>{setQuery("");setFilter("all");}}>Reset filters</button></p>:null}
         {visible.map(exercise=><button aria-pressed={current?.id===exercise.id} className={"btn "+(current?.id===exercise.id?"btn-primary":"btn-outline")}
           type="button" key={exercise.id} style={{display:"block",width:"100%",textAlign:"left",margin:"9px 0"}}
@@ -90,20 +96,21 @@ export default function Lab(){
         {current?<><span className="eyebrow">{current.skillId} / {current.difficulty}</span>
           <h2>{current.title}</h2><p>{current.prompt}</p>
           <pre className="workflow-code"><code>{current.snippet}</code></pre>
+          {!feedback?<div className="p3-hint"><button type="button" className="btn btn-quiet" aria-expanded={showHint} onClick={()=>setShowHint(value=>!value)}>{showHint?"Hide hint":"Show hint"}</button>{showHint?<p>{current.hint}</p>:null}</div>:null}
           {current.kind==="choice"?<fieldset disabled={Boolean(feedback)||pending}>
             <legend>Choose the correct response</legend>
             {current.choices?.map((label,index)=><label key={index} className="workflow-field"><span>
               <input type="radio" name="solution" checked={choice===index} onChange={()=>setChoice(index)}/> {label}
             </span></label>)}</fieldset>:
             <label className="workflow-field">Missing keyword or operator
-              <input className="workflow-input" autoComplete="off" maxLength={80} value={text}
+              <input className="workflow-input" name="practice-answer" autoComplete="off" maxLength={80} value={text}
                 disabled={Boolean(feedback)||pending} onChange={event=>setText(event.target.value)}
                 placeholder="Type the missing syntax"/>
             </label>}
           {!feedback?<button type="button" className="btn btn-primary"
             disabled={pending||(current.kind==="choice"?choice===null:!text.trim())}
             onClick={()=>void submit()}>{pending?<ActionSpinner label="Checking answer…"/>:"Check answer"}</button>:
-            <div className="workflow-field" role="status"><strong>{feedback.correct?"Correct!":"Review this concept"}</strong>
+            <div className="workflow-field" role="status"><strong>{feedback.correct?"Correct":"Review this concept"}</strong>
               <p>Expected answer: <code>{feedback.answer}</code></p><p>{feedback.explanation}</p>
               <p className="note">{feedback.trust}{feedback.persisted?" Your attempt was saved.":""}</p>
               <div className="sx-lab-next">
@@ -112,7 +119,9 @@ export default function Lab(){
                   const index=visible.findIndex(x=>x.id===current.id);
                   choose(visible[(index+1)%visible.length]?.id??current.id);
                 }}>Try next challenge →</button>
-                <Link href={"/resources?skill="+encodeURIComponent(current.skillId)} className="btn btn-quiet">Study this topic</Link>
+                {current.lessonHref?<Link href={current.lessonHref} className="btn btn-quiet">Review related lesson</Link>:null}
+                {current.topicId?<Link href={"/practice?topic="+encodeURIComponent(current.topicId)} className="btn btn-quiet">Practice this topic</Link>:null}
+                {current.topicId?<Link href={"/revision?topic="+encodeURIComponent(current.topicId)} className="btn btn-quiet">Schedule revision</Link>:null}
                 <Link href={matchingAssessment?"/assessments?assessment="+encodeURIComponent(matchingAssessment.id):"/assessments"} className="btn btn-quiet">{matchingAssessment?"Assess this skill":"Browse verified assessments"}</Link>
               </div>
             </div>}

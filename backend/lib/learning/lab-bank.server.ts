@@ -1,9 +1,10 @@
 import "server-only";
 import type { SkillId } from "@skillmetry/shared/types/domain";
+import { getCurriculumForSkill, getCurriculumLessonRoute } from "@skillmetry/shared/data/curriculum";
 
 type Exercise={
   id:string;skillId:SkillId;title:string;kind:"choice"|"fill";prompt:string;snippet:string;
-  difficulty:"beginner"|"intermediate";choices?:readonly string[];solution:string;explanation:string;
+  difficulty:"beginner"|"intermediate"|"advanced";choices?:readonly string[];solution:string;explanation:string;
 };
 const exercises:readonly Exercise[]=[
   {id:"js-array",skillId:"javascript",title:"Array transformations",kind:"choice",difficulty:"beginner",
@@ -48,10 +49,54 @@ const exercises:readonly Exercise[]=[
   {id:"node-env",skillId:"node",title:"Node environment",kind:"fill",difficulty:"beginner",
     prompt:"Fill the server environment property.",snippet:"const key = process.____.APP_SECRET;",
     solution:"env",explanation:"process.env contains server process environment variables."}
+  ,{id:"math-median",skillId:"math",title:"Robust summaries",kind:"choice",difficulty:"beginner",
+    prompt:"Which summary is less affected by one extreme outlier?",snippet:"values = [4, 5, 5, 6, 80]",
+    choices:["Mean","Median","Range","Maximum"],solution:"1",explanation:"The median depends on order, so one extreme value has less influence."}
+  ,{id:"data-merge",skillId:"data-processing",title:"Validate a merge",kind:"choice",difficulty:"intermediate",
+    prompt:"What should you check before joining customer rows?",snippet:"orders.merge(customers, on='customer_id')",
+    choices:["Font size","Key uniqueness and expected row grain","Only column order","Notebook theme"],solution:"1",explanation:"Key uniqueness and row grain reveal accidental row multiplication."}
+  ,{id:"ml-split",skillId:"ml-foundations",title:"Prevent data leakage",kind:"choice",difficulty:"intermediate",
+    prompt:"Which sequence keeps evaluation data independent?",snippet:"data -> ? -> fit preprocessing -> evaluate",
+    choices:["Scale all rows, then split","Split first, fit preprocessing on training rows","Tune on test rows","Duplicate the test set"],solution:"1",explanation:"Split before fitting transformations so evaluation information cannot leak into training."}
+  ,{id:"evaluation-imbalance",skillId:"model-evaluation",title:"Evaluate imbalanced outcomes",kind:"choice",difficulty:"advanced",
+    prompt:"Which evidence is more useful than accuracy alone for a rare positive class?",snippet:"positives = 2% of examples",
+    choices:["Precision and recall","Training file size","Alphabetical labels","One successful prediction"],solution:"0",explanation:"Precision and recall expose false-positive and false-negative tradeoffs hidden by accuracy."}
+  ,{id:"docker-cache",skillId:"docker",title:"Container layer reuse",kind:"choice",difficulty:"intermediate",
+    prompt:"Which ordering usually improves dependency-layer caching?",snippet:"# Dockerfile build steps",
+    choices:["Copy all source before dependency files","Copy dependency manifests, install, then copy source","Run the app before install","Store secrets in the image"],solution:"1",explanation:"Stable dependency manifests can reuse cached install layers when application source changes."}
+  ,{id:"deploy-health",skillId:"deployment",title:"Release health checks",kind:"choice",difficulty:"advanced",
+    prompt:"What should a deployment health endpoint report?",snippet:"GET /health",
+    choices:["A hard-coded success only","A bounded readiness signal without secrets","All environment variables","User access tokens"],solution:"1",explanation:"A health signal should be useful and bounded without exposing credentials or private data."}
+  ,{id:"css-overflow",skillId:"css",title:"Responsive media",kind:"fill",difficulty:"beginner",
+    prompt:"Fill the property that prevents an image from exceeding its container.",snippet:"img { ____: 100%; height: auto; }",
+    solution:"max-width",explanation:"max-width: 100% lets the image shrink within the available inline size."}
+  ,{id:"html-button",skillId:"html",title:"Use semantic actions",kind:"choice",difficulty:"beginner",
+    prompt:"Which element should trigger an in-page action?",snippet:"<!-- open a settings panel -->",
+    choices:["<div>","<a>","<button>","<span>"],solution:"2",explanation:"A button carries action semantics and keyboard behavior without recreating them manually."}
+  ,{id:"a11y-focus",skillId:"accessibility",title:"Visible keyboard focus",kind:"choice",difficulty:"intermediate",
+    prompt:"Which selector targets keyboard-style focus without suppressing it?",snippet:"button { /* focus rule */ }",
+    choices:[":hover",":focus-visible",":empty",":visited"],solution:"1",explanation:":focus-visible supports a clear focus indicator for keyboard navigation."}
+  ,{id:"test-boundary",skillId:"testing",title:"Choose a test boundary",kind:"choice",difficulty:"advanced",
+    prompt:"Which test best protects an owner-scoped API boundary?",snippet:"GET /api/private-record/:id",
+    choices:["A CSS snapshot","A two-user authorization integration test","A font check","A mocked always-success test"],solution:"1",explanation:"A two-user integration test proves one authenticated owner cannot read another owner's row."}
+  ,{id:"auth-owner",skillId:"authentication",title:"Owner-scoped authorization",kind:"choice",difficulty:"advanced",
+    prompt:"Where should a private resource owner ID come from?",snippet:"request -> authorize -> query",
+    choices:["A hidden form field","The verified server session","A query-string nickname","Local storage"],solution:"1",explanation:"The server must derive ownership from a validated identity claim, never client-supplied identity."}
 ];
-export type PublicLabExercise=Omit<Exercise,"solution">;
+export type PublicLabExercise=Omit<Exercise,"solution"> & {
+  hint:string;topicId:string|null;lessonHref:string|null;executionMode:"reference-check";
+};
 export function listLabExercises(skillId?:string):PublicLabExercise[] {
-  return exercises.filter(x=>!skillId||x.skillId===skillId).map(({solution:removed,...item})=>item);
+  return exercises.filter(x=>!skillId||x.skillId===skillId).map(({solution:removed,...item})=>{
+    void removed;
+    const path=getCurriculumForSkill(item.skillId);
+    const topic=path?.topics.find(entry=>entry.topic.difficulty===item.difficulty)?.topic??path?.topics[0]?.topic;
+    const lesson=path?.topics.find(entry=>entry.topic.id===topic?.id)?.subtopics[0]?.lessons[0];
+    return {...item,
+      hint:item.kind==="choice"?"Trace the snippet or scenario one step at a time before choosing.":"The blank expects one keyword, operator, or property name.",
+      topicId:topic?.id??null,lessonHref:lesson?getCurriculumLessonRoute(lesson.id):null,
+      executionMode:"reference-check" as const};
+  });
 }
 export function gradeLabExercise(id:string,answer:{selectedIndex?:number;textAnswer?:string}){
   const exercise=exercises.find(x=>x.id===id);

@@ -24,7 +24,10 @@ export async function GET(request:NextRequest){
     if(error)return NextResponse.json({error:"Practice history is unavailable."},{status:503});
     history=data??[];
   }
-  return NextResponse.json({exercises,history,persistenceActive:active},
+  return NextResponse.json({exercises,history,persistenceActive:active,runtime:{
+    available:false,
+    reason:"This guided lab does not execute submitted source code. Responses are checked against reviewed reference answers."
+  }},
     {headers:{"Cache-Control":"private, no-store"}});
 }
 export async function POST(request:Request){

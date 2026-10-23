@@ -1,5 +1,5 @@
 begin;
-select plan(14);
+select plan(16);
 
 insert into auth.users(id,instance_id,aud,role,email,encrypted_password,created_at,updated_at)
 values ('33333333-3333-4333-8333-333333333333','00000000-0000-0000-0000-000000000000',
@@ -18,6 +18,14 @@ values ('33333333-3333-4333-8333-333333333333','dockerize','in_progress','Workin
 insert into public.practice_lab_attempts(user_id,exercise_id,skill_id,is_correct)
 values ('33333333-3333-4333-8333-333333333333','js-array','javascript',true),
  ('44444444-4444-4444-8444-444444444444','py-slicing','python',true);
+
+select is((select count(*) from public.missions where id in
+  ('frontend-component-library','backend-service-observability')),2::bigint,
+  'Phase 3 curated project seed contains both foreign-key targets');
+select lives_ok($$insert into public.mission_work(user_id,mission_id,status,notes)
+  values ('33333333-3333-4333-8333-333333333333','frontend-component-library','in_progress','Temporary FK check')$$,
+  'Phase 3 project accepts owner-scoped work through the existing relationship');
+delete from public.mission_work where mission_id='frontend-component-library';
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','33333333-3333-4333-8333-333333333333',true);

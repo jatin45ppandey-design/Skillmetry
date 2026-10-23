@@ -5,7 +5,8 @@ import { useAuth } from "@/components/auth-provider";
 import {ActivityIndicator} from "@/components/motion-ui";
 import type { TopicDiagnosis } from "@skillmetry/shared/lib/diagnostic-intelligence";
 
-type WeakTopic = TopicDiagnosis & {practiceHref:string;resources:{id:string;title:string;url:string}[]};
+type WeakTopic = TopicDiagnosis & {practiceHref:string;lessonHref:string|null;revisionHref:string|null;
+  prerequisiteTopics:{topicId:string;title:string;lessonHref:string|null}[];resources:{id:string;title:string;url:string}[]};
 type Insight = {assessmentId:string;skillId:string;score:number;topics:TopicDiagnosis[];weakTopics:WeakTopic[];
   topicChanges:{id:string;label:string;previousPercent:number|null;currentPercent:number|null;delta:number|null}[]};
 export function DiagnosticTwinInsights(){
@@ -44,6 +45,8 @@ export function DiagnosticTwinInsights(){
         <strong>{topic.label}: {topic.correct}/{topic.questions} correct</strong>
         <p>Review this concept, practice, and reassess to create new measured evidence.</p>
         <Link className="btn btn-outline" href={topic.practiceHref}>Targeted practice</Link>
+        {topic.lessonHref?<Link className="btn btn-quiet" href={topic.lessonHref}>Related lesson</Link>:null}
+        {topic.revisionHref?<Link className="btn btn-quiet" href={topic.revisionHref}>Revision plan</Link>:null}
       </div>):<p className="note">No evidence-supported priority weak topic in the latest attempt.</p>}
       <Link className="text-link" href={`/assessments?assessment=${encodeURIComponent(insight.assessmentId)}`}>Review assessment history</Link>
     </article>)}

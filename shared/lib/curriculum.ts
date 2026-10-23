@@ -62,22 +62,33 @@ export const curriculumCatalogSchema = z.object({
     task: nonEmptyText,
     estimatedMinutes: z.number().int().min(5).max(180),
     resourceIds: z.array(canonicalIdSchema),
-    practiceIds: z.array(z.string().regex(/^assessment:[a-z][a-z0-9-]{2,63}$/)),
+    practiceIds: z.array(z.string().regex(/^(assessment:[a-z][a-z0-9-]{2,63}|topic-practice:[a-z][a-z0-9-]*:topic:[a-z][a-z0-9-]*)$/)),
     ...commonNodeFields
   }).strict().superRefine((lesson, context) => {
     if (!lesson.resourceIds.length && !lesson.practiceIds.length) {
       context.addIssue({ code: "custom", path: ["resourceIds"], message: "A lesson needs at least one resource or practice relationship" });
     }
   })).min(1),
-  practices: z.array(z.object({
-    id: z.string().regex(/^assessment:[a-z][a-z0-9-]{2,63}$/),
-    assessmentId: canonicalIdSchema,
-    skillId: canonicalIdSchema,
-    title: z.string().trim().min(2).max(140),
-    href: z.string().regex(/^\/assessments(?:\?.*)?$/),
-    kind: z.literal("assessment"),
-    availability: z.literal("available")
-  }).strict())
+  practices: z.array(z.discriminatedUnion("kind", [
+    z.object({
+      id: z.string().regex(/^assessment:[a-z][a-z0-9-]{2,63}$/),
+      assessmentId: canonicalIdSchema,
+      skillId: canonicalIdSchema,
+      title: z.string().trim().min(2).max(140),
+      href: z.string().regex(/^\/assessments(?:\?.*)?$/),
+      kind: z.literal("assessment"),
+      availability: z.literal("available")
+    }).strict(),
+    z.object({
+      id: z.string().regex(/^topic-practice:[a-z][a-z0-9-]*:topic:[a-z][a-z0-9-]*$/),
+      topicId: relationshipIdSchema,
+      skillId: canonicalIdSchema,
+      title: z.string().trim().min(2).max(140),
+      href: z.string().regex(/^\/practice\?topic=.*$/),
+      kind: z.literal("topic-practice"),
+      availability: z.literal("available")
+    }).strict()
+  ]))
 }).strict();
 
 function addDuplicateIssues<T>(
@@ -186,6 +197,9 @@ export function validateCurriculumCatalog(
   }
   for (const [index, practice] of catalog.practices.entries()) {
     if (!skillIds.has(practice.skillId)) addInvalid(`practices.${index}.skillId`, practice.skillId, "skill");
+    if (practice.kind === "topic-practice" && !topicIds.has(practice.topicId)) {
+      addInvalid(`practices.${index}.topicId`, practice.topicId, "topic");
+    }
   }
 
   addCycleIssues(catalog.skills.map(entry => ({ id: entry.skillId, prerequisites: entry.prerequisiteSkillIds })), "skills", issues);

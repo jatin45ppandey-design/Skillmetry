@@ -26,6 +26,8 @@ export function CurriculumLessonReader({
   const [progressState, setProgressState] = useState<ProgressState>(user ? "loading" : "signed-out");
   const [completed, setCompleted] = useState(false);
   const courseSlug = `skillmetry-${skillId}-path`;
+  const topicPracticeId = lesson.practiceIds.find(id => id.startsWith("topic-practice:"));
+  const assessmentPracticeId = lesson.practiceIds.find(id => id.startsWith("assessment:"));
 
   useEffect(() => {
     if (!user) { setProgressState("signed-out"); setCompleted(false); return; }
@@ -101,7 +103,12 @@ export function CurriculumLessonReader({
             <span>Open {resource.type}<ExternalLink aria-hidden="true"/></span>
           </a>)}</div>
         </section>
-        {lesson.practiceIds.length ? <section><span className="v3-kicker">PRACTICE HANDOFF</span><h2>Check your baseline</h2><p>The assessment is separate from this lesson and is the only place a numerical skill score can be created.</p><Link className="btn btn-outline" href={`/assessments?assessment=${encodeURIComponent(lesson.practiceIds[0].replace("assessment:", ""))}`}>Open assessment<ArrowRight aria-hidden="true"/></Link></section> : null}
+        {topicPracticeId ? <section><span className="v3-kicker">PRACTICE HANDOFF</span><h2>Apply this lesson</h2>
+          <p>Try three guided checks with hints and explanations. Topic practice is learning activity and never creates a proficiency score.</p>
+          <Link className="btn btn-primary" href={`/practice?topic=${encodeURIComponent(topic.id)}`}>Practice this topic<ArrowRight aria-hidden="true"/></Link>
+          {assessmentPracticeId ? <><p className="note">When you are ready, the secure assessment is the only place a numerical skill score can be created.</p>
+            <Link className="btn btn-outline" href={`/assessments?assessment=${encodeURIComponent(assessmentPracticeId.replace("assessment:", ""))}`}>Open assessment<ArrowRight aria-hidden="true"/></Link></> : null}
+        </section> : null}
         <Link className="text-link" href="/roadmap">Return to My Learning Path <ArrowRight aria-hidden="true"/></Link>
       </aside>
     </div>

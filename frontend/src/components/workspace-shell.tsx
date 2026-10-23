@@ -16,7 +16,7 @@ const primary = [
   { href: "/dashboard", label: "Home", icon: Activity, matches: ["/dashboard"] },
   { href: "/roadmap", label: "My Path", icon: GitBranch, matches: ["/roadmap", "/careers"] },
   { href: "/learn", label: "Learn", icon: BookMarked, matches: ["/learn", "/resources", "/courses"] },
-  { href: "/assessments", label: "Practice", icon: Target, matches: ["/assessments", "/practice", "/lab", "/missions"] },
+  { href: "/assessments", label: "Practice", icon: Target, matches: ["/assessments", "/practice", "/lab", "/missions", "/revision"] },
   { href: "/twin", label: "Progress", icon: Fingerprint, matches: ["/twin", "/passport"] }
 ] as const;
 
@@ -33,6 +33,7 @@ const areaNavigation = {
   practice: [
     { href: "/assessments", label: "Assessments" },
     { href: "/practice", label: "Topic Practice" },
+    { href: "/revision", label: "Revision Queue" },
     { href: "/lab", label: "Coding Practice" },
     { href: "/missions", label: "Projects" }
   ],
@@ -69,7 +70,7 @@ function isPrimaryCurrent(pathname: string, matches: readonly string[]) {
 }
 
 function routeFamily(pathname: string) {
-  if (["/assessments", "/practice", "/lab", "/missions"].includes(pathname)) return "practice";
+  if (["/assessments", "/practice", "/lab", "/missions", "/revision"].includes(pathname)) return "practice";
   if (["/careers", "/roadmap"].includes(pathname)) return "path";
   if (pathname === "/learn" || pathname.startsWith("/learn/") || ["/resources", "/courses"].includes(pathname)) return "learn";
   if (["/twin", "/passport"].includes(pathname)) return "progress";

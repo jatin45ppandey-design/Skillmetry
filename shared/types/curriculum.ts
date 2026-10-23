@@ -5,7 +5,7 @@ export type CurriculumSourceKind = "internal-catalog" | "curated-resource" | "pu
 export type CurriculumTopicId = `${string}:topic:${string}`;
 export type CurriculumSubtopicId = `${string}:subtopic:${string}`;
 export type CurriculumLessonId = `${string}:lesson:${string}`;
-export type CurriculumPracticeId = `assessment:${AssessmentId}`;
+export type CurriculumPracticeId = `assessment:${AssessmentId}` | `topic-practice:${CurriculumTopicId}`;
 
 export type CurriculumSource = {
   kind: CurriculumSourceKind;
@@ -75,13 +75,17 @@ export type CurriculumLesson = {
 
 export type CurriculumPractice = {
   id: CurriculumPracticeId;
-  assessmentId: AssessmentId;
   skillId: SkillId;
   title: string;
   href: string;
-  kind: "assessment";
   availability: "available";
-};
+} & ({
+  kind: "assessment";
+  assessmentId: AssessmentId;
+} | {
+  kind: "topic-practice";
+  topicId: CurriculumTopicId;
+});
 
 export type CurriculumCatalog = {
   version: string;

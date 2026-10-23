@@ -13,6 +13,8 @@ import {getNextSkills,selectCareer} from "@skillmetry/shared/lib/readiness";
 import {useSkillmetry} from "@/store/use-skillmetry";
 import type {MissionWork,MissionWorkStatus} from "@skillmetry/shared/lib/mission-work";
 import type {PublishedAdminMission} from "@skillmetry/shared/lib/admin-missions";
+import {missionSpecificationById} from "@skillmetry/shared/data/mission-specs";
+import {learningResources} from "@skillmetry/shared/data/learning-resources";
 
 const enabled=process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
 const draft=(missionId:string):MissionWork=>({missionId,status:"in_progress",completedIndices:[],
@@ -110,6 +112,8 @@ export default function Missions(){
         const item=work[mission.id]??draft(mission.id);
         const complete=mission.deliverables.every((_,i)=>item.completedIndices.includes(i));
         const hasEvidence=Boolean(item.repositoryUrl||item.demoUrl);
+        const specification=missionSpecificationById[mission.id];
+        const references=specification?.referenceResourceIds.flatMap(id=>learningResources.find(resource=>resource.id===id)??[] )??[];
         return <article key={mission.id} className={"mission-work-card workflow-mission "+(priority.has(mission.skillId)?"priority":"")}>
           <div className="mission-card-top"><span className="mission-index">M{String(index+1).padStart(2,"0")}</span>
             <div><StatusPill tone={priority.has(mission.skillId)?"accent":"neutral"}>
@@ -119,25 +123,35 @@ export default function Missions(){
           <div className="mission-title-row"><span><Target aria-hidden="true"/></span>
             <div><h2>{mission.title}</h2><p>{mission.description}</p></div></div>
           <div className="mission-focus"><span>Primary skill</span><strong>{skillById[mission.skillId].label}</strong></div>
+          {specification?<div className="p3-project-brief">
+            <div><span className="eyebrow">{specification.difficulty} project</span><h3>Objectives</h3><ul>{specification.objectives.map(objective=><li key={objective}>{objective}</li>)}</ul></div>
+            <div><h3>Prerequisites</h3>{specification.prerequisiteSkillIds.length?<ul>{specification.prerequisiteSkillIds.map(id=><li key={id}>{skillById[id]?.label??id}</li>)}</ul>:<p>No catalog prerequisite. Start with the linked lesson and practice.</p>}</div>
+            <nav aria-label={`${mission.title} preparation`}><h3>Prepare</h3>
+              {specification.lessonHref?<Link className="text-link" href={specification.lessonHref}>Related lesson <ArrowRight aria-hidden="true"/></Link>:null}
+              {specification.practiceHref?<Link className="text-link" href={specification.practiceHref}>Topic practice <ArrowRight aria-hidden="true"/></Link>:null}
+              {references.map(resource=><a className="text-link" key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer">{resource.title} ↗</a>)}
+            </nav>
+          </div>:<p className="note">Published project details use the reviewed author brief and checklist.</p>}
           <details className="sx-mission-details"><summary><FileCheck2 aria-hidden="true"/> View checklist & evidence <span>{item.completedIndices.length}/{mission.deliverables.length} steps</span></summary>
           <div className="mission-deliverables"><h3>Acceptance checklist</h3>
             <ul>{mission.deliverables.map((label,i)=><li key={label}><label>
-              <input type="checkbox" checked={item.completedIndices.includes(i)} disabled={!canSave||pending!==null}
+               <input type="checkbox" name={`deliverable-${mission.id}-${i}`} checked={item.completedIndices.includes(i)} disabled={!canSave||pending!==null}
                 onChange={e=>update(mission.id,{completedIndices:e.target.checked
                   ?[...item.completedIndices,i]:item.completedIndices.filter(n=>n!==i),status:"in_progress"})}/>
               {" "}{label}</label></li>)}</ul>
           </div>
+          {specification?<div className="p3-project-rubric"><h3>Evaluation rubric</h3>{specification.rubric.map(item=><article key={item.criterion}><strong>{item.criterion}</strong><p>{item.evidence}</p></article>)}</div>:null}
           {canSave?<div className="workflow-mission-fields">
             <label className="workflow-field">GitHub repository URL
-              <input className="workflow-input" type="url" value={item.repositoryUrl} disabled={pending!==null}
+              <input className="workflow-input" type="url" name={`repository-${mission.id}`} autoComplete="off" value={item.repositoryUrl} disabled={pending!==null}
                 onChange={e=>update(mission.id,{repositoryUrl:e.target.value,status:"in_progress"})}
                 placeholder="https://github.com/owner/repo" maxLength={500}/></label>
             <label className="workflow-field">Public HTTPS demo URL (optional)
-              <input className="workflow-input" type="url" value={item.demoUrl} disabled={pending!==null}
+              <input className="workflow-input" type="url" name={`demo-${mission.id}`} autoComplete="off" value={item.demoUrl} disabled={pending!==null}
                 onChange={e=>update(mission.id,{demoUrl:e.target.value,status:"in_progress"})}
                 placeholder="https://example.com/demo" maxLength={500}/></label>
             <label className="workflow-field">Project notes
-              <textarea className="workflow-input" value={item.notes} disabled={pending!==null}
+              <textarea className="workflow-input" name={`notes-${mission.id}`} autoComplete="off" value={item.notes} disabled={pending!==null}
                 onChange={e=>update(mission.id,{notes:e.target.value,status:"in_progress"})}
                 maxLength={3000} placeholder="What did you build? What was challenging?"/></label>
             <div className="workflow-inline-actions">

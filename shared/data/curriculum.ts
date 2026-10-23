@@ -34,7 +34,7 @@ export function lessonIdForSkill(skillId: SkillId): CurriculumLessonId {
   return curriculumLessonId(skillId, curriculumBlueprintBySkill[skillId].topics[0].lesson.slug);
 }
 
-const practices = assessmentCatalog.map(assessment => ({
+const assessmentPractices = assessmentCatalog.map(assessment => ({
   id: `assessment:${assessment.id}` as const,
   assessmentId: assessment.id,
   skillId: assessment.skillId,
@@ -43,6 +43,21 @@ const practices = assessmentCatalog.map(assessment => ({
   kind: "assessment" as const,
   availability: "available" as const
 }));
+
+const topicPractices = skillCurriculumBlueprints.flatMap(skill => skill.topics.map(entry => {
+  const topicId = curriculumTopicId(skill.skillId, entry.slug);
+  return {
+    id: `topic-practice:${topicId}` as const,
+    topicId,
+    skillId: skill.skillId,
+    title: `${entry.title} practice`,
+    href: `/practice?topic=${encodeURIComponent(topicId)}`,
+    kind: "topic-practice" as const,
+    availability: "available" as const
+  };
+}));
+
+const practices = [...topicPractices, ...assessmentPractices];
 
 const topics = skillCurriculumBlueprints.flatMap(skill => skill.topics.map((entry, order) => ({
   id: curriculumTopicId(skill.skillId, entry.slug),
@@ -90,9 +105,12 @@ const lessons = skillCurriculumBlueprints.flatMap(skill => skill.topics.map((ent
   learningObjectives: [...entry.objectives],
   learningOutcomes: [...entry.outcomes],
   resourceIds: [...new Set([...entry.resourceIds, ...supplementalVideoIds(skill.skillId)])],
-  practiceIds: order === skill.topics.length - 1
-    ? practices.filter(practice => practice.skillId === skill.skillId).map(practice => practice.id)
-    : [],
+  practiceIds: [
+    `topic-practice:${curriculumTopicId(skill.skillId, entry.slug)}` as const,
+    ...(order === skill.topics.length - 1
+      ? assessmentPractices.filter(practice => practice.skillId === skill.skillId).map(practice => practice.id)
+      : [])
+  ],
   version: CURRICULUM_VERSION,
   sources: internalSource
 })));

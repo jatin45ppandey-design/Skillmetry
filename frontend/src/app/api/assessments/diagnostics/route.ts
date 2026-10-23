@@ -3,6 +3,7 @@ import { authenticatedRequest } from "@skillmetry/backend/lib/supabase/request-a
 import { buildTopicDiagnosis, compareTopicDiagnoses, recommendedWeakTopics, getTopicResources, type DiagnosticReview } from "@skillmetry/shared/lib/diagnostic-intelligence";
 import { DIAGNOSTIC_VERSION } from "@skillmetry/shared/data/diagnostic-taxonomy";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
+import { curriculumTopicForDiagnostic, revisionTopicContext } from "@skillmetry/shared/lib/revision";
 
 /** Latest per-skill diagnostic evidence only; no cross-user or demo data. */
 export async function GET() {
@@ -44,8 +45,15 @@ export async function GET() {
     const olderTopics=prior?buildTopicDiagnosis(id,evidenceFor(prior.id)):[];
     return {attemptId:attempt.id,assessmentId:attempt.assessment_id,skillId:attempt.skill_id,score:Number(attempt.score),
       topics,topicChanges:compareTopicDiagnoses(topics,olderTopics),
-      weakTopics:recommendedWeakTopics(topics).map(t=>({...t,resources:getTopicResources(id,t.id),
-        practiceHref:`/practice?assessment=${encodeURIComponent(id)}&topic=${encodeURIComponent(t.id)}`}))};
+      weakTopics:recommendedWeakTopics(topics).map(t=>{
+        const curriculumTopic=curriculumTopicForDiagnostic(id,t.id);
+        const context=curriculumTopic?revisionTopicContext(curriculumTopic.id):null;
+        return {...t,resources:getTopicResources(id,t.id),
+          practiceHref:context?.practiceHref??`/practice?assessment=${encodeURIComponent(id)}&topic=${encodeURIComponent(t.id)}`,
+          lessonHref:context?.lessonHref??null,
+          revisionHref:context?`/revision?topic=${encodeURIComponent(context.topicId)}&assessment=${encodeURIComponent(id)}`:null,
+          prerequisiteTopics:context?.prerequisites??[]};
+      })};
   });
   return NextResponse.json({ insights }, { headers: { "Cache-Control": "private, no-store" } });
 }
