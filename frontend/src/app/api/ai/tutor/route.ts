@@ -55,7 +55,7 @@ export async function POST(request:Request){
   const body=await response.json() as GeminiResponse;
   const answer=body.candidates?.[0]?.content?.parts?.map(p=>p.text??"").join("\n").trim().slice(0,6500);
   if(!answer)return NextResponse.json({error:"AI returned no usable explanation. Try curated guidance."},{status:503});
-  return NextResponse.json({mode:"ai",answer,resources:context.resources,
+  return NextResponse.json({mode:"ai",answer,resources:context.resources,lesson:context.lesson,practice:context.practice,
    disclaimer:"AI-generated educational explanation; verify with the linked references. No trusted score was changed."},
    {headers:{"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"}});
  }catch{return NextResponse.json({error:"AI tutor request failed. Curated guidance remains available."},{status:503});}

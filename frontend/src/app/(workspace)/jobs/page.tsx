@@ -5,8 +5,15 @@ import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 import {useAuth} from "@/components/auth-provider";
 import type {JobAnalysis} from "@skillmetry/shared/lib/job-intelligence";
+import {getCurriculumGuidance} from "@skillmetry/shared/lib/student-guidance";
 type Result=JobAnalysis&{mode:string;storage:string;notice:string};
 type SavedRole={id:string;created_at:string;extracted_skills:{kind?:string;title?:string;skillId?:string;matchedTerm?:string}[]};
+function requirementAction(requirement:JobAnalysis["requirements"][number]){
+ const curriculum=getCurriculumGuidance(requirement.skillId);
+ if(requirement.nextStep==="assessment")return {href:curriculum?.assessmentHref??"/assessments",label:"Check assessment availability"};
+ if(requirement.nextStep==="practice")return {href:curriculum?.practiceHref??curriculum?.lessonHref??`/resources?skill=${encodeURIComponent(requirement.skillId)}`,label:"Practice topic"};
+ return {href:curriculum?.lessonHref??`/resources?skill=${encodeURIComponent(requirement.skillId)}`,label:"Review lesson"};
+}
 export default function Jobs(){
  const {user}=useAuth();
  const [roleTitle,setRoleTitle]=useState("");
@@ -79,15 +86,12 @@ export default function Jobs(){
          onChange={e=>setRoleTitle(e.target.value)}/></label>
         <button className="btn btn-outline" type="button" disabled={storageBusy||roleTitle.trim().length<3||!result.matches}
          onClick={()=>void updateSaved("POST")}>Save recognized skills only</button></div>:null}
-      {result.requirements.map(req=><article className="workflow-result" key={req.skillId}>
+      {result.requirements.map(req=>{const action=requirementAction(req);return <article className="workflow-result" key={req.skillId}>
         <div><strong>{req.label}</strong><small>Matched: {req.matchedTerm}</small></div>
         <span>{req.score===null?"Not assessed":`${req.score}/100 (quiz)`}</span>
-        <Link href={req.nextStep==="assessment"?"/assessments":
-          req.nextStep==="practice"?"/lab":`/resources?skill=${encodeURIComponent(req.skillId)}`}>
-          {req.nextStep==="assessment"?"Check assessment availability":req.nextStep==="practice"?"Practice":"Find learning resources"}
-        </Link>
+        <Link href={action.href}>{action.label}</Link>
         <Link href={"/tutor?skill="+encodeURIComponent(req.skillId)}>Understand this skill</Link>
-      </article>)}
+      </article>})}
       {result.requirements.length?<p className="note">Need help understanding a requirement? Open its skill explanation in Study Help; no job text is sent automatically.</p>:null}
       <h3>Related career pathways</h3>
       {result.matchingCareers.filter(x=>x.matchedSkillCount>0).map(c=><p key={c.id}>{c.title}: {c.matchedSkillCount} matching requirements</p>)}

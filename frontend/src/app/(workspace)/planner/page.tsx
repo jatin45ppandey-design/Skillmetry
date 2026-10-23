@@ -7,6 +7,7 @@ import {useAuth} from "@/components/auth-provider";
 import {useAssessmentProfile} from "@/hooks/use-assessment-profile";
 import {useSkillmetry} from "@/store/use-skillmetry";
 import {buildWeeklyStudyPlan,weekStartUtc,type StudyTask,type StudyTaskStatus} from "@skillmetry/shared/lib/learning-plan";
+import {getStudyTaskAction} from "@skillmetry/shared/lib/student-guidance";
 
 const enabled=process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED==="true";
 export default function Planner() {
@@ -53,7 +54,7 @@ export default function Planner() {
   const completed=visible.filter(t=>t.status==="completed").length;
   const focus=visible.filter(t=>t.status!=="skipped");
   const upcoming=visible.find(t=>t.status==="in_progress")??visible.find(t=>t.status==="todo");
-  const nextTaskHref=upcoming?(upcoming.kind==="reassess"?"/assessments":upcoming.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(upcoming.skillId)):"/roadmap";
+  const upcomingAction=upcoming?getStudyTaskAction(upcoming):null;
   return <>
     <SectionTitle eyebrow="Weekly Study Plan" title="Your weekly learning rhythm"
       description="A practical plan based on selected goals, available study hours and real quiz evidence. Task completion is activity—not a skill score."
@@ -65,7 +66,7 @@ export default function Planner() {
       <div><span className="sx-eyebrow">YOUR NEXT STUDY ACTION</span><h2>{upcoming.title}</h2>
       <p>{upcoming.estimatedMinutes} minutes · {upcoming.kind==="learn"?"Learning":upcoming.kind==="practice"?"Guided practice":"Assessment review"}
         · {upcoming.plannedDate}</p></div>
-      <Link href={nextTaskHref} className="sx-main-action">Continue this task →</Link>
+      <Link href={upcomingAction?.href??"/roadmap"} className="sx-main-action">Continue this task →</Link>
       {!persisted?<small>Preview only. Your task status is not stored until the approved database rollout.</small>:null}
     </section>:null}
     <section className="panel workflow-panel">
@@ -87,7 +88,7 @@ export default function Planner() {
       <ol className="workflow-task-list sx-planner-tasks">
       {shownTasks.map(task=><li key={task.taskKey}>
         <div><strong>{task.title}</strong><small>{task.plannedDate} · {task.estimatedMinutes} min · {task.kind}</small>
-        <Link href={task.kind==="reassess"?"/assessments":task.kind==="practice"?"/lab":"/resources?skill="+encodeURIComponent(task.skillId)}>Open {task.kind==="learn"?"resources":task.kind==="practice"?"practice lab":"assessments"}</Link></div>
+         {(() => { const action=getStudyTaskAction(task); return <Link href={action.href}>{action.label}</Link>; })()}</div>
         {persisted?<div className="workflow-inline-actions"><label className="workflow-task-status">Study date
           <input className="workflow-input" type="date" value={task.plannedDate} min={week}
             max={new Date(new Date(week+"T00:00:00Z").getTime()+6*86400000).toISOString().slice(0,10)}

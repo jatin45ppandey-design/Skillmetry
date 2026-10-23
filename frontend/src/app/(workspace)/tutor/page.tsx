@@ -5,7 +5,7 @@ import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 import {skills} from "@skillmetry/shared/data/catalog";
-type Answer={mode:"ai"|"curated";answer:string;resources:{id:string;title:string;provider:string;url:string}[];disclaimer:string};
+type Answer={mode:"ai"|"curated";answer:string;resources:{id:string;title:string;provider:string;url:string}[];lesson?:{title:string;href:string}|null;practice?:{title:string;href:string}|null;disclaimer:string};
 function TutorContent(){
  const search=useSearchParams();
  const requested=search.get("skill");
@@ -51,7 +51,11 @@ function TutorContent(){
       <h3>Reviewed learning resources</h3>
       {answer.resources.length?answer.resources.map(r=><p key={r.id}><a href={r.url} target="_blank" rel="noopener noreferrer">
        {r.title} · {r.provider}</a></p>):<p>Visit Learning Resources for the current catalog.</p>}
-      <p className="note">{answer.disclaimer}</p><Link href="/lab" className="btn btn-outline">Practice this skill</Link></>}
+      {answer.lesson||answer.practice?<div className="sx-tutor-path-links" aria-label="Published Skillmetry learning path">
+       {answer.lesson?<Link href={answer.lesson.href} className="btn btn-outline">Open {answer.lesson.title}</Link>:null}
+       {answer.practice?<Link href={answer.practice.href} className="btn btn-outline">Open {answer.practice.title}</Link>:null}
+      </div>:<Link href="/lab" className="btn btn-outline">Practice this skill</Link>}
+      <p className="note">{answer.disclaimer}</p></>}
    </section>:null}
   </div>
  </>;

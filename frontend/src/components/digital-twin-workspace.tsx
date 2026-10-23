@@ -28,6 +28,7 @@ import {
   type TwinEvidenceState
 } from "@skillmetry/shared/lib/digital-twin-intelligence";
 import { getResourceBrowseHref, getResourcesForSkill, getResourcesForTool } from "@skillmetry/shared/lib/resource-intelligence";
+import { getCurriculumGuidance } from "@skillmetry/shared/lib/student-guidance";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import type { CareerId, SkillId, ToolId } from "@skillmetry/shared/types/domain";
 
@@ -126,6 +127,7 @@ function ScoreHistoryChart({ skill }: { skill: SkillTwinSnapshot }) {
 
 function SkillDetail({ skill, onSelectSkill }: { skill: SkillTwinSnapshot; onSelectSkill: (skillId: SkillId) => void }) {
   const resources = getResourcesForSkill(skill.skillId).slice(0, 3);
+  const curriculum = getCurriculumGuidance(skill.skillId);
   const relatedCareers = careers.filter(career => career.skills.some(item => item.skillId === skill.skillId));
   const history = skill.history;
   const assessmentHref = skill.assessment.available ? `/assessments?assessment=${encodeURIComponent(skill.assessment.assessmentId)}` : null;
@@ -169,6 +171,8 @@ function SkillDetail({ skill, onSelectSkill }: { skill: SkillTwinSnapshot; onSel
       <h3>Learning resources</h3>
       {resources.length ? <ul className="twin-resource-list">{resources.map(resource => <li key={resource.id}><span><strong>{resource.title}</strong><small>{resource.provider} · {resource.difficulty}</small></span></li>)}</ul> : <p>Curated resources are not available for this skill yet.</p>}
       <Link className="text-link" href={getResourceBrowseHref({ kind: "skill", skillId: skill.skillId })}><Compass aria-hidden="true"/>Learn resources</Link>
+      {curriculum?.lessonHref ? <Link className="text-link" href={curriculum.lessonHref}><BookOpenCheck aria-hidden="true"/>Open {curriculum.topicTitle ?? "published"} lesson</Link> : null}
+      {curriculum?.practiceHref ? <Link className="text-link" href={curriculum.practiceHref}><ListChecks aria-hidden="true"/>Open topic practice</Link> : null}
     </div>
 
     <div className="twin-detail-actions">

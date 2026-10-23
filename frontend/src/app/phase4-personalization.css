@@ -1,0 +1,15 @@
+.mb-now__activity-note { display:block; max-width:34rem; opacity:.78; }
+
+.sx-career-comparison { margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid color-mix(in srgb, var(--line, #d8d0c4) 80%, transparent); }
+.sx-career-comparison > label { display:flex; align-items:center; gap:.7rem; margin:.85rem 0; font-size:.88rem; font-weight:650; }
+.sx-career-comparison select { min-height:2.4rem; max-width:100%; border:1px solid var(--line, #d8d0c4); border-radius:.55rem; background:var(--surface, #fffdf8); color:inherit; padding:0 .65rem; }
+.sx-career-comparison-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:.75rem; }
+.sx-career-comparison-grid > div { padding:.8rem; border:1px solid color-mix(in srgb, var(--line, #d8d0c4) 70%, transparent); border-radius:.7rem; background:color-mix(in srgb, var(--surface, #fffdf8) 88%, transparent); }
+.sx-career-comparison-grid p { margin:.35rem 0 0; color:var(--muted, #665f55); font-size:.86rem; line-height:1.5; }
+.sx-tutor-path-links { display:flex; flex-wrap:wrap; gap:.65rem; margin:1rem 0; }
+
+@media (max-width: 680px) {
+  .sx-career-comparison-grid { grid-template-columns:1fr; }
+  .sx-career-comparison > label { align-items:flex-start; flex-direction:column; }
+  .sx-career-comparison select { width:100%; }
+}

@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BookOpen, Compass, Fingerprint, GitBranch, ShieldCheck } from "lucide-react";
-import { careers, skillById } from "@skillmetry/shared/data/catalog";
+import { careers, missions, skillById } from "@skillmetry/shared/data/catalog";
 import { buildDigitalTwinSnapshot } from "@skillmetry/shared/lib/digital-twin-intelligence";
 import { selectCourseContinuation, type ContinueLearning, type ResumeCourse, type SavedLessonActivity } from "@skillmetry/shared/lib/learning-continuation";
 import { getPersonalizedResources } from "@skillmetry/shared/lib/resource-intelligence";
+import { type StudyTask } from "@skillmetry/shared/lib/learning-plan";
+import { selectStudentNextAction, type StudentAction } from "@skillmetry/shared/lib/student-guidance";
 import { useAssessmentProfile } from "@/hooks/use-assessment-profile";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import { useAuth } from "@/components/auth-provider";
@@ -19,6 +21,8 @@ type TrustedNextAction = {
   href: string;
   explanation: string;
 };
+const workflowsEnabled = process.env.NEXT_PUBLIC_LEARNING_WORKFLOWS_ENABLED === "true";
+type MissionActivity = { missionId: string; status: string };
 
 function formatAttemptDate(value: string) {
   const date = new Date(value);
@@ -31,6 +35,9 @@ export default function Dashboard() {
   const [cloudNext, setCloudNext] = useState<TrustedNextAction | null>(null);
   const [resume, setResume] = useState<ContinueLearning | null>(null);
   const [cloudNextStatus, setCloudNextStatus] = useState<"idle" | "loading" | "ready" | "unavailable">("idle");
+  const [savedTasks, setSavedTasks] = useState<StudyTask[]>([]);
+  const [revisionTasks, setRevisionTasks] = useState<StudyTask[]>([]);
+  const [missionActivity, setMissionActivity] = useState<MissionActivity[]>([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -52,6 +59,31 @@ export default function Dashboard() {
       .catch(() => {
         if (!controller.signal.aborted) setCloudNextStatus("unavailable");
       });
+    return () => controller.abort();
+  }, [user]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setSavedTasks([]); setRevisionTasks([]); setMissionActivity([]);
+    if (!user || !workflowsEnabled) return () => controller.abort();
+    void Promise.all([
+      fetch("/api/learning/plan", { cache: "no-store", signal: controller.signal }).then(async response =>
+        response.ok ? (await response.json() as { tasks?: StudyTask[] }).tasks ?? [] : []),
+      fetch("/api/learning/revision", { cache: "no-store", signal: controller.signal }).then(async response => {
+        if (!response.ok) return [] as StudyTask[];
+        const body = await response.json() as { saved?: StudyTask[] };
+        return body.saved ?? [];
+      }),
+      fetch("/api/learning/missions", { cache: "no-store", signal: controller.signal }).then(async response => {
+        if (!response.ok) return [] as MissionActivity[];
+        const body = await response.json() as { work?: MissionActivity[] };
+        return body.work ?? [];
+      })
+    ]).then(([tasks, revisions, missionWork]) => {
+      if (!controller.signal.aborted) { setSavedTasks(tasks); setRevisionTasks(revisions); setMissionActivity(missionWork); }
+    }).catch(() => {
+      // Personal activity is optional; assessment guidance remains available independently.
+    });
     return () => controller.abort();
   }, [user]);
 
@@ -102,18 +134,22 @@ export default function Dashboard() {
   const focus = hasFocus ? twin.insights.find(item => item.priority === "now") ?? twin.insights[0] : null;
   const detail = focus?.skillId ? skillById[focus.skillId]?.label : null;
   const groundedCloudAction = profileReady && hasFocus && !loading && cloudNextStatus === "ready" ? cloudNext : null;
-  const nextHref = groundedCloudAction?.href ?? (!profileReady || !hasFocus ? "/onboarding" : focus?.action.href ?? "/roadmap");
-  const nextLabel = groundedCloudAction?.label ?? (!profileReady || !hasFocus ? "Choose a direction" :
-    focus?.action.kind === "assessment" ? "Take the available assessment" :
-      focus?.action.kind === "resources" ? "Open a learning resource" : "Open My Path");
-  const nextTitle = groundedCloudAction?.title ?? (!profileReady || !hasFocus ? "Choose a direction." :
-    loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ?
-      "Find out what you already know." : focus?.type === "reassessment-opportunity" ?
-        "Check how far you have come." : detail ? `Work on ${detail}.` : "Make one useful move today.");
-  const nextExplanation = groundedCloudAction?.explanation ?? (!profileReady || !hasFocus ?
-    "Skillmetry needs a career or skill goal before it can recommend an evidence-based next step." :
-    loading ? "Your trusted quiz results are loading. Skillmetry will not guess your next action." :
-      focus?.explanation ?? "Explore your pathway and choose a practical next step.");
+  const fallbackAction: Omit<StudentAction, "source"> | null = groundedCloudAction ? {
+    title: groundedCloudAction.title, label: groundedCloudAction.label, href: groundedCloudAction.href, explanation: groundedCloudAction.explanation
+  } : !profileReady || !hasFocus ? null : {
+    title: loading ? "Preparing your next step…" : focus?.type === "assessment-recommended" ? "Find out what you already know." : focus?.type === "reassessment-opportunity" ? "Check how far you have come." : detail ? `Work on ${detail}.` : "Make one useful move today.",
+    label: focus?.action.kind === "assessment" ? "Take the available assessment" : focus?.action.kind === "resources" ? "Open a learning resource" : "Open My Path",
+    href: focus?.action.href ?? "/roadmap",
+    explanation: loading ? "Your trusted quiz results are loading. Skillmetry will not guess your next action." : focus?.explanation ?? "Explore your pathway and choose a practical next step."
+  };
+  const personalizedAction = selectStudentNextAction({
+    today: new Date().toISOString().slice(0, 10), resume: resume ? { courseTitle: resume.courseTitle, lessonTitle: resume.lessonTitle, href: resume.href } : null,
+    tasks: savedTasks, revisionTasks, fallback: fallbackAction, hasGoals: hasFocus
+  });
+  const nextHref = personalizedAction.href;
+  const nextLabel = personalizedAction.label;
+  const nextTitle = personalizedAction.title;
+  const nextExplanation = personalizedAction.explanation;
   const lastAttempt = [...attempts].sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt))[0];
   const focusedSkill = focus?.skillId ? skillById[focus.skillId] : null;
   const relevantPrerequisites = focusedSkill?.prerequisites.map(id => skillById[id]).filter(Boolean) ?? [];
@@ -152,6 +188,8 @@ export default function Dashboard() {
     href: resourceHref,
     label: "Browse resources"
   };
+  const activeMission = missionActivity.find(item => !["submitted", "self_completed"].includes(item.status));
+  const mission = activeMission ? missions.find(item => item.id === activeMission.missionId) : null;
 
   return (
     <div className="mb-dashboard">
@@ -182,6 +220,7 @@ export default function Dashboard() {
             {loading ? "Loading your next action…" : nextLabel}<ArrowRight aria-hidden="true" />
           </Link>
           <small>{actionBasis}</small>
+          {personalizedAction.activityNote ? <small className="mb-now__activity-note">{personalizedAction.activityNote}</small> : null}
         </div>
         <aside className="mb-now__why">
           <p>Why this</p>
@@ -246,6 +285,11 @@ export default function Dashboard() {
         <Link href={continuation.href}>{continuation.label} <ArrowRight aria-hidden="true" /></Link>
         <BookOpen aria-hidden="true" className="mb-continue__icon" />
       </section>
+      {mission ? <section className="mb-continue mb-project-continue" aria-labelledby="mb-project-continue-title" data-ui>
+        <div><p>Continue Project</p><h2 id="mb-project-continue-title">{mission.title}</h2><p>Your saved project work is marked {activeMission?.status.replaceAll("_", " ")}.</p><small>Project activity is learner-reported and remains separate from assessment evidence.</small></div>
+        <Link href="/missions">Open project <ArrowRight aria-hidden="true" /></Link>
+        <GitBranch aria-hidden="true" className="mb-continue__icon" />
+      </section> : null}
     </div>
   );
 }

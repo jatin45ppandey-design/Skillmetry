@@ -8,6 +8,7 @@ import {StatusPill} from "@/components/workspace-ui";
 import {careers,skillById} from "@skillmetry/shared/data/catalog";
 import {useAssessmentProfile} from "@/hooks/use-assessment-profile";
 import {assessmentSnapshot} from "@skillmetry/shared/lib/assessments/grading";
+import {compareCareerCurricula} from "@skillmetry/shared/lib/career-comparison";
 import {useSkillmetry} from "@/store/use-skillmetry";
 
 const careerIcons={"ml-engineer":BrainCircuit,"frontend-developer":LayoutPanelTop,
@@ -18,7 +19,11 @@ export default function Careers(){
  const {attempts,scores,illustrative,status}=useAssessmentProfile();
  const careerId=onboardingCompleted?preferences.learning.primaryCareerId:null;
  const [previewId,setPreviewId]=useState<string|null>(null);
+ const [comparisonId,setComparisonId]=useState<string|null>(null);
  const preview=careers.find(c=>c.id===(previewId??careerId))??careers[0];
+ const comparedId=comparisonId&&comparisonId!==preview.id?comparisonId:careers.find(c=>c.id!==preview.id)?.id??null;
+ const comparison=comparedId?compareCareerCurricula(preview.id,comparedId):null;
+ const compared=careers.find(c=>c.id===comparedId)??null;
  const previewSnapshot=assessmentSnapshot(preview,attempts);
  const highlights=preview.skills.filter(skill=>Object.hasOwn(scores,skill.skillId))
   .sort((a,b)=>scores[b.skillId]-scores[a.skillId]).slice(0,3);
@@ -67,6 +72,18 @@ export default function Careers(){
         <button className="btn btn-primary" type="button" onClick={()=>setCareer(preview.id)}>Set as my goal <Check size={17} aria-hidden="true"/></button>}
       <Link className="btn btn-outline" href="/resources">Explore learning resources <ArrowRight size={17} aria-hidden="true"/></Link>
     </div>
+    {comparison&&compared?<section className="sx-career-comparison" aria-labelledby="sx-career-comparison-title">
+      <div><span className="eyebrow">CURRICULUM COMPARISON</span><h3 id="sx-career-comparison-title">{preview.title} and {compared.title}</h3></div>
+      <label>Compare with<select value={compared.id} onChange={event=>setComparisonId(event.target.value)}>
+        {careers.filter(c=>c.id!==preview.id).map(c=><option value={c.id} key={c.id}>{c.title}</option>)}
+      </select></label>
+      <div className="sx-career-comparison-grid">
+       <div><strong>Shared foundations</strong><p>{comparison.shared.length?comparison.shared.map(item=>item.label).join(", "):"No shared canonical skills."}</p></div>
+       <div><strong>{preview.title} focus</strong><p>{comparison.primaryOnly.length?comparison.primaryOnly.map(item=>item.label).join(", "):"No pathway-specific skills."}</p></div>
+       <div><strong>{compared.title} focus</strong><p>{comparison.comparedOnly.length?comparison.comparedOnly.map(item=>item.label).join(", "):"No pathway-specific skills."}</p></div>
+      </div>
+      <small>This compares published learning pathways, not job-market fit or your readiness.</small>
+    </section>:null}
    </section>
   </div>
   <p className="sx-career-footer"><GitBranch size={16} aria-hidden="true"/>Switching careers changes your learning direction, never your existing quiz evidence. Save your full learning profile in <Link href="/onboarding">onboarding</Link>.</p>
