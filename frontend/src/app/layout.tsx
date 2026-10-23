@@ -20,6 +20,7 @@ import "./milestone-c-tools.css";
 import "./phase2-learning.css";
 import "./phase3-practice.css";
 import "./phase4-personalization.css";
+import "./signature-navigation-motion.css";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { AuthProvider } from "@/components/auth-provider";
 import { getServerAuthState } from "@skillmetry/backend/lib/supabase/server";

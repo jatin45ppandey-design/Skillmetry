@@ -1,0 +1,137 @@
+/* Phase 1 signature navigation: a small route acknowledgement, never a route blocker. */
+:root {
+  --signature-motion-ease: cubic-bezier(.2, .8, .2, 1);
+  --signature-motion-fast: 140ms;
+  --signature-motion-standard: 240ms;
+}
+
+.signature-navigation-motion {
+  position: fixed;
+  z-index: 60;
+  top: 82px;
+  right: clamp(20px, 4vw, 64px);
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: #283c30;
+  border: 1px solid rgb(40 60 48 / .14);
+  border-radius: 18px;
+  background: rgb(251 245 234 / .94);
+  box-shadow: 0 12px 26px rgb(40 60 48 / .12);
+  animation: signature-symbol-in var(--signature-motion-standard) var(--signature-motion-ease) both;
+}
+
+.signature-navigation-motion[data-area="path"] { color: #315f69; }
+.signature-navigation-motion[data-area="learn"] { color: #635384; }
+.signature-navigation-motion[data-area="practice"] { color: #985331; }
+.signature-navigation-motion[data-area="progress"] { color: #456840; }
+
+.signature-navigation-motion svg {
+  width: 38px;
+  height: 38px;
+  overflow: visible;
+}
+
+.signature-navigation-motion path,
+.signature-navigation-motion circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.signature-navigation-motion path {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: signature-line-draw 420ms var(--signature-motion-ease) both;
+}
+
+.signature-navigation-motion[data-variant="repeat"] path { animation-duration: 250ms; }
+.signature-navigation-motion circle { fill: currentColor; stroke: none; animation: signature-dot-in 240ms var(--signature-motion-ease) both; }
+.signature-navigation-motion circle:nth-of-type(2) { animation-delay: 55ms; }
+.signature-navigation-motion circle:nth-of-type(3) { animation-delay: 110ms; }
+.signature-navigation-motion circle:nth-of-type(4) { animation-delay: 165ms; }
+
+.mb-shell[data-signature-phase] .mb-shell-content {
+  animation: signature-content-arrive 300ms var(--signature-motion-ease) both;
+}
+
+.mb-shell[data-signature-phase] .mb-shell-content::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: min(130px, 28%);
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: .35;
+  transform-origin: left;
+  animation: signature-content-line 380ms var(--signature-motion-ease) both;
+}
+
+.mb-primary-nav a,
+.mb-bottom-nav a,
+.mb-drawer__primary a {
+  position: relative;
+  transition: background-color var(--signature-motion-fast) ease, color var(--signature-motion-fast) ease, transform var(--signature-motion-fast) ease;
+}
+
+.mb-primary-nav a::before,
+.mb-bottom-nav a::before,
+.mb-drawer__primary a::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 5px;
+  left: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: .7;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--signature-motion-standard) var(--signature-motion-ease);
+}
+
+.mb-primary-nav a.is-current::before,
+.mb-bottom-nav a.is-current::before,
+.mb-drawer__primary a.is-current::before { transform: scaleX(1); }
+.mb-bottom-nav a::before { right: 18%; bottom: 2px; left: 18%; }
+.mb-drawer__primary a::before { bottom: 4px; }
+
+@media (hover: hover) {
+  .mb-shell :is(a, button):not([disabled]):active { transform: translateY(1px) scale(.985); }
+}
+
+@keyframes signature-symbol-in {
+  from { opacity: 0; transform: translateY(-8px) scale(.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes signature-line-draw { to { stroke-dashoffset: 0; } }
+@keyframes signature-dot-in { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: scale(1); } }
+@keyframes signature-content-arrive { from { opacity: .72; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes signature-content-line { from { opacity: 0; transform: scaleX(.2); } to { opacity: .35; transform: scaleX(1); } }
+
+@media (max-width: 768px) {
+  .signature-navigation-motion { top: 72px; right: 16px; width: 50px; height: 50px; border-radius: 15px; }
+  .signature-navigation-motion svg { width: 31px; height: 31px; }
+}
+
+@media (max-width: 360px) {
+  .signature-navigation-motion { right: 12px; width: 44px; height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signature-navigation-motion { display: none; }
+  .mb-shell[data-signature-phase] .mb-shell-content,
+  .mb-shell[data-signature-phase] .mb-shell-content::after,
+  .mb-primary-nav a::before,
+  .mb-bottom-nav a::before,
+  .mb-drawer__primary a::before { animation: none; transition: none; }
+}

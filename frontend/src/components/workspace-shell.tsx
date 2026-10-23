@@ -10,15 +10,16 @@ import {
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { useAuth } from "@/components/auth-provider";
+import { SignatureNavigationMotion, type SignatureArea, useSignatureNavigation } from "@/components/signature-navigation-motion";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import { careers } from "@skillmetry/shared/data/catalog";
 
 const primary = [
-  { href: "/dashboard", label: "Home", icon: Activity, matches: ["/dashboard"] },
-  { href: "/roadmap", label: "My Path", icon: GitBranch, matches: ["/roadmap", "/careers"] },
-  { href: "/learn", label: "Learn", icon: BookMarked, matches: ["/learn", "/resources", "/courses"] },
-  { href: "/assessments", label: "Practice", icon: Target, matches: ["/assessments", "/practice", "/lab", "/missions", "/revision"] },
-  { href: "/twin", label: "Progress", icon: Fingerprint, matches: ["/twin", "/passport"] }
+  { href: "/dashboard", label: "Home", icon: Activity, area: "home", matches: ["/dashboard"] },
+  { href: "/roadmap", label: "My Path", icon: GitBranch, area: "path", matches: ["/roadmap", "/careers"] },
+  { href: "/learn", label: "Learn", icon: BookMarked, area: "learn", matches: ["/learn", "/resources", "/courses"] },
+  { href: "/assessments", label: "Practice", icon: Target, area: "practice", matches: ["/assessments", "/practice", "/lab", "/missions", "/revision"] },
+  { href: "/twin", label: "Progress", icon: Fingerprint, area: "progress", matches: ["/twin", "/passport"] }
 ] as const;
 
 const areaNavigation = {
@@ -80,11 +81,22 @@ function routeFamily(pathname: string) {
   return "home";
 }
 
-function PrimaryLinks({ current, onNavigate }: { current: string; onNavigate?: () => void }) {
-  return primary.map(({ href, label, icon: Icon, matches }) => {
+function signatureAreaForPathname(pathname: string): SignatureArea | null {
+  return primary.find(item => isPrimaryCurrent(pathname, item.matches))?.area ?? null;
+}
+
+function PrimaryLinks({ current, onNavigate, onSignatureNavigate }: {
+  current: string;
+  onNavigate?: () => void;
+  onSignatureNavigate?: (area: SignatureArea) => void;
+}) {
+  return primary.map(({ href, label, icon: Icon, area, matches }) => {
     const active = isPrimaryCurrent(current, matches);
     return (
-      <Link href={href} key={href} onClick={onNavigate} aria-current={active ? "page" : undefined}
+      <Link href={href} key={href} onClick={() => {
+        if (!active) onSignatureNavigate?.(area);
+        onNavigate?.();
+      }} aria-current={active ? "page" : undefined}
         className={active ? "is-current" : undefined}>
         <Icon aria-hidden="true" />
         <span>{label}</span>
@@ -95,6 +107,7 @@ function PrimaryLinks({ current, onNavigate }: { current: string; onNavigate?: (
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { beginSignatureNavigation, signatureTransition } = useSignatureNavigation(pathname, signatureAreaForPathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerPanelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -157,13 +170,14 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={`studio-app mb-shell${isAssessmentPage ? " studio-app--assessment" : ""}`}
-      data-route={pathname.slice(1) || "home"} data-area={routeFamily(pathname)}>
+      data-route={pathname.slice(1) || "home"} data-area={routeFamily(pathname)}
+      data-signature-area={signatureTransition?.area} data-signature-phase={signatureTransition?.phase}>
       <a href="#workspace-main" className="mb-skip-link">Skip to main content</a>
       <header className="mb-shell-header">
         <div className="mb-shell-header__inner">
           <Brand />
           <nav className="mb-primary-nav" aria-label="Primary learning navigation">
-            <PrimaryLinks current={pathname} />
+            <PrimaryLinks current={pathname} onSignatureNavigate={beginSignatureNavigation} />
           </nav>
           <div className="mb-shell-actions">
             <span className="mb-sync-state" title={cloudLabel}><CloudIcon aria-hidden="true" />{cloudLabel}</span>
@@ -191,7 +205,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         </nav>
       ) : null}
 
-      <main className="studio-main mb-shell-main" id="workspace-main">
+      <main className="studio-main mb-shell-main" id="workspace-main" data-signature-target={primaryArea?.area}>
         <div className="studio-content mb-shell-content" key={pathname}>{children}</div>
       </main>
 
@@ -200,7 +214,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           <button type="button" className="mb-drawer__backdrop" onClick={closeDrawer} aria-label="Close navigation" />
           <aside className="mb-drawer__panel" ref={drawerPanelRef}>
             <header><Brand /><button type="button" ref={closeButtonRef} onClick={closeDrawer} aria-label="Close navigation"><X aria-hidden="true" /></button></header>
-            <nav className="mb-drawer__primary" aria-label="Primary learning areas"><PrimaryLinks current={pathname} onNavigate={closeDrawer} /></nav>
+            <nav className="mb-drawer__primary" aria-label="Primary learning areas"><PrimaryLinks current={pathname} onNavigate={closeDrawer} onSignatureNavigate={beginSignatureNavigation} /></nav>
             {secondaryGroups.map(group => (
               <section key={group.label} className="mb-drawer__group">
                 <h2>{group.label}</h2>
@@ -223,8 +237,10 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       ) : null}
 
       <nav className="mb-bottom-nav" aria-label="Mobile learning navigation">
-        <PrimaryLinks current={pathname} />
+        <PrimaryLinks current={pathname} onSignatureNavigate={beginSignatureNavigation} />
       </nav>
+
+      <SignatureNavigationMotion transition={signatureTransition} />
 
       <span className="mb-current-area" aria-live="polite">{current?.label ?? "Learning workspace"}</span>
     </div>
