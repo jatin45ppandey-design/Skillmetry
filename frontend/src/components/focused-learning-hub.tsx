@@ -13,7 +13,7 @@ import {useSkillmetry} from "@/store/use-skillmetry";
 type Mode = "docs"|"lectures"|"notes";
 const modes:{key:Mode;label:string;description:string;icon:typeof BookOpen}[]=[
  {key:"docs",label:"Documentation",description:"Read the reference",icon:BookOpen},
- {key:"lectures",label:"Video lectures",description:"Watch a guided course",icon:PlayCircle},
+ {key:"lectures",label:"Guided sources",description:"Open a course or reference",icon:PlayCircle},
  {key:"notes",label:"Quick notes",description:"Revise key concepts",icon:FileText}
 ];
 
@@ -93,13 +93,13 @@ export function FocusedLearningHub(){
          </div>
          <a className="v3-primary-link" href={guide.documentation.url} target="_blank" rel="noopener noreferrer">Read documentation <ExternalLink size={17} aria-hidden="true"/></a>
        </>:mode==="lectures"?<>
-         <h2>Learn by watching and building.</h2>
-         <p>A selected educational course relevant to this topic. Take notes and pause to reproduce examples.</p>
+         <h2>Learn from a selected source.</h2>
+         <p>A selected course, video, or reference relevant to this topic. Take notes and reproduce examples where the source supports it.</p>
          <div className="v3-source-card v3-video-source"><PlayCircle size={27} aria-hidden="true"/>
            <div><strong>{guide.lecture.title}</strong><small>External free learning resource · Publisher hosts the content</small></div>
          </div>
          <a className="v3-primary-link" href={guide.lecture.url} target="_blank" rel="noopener noreferrer">
-           {guide.lecture.format==="video"?"Watch video lecture":"Open course with video"} <ExternalLink size={17} aria-hidden="true"/></a>
+           {guide.lecture.format==="video"?"Watch video lecture":guide.lecture.format==="reference"?"Open learning reference":"Open course with video"} <ExternalLink size={17} aria-hidden="true"/></a>
        </>:<>
          <h2>Remember the essentials.</h2>
          <p>Short Skillmetry-written revision notes; use the full docs and lecture for deeper explanations.</p>

@@ -1,6 +1,7 @@
 import type { Career, Mission, Skill } from "@skillmetry/shared/types/domain";
+import { phase5Careers, phase5Missions, phase5Skills } from "@skillmetry/shared/data/phase5-expansion";
 
-export const skills: Skill[] = [
+const foundationSkills: Skill[] = [
   { id: "python", label: "Python", group: "Foundation", description: "Write maintainable Python programs.", prerequisites: [] },
   { id: "sql", label: "SQL", group: "Foundation", description: "Query, join and aggregate relational data.", prerequisites: [] },
   { id: "math", label: "Math & Statistics", group: "Foundation", description: "Statistics, algebra and basic probability.", prerequisites: [] },
@@ -20,9 +21,10 @@ export const skills: Skill[] = [
   { id: "node", label: "Node.js", group: "Core", description: "Build and debug Node.js services.", prerequisites: ["javascript"] },
   { id: "authentication", label: "Authentication", group: "Applied", description: "Implement secure sessions and authorization.", prerequisites: ["rest-api"] }
 ];
+export const skills: Skill[] = [...foundationSkills, ...phase5Skills];
 
 // All career weights sum to exactly 100. These are illustrative, curated MVP weights.
-export const careers: Career[] = [
+const foundationCareers: Career[] = [
   { id: "ml-engineer", title: "ML Engineer", subtitle: "From datasets to deployed intelligence", icon: "brain", skills: [
     { skillId: "python", weight: 15 }, { skillId: "sql", weight: 10 }, { skillId: "math", weight: 10 },
     { skillId: "data-processing", weight: 10 }, { skillId: "ml-foundations", weight: 20 },
@@ -48,8 +50,9 @@ export const careers: Career[] = [
     { skillId: "testing", weight: 5 }, { skillId: "docker", weight: 3 }, { skillId: "deployment", weight: 3 }
   ] }
 ];
+export const careers: Career[] = [...foundationCareers, ...phase5Careers];
 
-export const missions: Mission[] = [
+const foundationMissions: Mission[] = [
   { id: "ml-deploy", roleId: "ml-engineer", title: "Deploy an ML inference API", description: "Wrap a trained model in an API and document its deployment.", skillId: "deployment", estimatedHours: 8, simulatedGain: 30, deliverables: ["API endpoint", "README with example requests", "Deployment notes"] },
   { id: "dockerize", roleId: "ml-engineer", title: "Dockerize a Python service", description: "Make your Python app run reproducibly in a container.", skillId: "docker", estimatedHours: 4, simulatedGain: 40, deliverables: ["Dockerfile", "Build/run instructions", "Screenshot or run log"] },
   { id: "sql-analysis", roleId: "ml-engineer", title: "SQL data exploration", description: "Explore a dataset using joins, group-by and windows.", skillId: "sql", estimatedHours: 4, simulatedGain: 25, deliverables: ["SQL query file", "Findings summary"] },
@@ -63,5 +66,6 @@ export const missions: Mission[] = [
   { id: "fullstack-auth-portal", roleId: "full-stack-developer", title: "Implement a private account portal", description: "Build login and owner-scoped profile access with defensive error handling.", skillId: "authentication", estimatedHours: 8, simulatedGain: 25, deliverables: ["Sign-in and sign-out", "Owner access checks", "Network error states", "Authorization tests"] },
   { id: "fullstack-release", roleId: "full-stack-developer", title: "Prepare a safe full-stack release", description: "Configure deployment, health reporting and a reproducible setup guide.", skillId: "deployment", estimatedHours: 6, simulatedGain: 20, deliverables: ["Repeatable production build", "Working deployment URL", "Health endpoint", "Deployment runbook"] }
 ];
+export const missions: Mission[] = [...foundationMissions, ...phase5Missions];
 
 export const skillById = Object.fromEntries(skills.map(s => [s.id, s])) as Record<string, Skill>;

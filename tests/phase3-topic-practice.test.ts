@@ -6,9 +6,9 @@ import {listLabExercises} from "@skillmetry/backend/lib/learning/lab-bank.server
 describe("Phase 3 curriculum practice coverage",()=>{
   it("links every Phase 2 topic and lesson to three server-checked exercises",()=>{
     const coverage=topicPracticeCoverage();
-    expect(coverage).toHaveLength(54);
+    expect(coverage).toHaveLength(curriculumCatalog.topics.length);
     expect(coverage.every(item=>item.questionCount===3)).toBe(true);
-    expect(new Set(coverage.map(item=>item.skillId)).size).toBe(18);
+    expect(new Set(coverage.map(item=>item.skillId)).size).toBe(42);
     for(const lesson of curriculumCatalog.lessons){
       expect(lesson.practiceIds.some(id=>id.startsWith("topic-practice:"))).toBe(true);
     }

@@ -17,9 +17,9 @@ function sourceFiles(directory: string): string[] {
 
 describe("restructured module boundaries", () => {
   it("preserves the complete curated product catalogs", () => {
-    expect(careers).toHaveLength(4);
-    expect(skills).toHaveLength(18);
-    expect(learningResources).toHaveLength(83);
+    expect(careers).toHaveLength(14);
+    expect(skills).toHaveLength(42);
+    expect(learningResources).toHaveLength(141);
   });
 
   it("keeps one canonical protected assessment implementation", () => {

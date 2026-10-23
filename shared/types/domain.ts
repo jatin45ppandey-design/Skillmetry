@@ -1,4 +1,8 @@
-export type CareerId = "ml-engineer" | "frontend-developer" | "backend-developer" | "full-stack-developer";
+export type CareerId =
+  | "ml-engineer" | "frontend-developer" | "backend-developer" | "full-stack-developer"
+  | "data-analyst" | "data-scientist" | "ai-llm-application-engineer" | "devops-engineer"
+  | "qa-automation-engineer" | "cybersecurity-analyst" | "android-developer" | "cloud-engineer"
+  | "data-engineer" | "ui-ux-designer";
 export type SkillId = string;
 export type ToolId = "git" | "github" | "docker" | "postman";
 export type Skill = {

@@ -18,12 +18,12 @@ import { filterLearningResources } from "@skillmetry/shared/lib/resource-intelli
 const root = fileURLToPath(new URL("..", import.meta.url));
 
 describe("Phase 2 complete learning system", () => {
-  it("provides an ordered beginner-to-advanced path for all 18 canonical skills and all four careers", () => {
-    expect(skills).toHaveLength(18);
-    expect(careers).toHaveLength(4);
-    expect(curriculumCatalog.topics).toHaveLength(54);
-    expect(curriculumCatalog.subtopics).toHaveLength(54);
-    expect(curriculumCatalog.lessons).toHaveLength(54);
+  it("provides an ordered beginner-to-advanced path for every canonical skill and career", () => {
+    expect(skills).toHaveLength(42);
+    expect(careers).toHaveLength(14);
+    expect(curriculumCatalog.topics).toHaveLength(126);
+    expect(curriculumCatalog.subtopics).toHaveLength(126);
+    expect(curriculumCatalog.lessons).toHaveLength(126);
 
     for (const skill of skills) {
       const path = getCurriculumForSkill(skill.id);
@@ -41,8 +41,8 @@ describe("Phase 2 complete learning system", () => {
     }
   });
 
-  it("ships 18 navigable built-in courses without presenting staged activity as saved progress", () => {
-    expect(builtInCourses).toHaveLength(18);
+  it("ships navigable built-in courses without presenting staged activity as saved progress", () => {
+    expect(builtInCourses).toHaveLength(skills.length);
     for (const course of builtInCourses) {
       expect(course.source).toBe("skillmetry-curriculum");
       expect(course.modules).toHaveLength(3);
@@ -62,9 +62,9 @@ describe("Phase 2 complete learning system", () => {
   });
 
   it("normalizes, deduplicates, filters, and maps the preserved catalog plus reviewed Phase 2 additions", () => {
-    expect(learningResources).toHaveLength(83);
-    expect(new Set(learningResources.map(resource => resource.id)).size).toBe(83);
-    expect(new Set(learningResources.map(resource => resource.url)).size).toBe(83);
+    expect(learningResources).toHaveLength(141);
+    expect(new Set(learningResources.map(resource => resource.id)).size).toBe(141);
+    expect(new Set(learningResources.map(resource => resource.url)).size).toBe(141);
     for (const resource of learningResources) {
       expect(resource.url).toMatch(/^https:\/\//);
       expect(resource.availabilityStatus).toMatch(/^(available|unverified|unavailable)$/);
@@ -83,8 +83,8 @@ describe("Phase 2 complete learning system", () => {
 
   it("reports coverage honestly and resolves lesson routes with sequence navigation", () => {
     const report = getCurriculumCoverageReport();
-    expect(report.totals).toEqual(expect.objectContaining({ careers: 4, skills: 18, topics: 54, subtopics: 54, lessons: 54, resourcesReviewed: 83 }));
-    expect(report.totals.resourcesAccepted + report.totals.resourcesUnverified + report.totals.resourcesUnavailable).toBe(83);
+    expect(report.totals).toEqual(expect.objectContaining({ careers: 14, skills: 42, topics: 126, subtopics: 126, lessons: 126, resourcesReviewed: 141 }));
+    expect(report.totals.resourcesAccepted + report.totals.resourcesUnverified + report.totals.resourcesUnavailable).toBe(141);
     expect(report.skills.every(skill => skill.topics === 3 && skill.subtopics === 3 && skill.lessons === 3)).toBe(true);
     expect(report.topics.every(topic => topic.missing.length === 0)).toBe(true);
 

@@ -1,5 +1,6 @@
 import type { CurriculumDifficulty } from "@skillmetry/shared/types/curriculum";
 import type { SkillId } from "@skillmetry/shared/types/domain";
+import { phase5SkillCurriculumBlueprints } from "@skillmetry/shared/data/phase5-curriculum";
 
 export type CurriculumTopicBlueprint = {
   slug: string;
@@ -29,7 +30,7 @@ export type SkillCurriculumBlueprint = {
 
 const topic = (entry: CurriculumTopicBlueprint) => entry;
 
-export const skillCurriculumBlueprints: readonly SkillCurriculumBlueprint[] = [
+const foundationSkillCurriculumBlueprints: readonly SkillCurriculumBlueprint[] = [
   { skillId: "python", topics: [
     topic({ slug: "language-foundations", title: "Python language foundations", subtopicTitle: "Values, control flow, and functions", description: "Read and write small Python programs using clear values, branches, loops, and functions.", difficulty: "beginner", objectives: ["Choose suitable built-in data types", "Control program flow without duplicating work"], outcomes: ["Build a small program from functions and collections", "Trace how values change during execution"], resourceIds: ["python-tutorial-intro", "python-control-flow", "python-hindi-course"], lesson: { slug: "values-and-program-flow", title: "Values and program flow", summary: "Connect Python values, conditions, loops, and functions in one readable program.", explanation: "Python evaluates expressions into values and uses indentation to define blocks. Small functions make those transformations explicit, testable, and easier to reuse.", example: "Read a list of expenses, skip invalid amounts, group valid values by category, and return totals from a function.", commonMistakes: ["Mutating a collection while iterating over it", "Using a broad except block to hide input errors"], task: "Write a command-line expense summary with validation and two reusable functions.", estimatedMinutes: 35 } }),
     topic({ slug: "data-and-modularity", title: "Data structures and modular code", subtopicTitle: "Collections, modules, and boundaries", description: "Model data with collections and divide a program into modules with narrow responsibilities.", difficulty: "intermediate", objectives: ["Select lists, dictionaries, sets, and tuples deliberately", "Separate input, transformation, and output logic"], outcomes: ["Refactor a script into importable modules", "Explain the mutation and lookup tradeoffs of common collections"], resourceIds: ["python-data-structures", "python-control-flow"], lesson: { slug: "collections-and-modules", title: "Collections and modules", summary: "Use the right collection and keep module boundaries small.", explanation: "A data structure should match the operations the program performs most often. Modules then group related behavior while keeping parsing, business rules, and side effects separate.", example: "Store inventory by product ID in a dictionary, use a set for unique tags, and expose an update function from an inventory module.", commonMistakes: ["Using a list for repeated key lookups", "Running file or network work at import time"], task: "Refactor a single-file inventory script into data, service, and command modules.", estimatedMinutes: 40 } }),
@@ -121,6 +122,11 @@ export const skillCurriculumBlueprints: readonly SkillCurriculumBlueprint[] = [
     topic({ slug: "authorization-and-ownership", title: "Authorization and ownership", subtopicTitle: "Server checks, RLS, and cross-account tests", description: "Enforce what an authenticated user may do with each resource.", difficulty: "advanced", objectives: ["Apply owner-scoped authorization on every operation", "Test cross-account denial at multiple layers"], outcomes: ["Prevent insecure direct object references", "Explain how server checks and RLS complement each other"], resourceIds: ["auth-owasp", "auth-mdn"], lesson: { slug: "enforce-owner-boundaries", title: "Enforce owner boundaries", summary: "Bind reads and writes to verified identity instead of client-supplied ownership.", explanation: "Authorization belongs on the server and close to the data. Deriving owner identity from verified claims and enforcing row policies prevents a changed URL or payload from crossing accounts.", example: "Ignore userId in a request body, derive it from the session, filter the query by owner, and test Alice cannot read or update Bob's row.", commonMistakes: ["Relying on a hidden UI control as authorization", "Using an admin credential for ordinary user queries"], task: "Add two-user denial tests to an owner-scoped resource API.", estimatedMinutes: 55 } })
   ] }
 ] satisfies readonly SkillCurriculumBlueprint[];
+
+export const skillCurriculumBlueprints: readonly SkillCurriculumBlueprint[] = [
+  ...foundationSkillCurriculumBlueprints,
+  ...phase5SkillCurriculumBlueprints
+];
 
 export const curriculumBlueprintBySkill = Object.fromEntries(
   skillCurriculumBlueprints.map(entry => [entry.skillId, entry])

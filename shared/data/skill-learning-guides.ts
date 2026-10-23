@@ -5,7 +5,7 @@
 export type SkillLearningGuide = {
   skillId: string;
   documentation: {title:string;url:string};
-  lecture: {title:string;url:string;format:"video"|"course-with-video"|"interactive-course"};
+  lecture: {title:string;url:string;format:"video"|"course-with-video"|"interactive-course"|"reference"};
   notes:readonly string[];
   challenge:string;
 };
@@ -335,5 +335,27 @@ const guides: SkillLearningGuide[] = [
     "challenge": "Design owner-only API endpoints and test cross-account denial."
   }
 ];
-export const skillLearningGuides: Readonly<Record<string, SkillLearningGuide>> = Object.fromEntries(guides.map(g=>[g.skillId,g]));
-export const curatedGuideSkillIds=guides.map(g=>g.skillId);
+
+/** Phase 5 references retain truthful format labels when a dedicated lecture is not available. */
+const expansionGuides: SkillLearningGuide[] = phase5Skills.map(skill => {
+  const references = phase5LearningResources.filter(resource => resource.target.kind === "skill" && resource.target.skillId === skill.id && resource.type !== "video");
+  const documentation = references[0];
+  const companion = references[1] ?? documentation;
+  return {
+    skillId: skill.id,
+    documentation: { title: documentation.title, url: documentation.url },
+    lecture: { title: `${companion.title} learning reference`, url: companion.url, format: companion.type === "course" ? "interactive-course" : "reference" },
+    notes: [
+      `Start ${skill.label} work by naming the constraint, expected outcome, and boundary of the task.`,
+      `Use a small reproducible example before expanding a ${skill.label} solution or recommendation.`,
+      `Record one limitation and one next validation step instead of treating activity as proof of proficiency.`
+    ],
+    challenge: `Use the linked ${skill.label} references to complete a small reviewable exercise, document one failure case, and state the next question you would test.`
+  };
+});
+
+const allGuides = [...guides, ...expansionGuides];
+export const skillLearningGuides: Readonly<Record<string, SkillLearningGuide>> = Object.fromEntries(allGuides.map(g=>[g.skillId,g]));
+export const curatedGuideSkillIds=allGuides.map(g=>g.skillId);
+import { phase5Skills } from "@skillmetry/shared/data/phase5-expansion";
+import { phase5LearningResources } from "@skillmetry/shared/data/phase5-resources";

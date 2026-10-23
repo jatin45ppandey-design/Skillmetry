@@ -3,6 +3,7 @@ import {useCallback,useEffect,useState} from "react";
 import {AdminReviewQueue} from "@/components/admin-editorial-reviews";
 import {ActivityIndicator} from "@/components/motion-ui";
 import {ArrowRight,RefreshCw,ShieldCheck} from "lucide-react";
+import {AdminCurriculumCoverage} from "@/components/admin-curriculum-coverage";
 
 export type ContentModule="guides"|"roadmaps"|"courses"|"missions"|"assessments";
 type Snapshot={key:ContentModule;total:number;published:number;drafts:number;lastUpdated:string|null;truncated:boolean};
@@ -54,6 +55,7 @@ export function AdminContentInventory({onManage,role}:{onManage:(key:ContentModu
          Open editor <ArrowRight size={16} aria-hidden="true"/></button>
      </article>)}
    </div>:null}
+   <AdminCurriculumCoverage/>
    <AdminReviewQueue role={role}/>
    <p className="sx-admin-inventory-trust"><ShieldCheck size={16} aria-hidden="true"/>
      Inventory reports editorial metadata only. It does not display learner profiles or assessment answer keys.</p>

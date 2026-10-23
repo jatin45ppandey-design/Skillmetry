@@ -1,8 +1,8 @@
 "use client";
 
-import {useState} from "react";
+import {useMemo,useState} from "react";
 import Link from "next/link";
-import {ArrowRight,BrainCircuit,Check,GitBranch,Layers3,LayoutPanelTop,ServerCog} from "lucide-react";
+import {ArrowRight,BrainCircuit,Check,Compass,GitBranch,Layers3,LayoutPanelTop,ServerCog} from "lucide-react";
 import {SectionTitle} from "@/components/section-title";
 import {StatusPill} from "@/components/workspace-ui";
 import {careers,skillById} from "@skillmetry/shared/data/catalog";
@@ -20,6 +20,13 @@ export default function Careers(){
  const careerId=onboardingCompleted?preferences.learning.primaryCareerId:null;
  const [previewId,setPreviewId]=useState<string|null>(null);
  const [comparisonId,setComparisonId]=useState<string|null>(null);
+  const [query,setQuery]=useState("");
+  const [catalog,setCatalog]=useState<"all"|"foundation"|"expanded">("all");
+  const visibleCareers=useMemo(()=>careers.filter(career=>{
+    const matchesCatalog=catalog==="all"||catalog==="foundation"?catalog==="all"||["ml-engineer","frontend-developer","backend-developer","full-stack-developer"].includes(career.id):!["ml-engineer","frontend-developer","backend-developer","full-stack-developer"].includes(career.id);
+    const needle=query.trim().toLowerCase();
+    return matchesCatalog&&(!needle||`${career.title} ${career.subtitle}`.toLowerCase().includes(needle));
+  }),[catalog,query]);
  const preview=careers.find(c=>c.id===(previewId??careerId))??careers[0];
  const comparedId=comparisonId&&comparisonId!==preview.id?comparisonId:careers.find(c=>c.id!==preview.id)?.id??null;
  const comparison=comparedId?compareCareerCurricula(preview.id,comparedId):null;
@@ -34,8 +41,9 @@ export default function Careers(){
   <div className="sx-career-workspace">
    <section className="sx-career-options" aria-label="Choose a career to preview">
     <div className="sx-career-options-header"><h2>Career directions</h2><span>{careers.length} pathways</span></div>
-    {careers.map(career=>{
-     const Icon=careerIcons[career.id];
+    <div className="sx-career-filters"><label><span className="sr-only">Search career directions</span><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search career directions" type="search"/></label><select aria-label="Filter career catalog" value={catalog} onChange={event=>setCatalog(event.target.value as typeof catalog)}><option value="all">All paths</option><option value="foundation">Foundation paths</option><option value="expanded">New paths</option></select></div>
+    {visibleCareers.map(career=>{
+     const Icon=careerIcons[career.id as keyof typeof careerIcons]??Compass;
      const current=career.id===careerId;
      const selected=career.id===preview.id;
      const snapshot=assessmentSnapshot(career,attempts);
@@ -46,6 +54,7 @@ export default function Careers(){
        <span className="sx-career-option-status">{current?<Check size={16} aria-label="Current goal"/>:<span>{snapshot.coveragePercent}%<small> assessed</small></span>}</span>
      </button>;
     })}
+    {!visibleCareers.length?<p className="sx-career-empty" role="status">No career direction matches that search. Clear the search or choose another catalog.</p>:null}
    </section>
    <section className="sx-career-inspector" aria-live="polite" aria-label="Selected career details">
     <div className="sx-career-inspector-head">

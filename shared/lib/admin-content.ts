@@ -4,7 +4,7 @@ export const adminGuidePayloadSchema=z.object({
    url:z.string().url().max(700).refine(v=>v.startsWith("https://"),"HTTPS required")}).strict(),
  lecture:z.object({title:z.string().trim().min(5).max(150),
    url:z.string().url().max(700).refine(v=>v.startsWith("https://"),"HTTPS required"),
-   format:z.enum(["video","course-with-video","interactive-course"])}).strict(),
+   format:z.enum(["video","course-with-video","interactive-course","reference"])}).strict(),
  notes:z.array(z.string().trim().min(10).max(600)).min(3).max(12),
  challenge:z.string().trim().min(15).max(700)
 }).strict();

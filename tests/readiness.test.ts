@@ -4,7 +4,7 @@ import { applyScenario, catalogIsValid, clamp, getNextSkills, getSkillGaps, getS
 
 describe("curated career knowledge base", () => {
  it("has valid weights, references and an acyclic dependency graph",()=>expect(catalogIsValid()).toBe(true));
- it("includes the four supported career paths",()=>expect(careers).toHaveLength(4));
+ it("includes the fourteen supported career paths",()=>expect(careers).toHaveLength(14));
  it("keeps Full Stack weights on canonical skills and totals exactly 100",()=>{
   const fullStack=selectCareer("full-stack-developer");
   expect(fullStack.skills.reduce((sum, skill)=>sum+skill.weight,0)).toBe(100);

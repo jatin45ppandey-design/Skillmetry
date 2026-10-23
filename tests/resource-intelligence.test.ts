@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { learningResources } from "@skillmetry/shared/data/learning-resources";
-import { skills } from "@skillmetry/shared/data/catalog";
+import { careers, skills } from "@skillmetry/shared/data/catalog";
+import { phase5LearningResources } from "@skillmetry/shared/data/phase5-resources";
 import {
   filterLearningResources,
   getPersonalizedResources,
@@ -16,7 +17,8 @@ const noGoals: LearningPreferences = { primaryCareerId: null, selectedSkillIds: 
 
 describe("learning resource catalog", () => {
   it("covers all canonical skills plus Git, GitHub, and Postman with stable unique HTTPS resources", () => {
-    expect(learningResources).toHaveLength(83);
+    // Phase 5 preserves the original 83-item catalog and adds reviewed sources.
+    expect(learningResources).toHaveLength(83 + phase5LearningResources.length);
     expect(learningResources.filter(resource => resource.type === "roadmap")).toHaveLength(10);
     expect(learningResources.filter(resource => resource.discoverySource?.label === "awesome-roadmaps")).toHaveLength(11);
     expect(new Set(learningResources.map(resource => resource.id)).size).toBe(learningResources.length);
@@ -26,7 +28,7 @@ describe("learning resource catalog", () => {
     expect(getResourcesForTool("docker")).toEqual(getResourcesForSkill("docker"));
     expect(learningResources.every(resource => isSafeResourceUrl(resource.url))).toBe(true);
     const skillIds = new Set(skills.map(skill => skill.id));
-    const careerIds = new Set(["ml-engineer", "frontend-developer", "backend-developer", "full-stack-developer"]);
+    const careerIds = new Set(careers.map(career => career.id));
     for (const entry of learningResources) {
       if (entry.target.kind === "skill") expect(skillIds.has(entry.target.skillId)).toBe(true);
       expect(entry.relatedSkillIds?.every(id => skillIds.has(id)) ?? true).toBe(true);

@@ -146,8 +146,8 @@ describe("digital twin growth and recommendations", () => {
     });
     expect(combined.insights.every(insight => insight.action.kind === "none" || Boolean(insight.action.href))).toBe(true);
     expect(combined.skills).toHaveLength(skills.length);
-    expect(combined.skills).toHaveLength(18);
-    expect(combined.careers).toHaveLength(4);
+    expect(combined.skills).toHaveLength(skills.length);
+    expect(combined.careers).toHaveLength(careers.length);
   });
 
   it("records an improvement separately from a cross-version comparison", () => {

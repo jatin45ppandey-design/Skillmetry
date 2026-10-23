@@ -30,8 +30,13 @@ const editorial:Record<string,{difficulty:CurriculumDifficulty;objectives:string
 };
 
 export const missionSpecifications:readonly MissionSpecification[]=missions.map(mission=>{
-  const content=editorial[mission.id];
-  if(!content)throw new Error(`Missing project specification for ${mission.id}`);
+  const careerMissions = missions.filter(item => item.roleId === mission.roleId);
+  const expansionDifficulty = (["beginner", "intermediate", "advanced"] as const)[careerMissions.findIndex(item => item.id === mission.id)] ?? "intermediate";
+  const content=editorial[mission.id]??{
+    difficulty:expansionDifficulty,
+    objectives:[`Apply ${skillById[mission.skillId]?.label??mission.skillId} to a bounded project outcome`,`Document one trade-off, one failure state, and a concrete next improvement`],
+    qualityEvidence:`The deliverables demonstrate ${skillById[mission.skillId]?.label??mission.skillId} with reproducible setup and an explicit limitation.`
+  };
   const path=getCurriculumForSkill(mission.skillId);
   const stage=path?.topics.find(entry=>entry.topic.difficulty===content.difficulty)??path?.topics[0];
   const lesson=stage?.subtopics[0]?.lessons[0];

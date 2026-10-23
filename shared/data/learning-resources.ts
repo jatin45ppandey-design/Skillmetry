@@ -2,6 +2,7 @@ import { curatedRoadmaps } from "@skillmetry/shared/data/curated-roadmaps";
 import { curriculumBlueprintBySkill, curriculumTopicId, topicIdsForResource } from "@skillmetry/shared/data/curriculum-blueprints";
 import { skillById } from "@skillmetry/shared/data/catalog";
 import { skillLearningGuides } from "@skillmetry/shared/data/skill-learning-guides";
+import { phase5LearningResources } from "@skillmetry/shared/data/phase5-resources";
 import type { LearningResource } from "@skillmetry/shared/types/domain";
 
 const verifiedOn = "2026-10-22";
@@ -79,6 +80,8 @@ const originalLearningResources: readonly LearningResource[] = [
 
 /** Keep the original 50 resources intact, extending rather than replacing them. */
 const guideVideoResources: readonly LearningResource[] = Object.values(skillLearningGuides)
+  // Phase 5 has explicit catalog records; do not duplicate their URLs merely to power the editor fallback.
+  .filter(guide => !phase5LearningResources.some(resource => resource.target.kind === "skill" && resource.target.skillId === guide.skillId))
   .map(guide => resource({
     id: `${guide.skillId}-guided-video`,
     target: { kind: "skill", skillId: guide.skillId as keyof typeof skillById },
@@ -94,7 +97,7 @@ const guideVideoResources: readonly LearningResource[] = Object.values(skillLear
     language: "English"
   }));
 
-const sourceResources: readonly LearningResource[] = [...originalLearningResources, ...guideVideoResources, ...curatedRoadmaps];
+const sourceResources: readonly LearningResource[] = [...originalLearningResources, ...phase5LearningResources.map(resource), ...guideVideoResources, ...curatedRoadmaps];
 
 export const learningResources = sourceResources.map(resourceEntry => {
   const skillIds = [...new Set([
