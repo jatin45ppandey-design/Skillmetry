@@ -1,5 +1,5 @@
 import "server-only";
-import type { AssessmentId, DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
+import type { DiagnosticAssessmentId } from "@skillmetry/shared/types/domain";
 /** Three additional independent practice exercises per topic, with authored feedback. */
 export const practiceExtensions:Record<DiagnosticAssessmentId,readonly string[][]> = {
   "python-foundations": [

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { curriculumCatalog, curriculumLessonById, curriculumSubtopicById, curriculumTopicById } from "@skillmetry/shared/data/curriculum";
+import { curriculumCatalog, curriculumTopicById } from "@skillmetry/shared/data/curriculum";
 import { skillById } from "@skillmetry/shared/data/catalog";
 import type { CurriculumDifficulty, CurriculumTopicId } from "@skillmetry/shared/types/curriculum";
 
@@ -101,5 +101,13 @@ export function topicPracticeCoverage() {
 }
 
 export function publicTopicPracticeQuestions(topicId: string) {
-  return listTopicPracticeQuestions(topicId).map(({ correctIndex: _correctIndex, explanation: _explanation, ...question }) => question);
+  return listTopicPracticeQuestions(topicId).map(question => ({
+    id: question.id,
+    topicId: question.topicId,
+    skillId: question.skillId,
+    difficulty: question.difficulty,
+    prompt: question.prompt,
+    choices: question.choices,
+    hint: question.hint
+  }));
 }

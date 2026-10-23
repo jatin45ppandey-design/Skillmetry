@@ -56,8 +56,10 @@ function PracticeContent() {
         return body;
       }).then(body=>{
         if(controller.signal.aborted)return;
-        const {questions:items=[],error:_error,...rest}=body;
-        setQuestions(items);setMetadata(rest);setLoading(false);
+        const items=body.questions??[];
+        const metadataPayload={...body};
+        delete metadataPayload.questions;delete metadataPayload.error;
+        setQuestions(items);setMetadata(metadataPayload);setLoading(false);
       }).catch(caught=>{
         if(controller.signal.aborted)return;
         setError(caught instanceof Error?caught.message:"Practice is unavailable");setLoading(false);

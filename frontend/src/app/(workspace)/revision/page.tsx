@@ -5,7 +5,7 @@ import {useSearchParams} from "next/navigation";
 import {Suspense,useCallback,useEffect,useMemo,useState} from "react";
 import {ArrowRight,CalendarClock,CheckCircle2,RefreshCcw} from "lucide-react";
 import {SectionTitle} from "@/components/section-title";
-import {ActivityIndicator,ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
+import {ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
 import {learningResources} from "@skillmetry/shared/data/learning-resources";
 import {buildSpacedRevisionDates,dateKeyInTimeZone,revisionTopicContext,type RevisionEvidence} from "@skillmetry/shared/lib/revision";
 

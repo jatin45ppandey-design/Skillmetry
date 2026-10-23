@@ -1,10 +1,10 @@
 "use client";
-import {ActivityIndicator,ActionSpinner,ContentSkeleton} from "@/components/motion-ui";
+import {ActivityIndicator,ContentSkeleton} from "@/components/motion-ui";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, ArrowRight, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, LockKeyhole, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
+import { AlertCircle, ArrowRight, BookOpenCheck, Check, CheckCircle2, Clock3, LoaderCircle, RotateCcw, ShieldCheck, TrendingDown, TrendingUp, X } from "lucide-react";
 import { SectionTitle } from "@/components/section-title";
 import { EmptyState, StatusPill } from "@/components/workspace-ui";
 import { DiagnosticResultPanel } from "@/components/diagnostic-result-panel";

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { assessmentIdSchema } from "@skillmetry/backend/lib/assessments/schema";
 import { getPracticeQuestions } from "@skillmetry/backend/lib/assessments/practice-bank.server";
 import { listTopicPracticeQuestions, publicTopicPracticeQuestions } from "@skillmetry/backend/lib/learning/topic-practice-bank.server";
-import { curriculumCatalog, curriculumSubtopicById, curriculumTopicById, getCurriculumLessonRoute } from "@skillmetry/shared/data/curriculum";
+import { curriculumCatalog, curriculumTopicById, getCurriculumLessonRoute } from "@skillmetry/shared/data/curriculum";
 
 const answersSchema=z.record(z.string().min(1).max(160),z.number().int().min(0).max(3));
 const diagnosticRequestSchema=z.object({

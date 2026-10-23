@@ -1,4 +1,4 @@
-import { curriculumCatalog, curriculumSubtopicById, curriculumTopicById, getCurriculumLessonRoute } from "@skillmetry/shared/data/curriculum";
+import { curriculumCatalog, curriculumTopicById, getCurriculumLessonRoute } from "@skillmetry/shared/data/curriculum";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
 import type { CurriculumTopicId } from "@skillmetry/shared/types/curriculum";
 
