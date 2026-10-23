@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BrainCircuit, CheckCircle2, Code2, Layers3, ServerCog } from "lucide-react";
+import { ArrowRight, BrainCircuit, CheckCircle2, Code2, Compass, Layers3, ServerCog } from "lucide-react";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import type { CareerId } from "@skillmetry/shared/types/domain";
@@ -19,7 +19,10 @@ export function CareerChapterGallery() {
   const [selectedId, setSelectedId] = useState<CareerId>("backend-developer");
   const [selectedSkillId, setSelectedSkillId] = useState<string>("javascript");
   const selected = careers.find(career => career.id === selectedId) ?? careers[0];
-  const SelectedIcon = careerIcons[selected.id as keyof typeof careerIcons];
+  // Phase 5 added catalog pathways beyond the four illustrated foundations.
+  // A neutral compass keeps every real path explorable without inventing an
+  // icon-specific meaning for it.
+  const SelectedIcon = careerIcons[selected.id as keyof typeof careerIcons] ?? Compass;
   const selectedSkills = selected.skills.map(item => ({ ...item, skill: skillById[item.skillId] })).filter(item => item.skill);
   const foundations = selectedSkills.filter(item => item.skill.group === "Foundation");
   const applied = selectedSkills.filter(item => item.skill.group !== "Foundation");
@@ -31,7 +34,7 @@ export function CareerChapterGallery() {
     <div className={styles.careerBrowser}>
       <div className={styles.careerChoices} role="group" aria-label="Preview career blueprints">
         {careers.map(career => {
-          const Icon = careerIcons[career.id as keyof typeof careerIcons];
+          const Icon = careerIcons[career.id as keyof typeof careerIcons] ?? Compass;
           const active = career.id === selectedId;
           return (
             <button

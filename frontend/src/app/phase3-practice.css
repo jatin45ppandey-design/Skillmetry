@@ -13,6 +13,13 @@
 .p3-diagnostic-practice summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
 .p3-diagnostic-practice nav{display:grid}.p3-diagnostic-practice nav a{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#365740;text-decoration:none;border-top:1px dashed var(--mc-rule)}
 .p3-practice-session{margin-inline:auto;width:min(100%,920px)}
+.studio-app[data-route="practice"] .p3-practice-session{background:#10202d;color:#f7fbf2;border-color:#315365;}
+.studio-app[data-route="practice"] .p3-practice-session :is(.assessment-paper-head h2,fieldset legend){color:#f7fbf2;}
+.studio-app[data-route="practice"] .p3-practice-session .assessment-paper-head p{color:#c5d6cf;}
+.studio-app[data-route="practice"] .p3-practice-session fieldset{border-color:#8da9a0;}
+.studio-app[data-route="practice"] .p3-practice-session label{color:#e3eee8;border-color:#9bb5ad;background:#10202d;line-height:1.45;}
+.studio-app[data-route="practice"] .p3-practice-session label:hover{border-color:#d9ed82;background:#183141;}
+.studio-app[data-route="practice"] .p3-practice-session label:has(input:checked){color:#f7fbf2;border-color:#d9ed82;background:#264a39;}
 .p3-question-nav{display:flex;flex-wrap:wrap;gap:8px}
 .p3-question-nav button{width:44px;height:44px;border:1px solid var(--mc-rule);border-radius:50%;background:#fffef9;color:#365740;font-weight:800;cursor:pointer}
 .p3-question-nav button.active{background:#365740;color:#fffef9;border-color:#365740}

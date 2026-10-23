@@ -11,6 +11,7 @@ import {
 import { Brand } from "@/components/brand";
 import { useAuth } from "@/components/auth-provider";
 import { useSkillmetry } from "@/store/use-skillmetry";
+import { careers } from "@skillmetry/shared/data/catalog";
 
 const primary = [
   { href: "/dashboard", label: "Home", icon: Activity, matches: ["/dashboard"] },
@@ -46,7 +47,7 @@ const areaNavigation = {
 type SecondaryLink = { href: string; label: string; description: string; icon: typeof BookOpen };
 const secondaryGroups: { label: string; items: SecondaryLink[] }[] = [
   { label: "Path & learning", items: [
-    { href: "/careers", label: "Career directions", description: "Compare the 4 curated paths", icon: Compass },
+    { href: "/careers", label: "Career directions", description: `Compare ${careers.length} curated paths`, icon: Compass },
     { href: "/courses", label: "Courses & lessons", description: "Read structured learning material", icon: BookOpen },
     { href: "/lab", label: "Coding Practice", description: "Practise without changing quiz scores", icon: Target },
     { href: "/missions", label: "Projects", description: "Work through learner-reported projects", icon: Target }

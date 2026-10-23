@@ -45,11 +45,11 @@ export function CurriculumExplorer() {
 
     <section className="p2-explorer-controls" aria-label="Curriculum filters">
       <label><span>Career path</span><select value={careerId} onChange={event => setCareerId(event.target.value as CareerId | "all")}>
-        <option value="all">All four careers</option>{careers.map(career => <option key={career.id} value={career.id}>{career.title}</option>)}
+        <option value="all">All {careers.length} careers</option>{careers.map(career => <option key={career.id} value={career.id}>{career.title}</option>)}
       </select></label>
       <label className="p2-search"><span>Find a skill</span><span><Search aria-hidden="true"/><input type="search" name="q" value={query}
         autoComplete="off" placeholder="Search skills…" onChange={event => setQuery(event.target.value)}/></span></label>
-      <p><strong>{visibleSkills.length}</strong> of 18 skills</p>
+      <p><strong>{visibleSkills.length}</strong> of {skills.length} skills</p>
     </section>
 
     {!selectedSkill ? <section className="p2-skill-index" aria-labelledby="p2-skill-index-title">

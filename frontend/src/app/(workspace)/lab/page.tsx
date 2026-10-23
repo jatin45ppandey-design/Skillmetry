@@ -4,7 +4,7 @@ import {useCallback,useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
 import {assessmentCatalog} from "@skillmetry/shared/data/assessment-catalog";
-import {skillById} from "@skillmetry/shared/data/catalog";
+import {skills,skillById} from "@skillmetry/shared/data/catalog";
 
 type Exercise={id:string;skillId:string;title:string;kind:"choice"|"fill";prompt:string;snippet:string;
  difficulty:string;choices?:readonly string[];hint:string;topicId:string|null;lessonHref:string|null;executionMode:"reference-check"};
@@ -81,7 +81,7 @@ export default function Lab(){
       <select className="workflow-input" name="exercise-skill-filter" value={filter} onChange={event=>{const value=event.target.value;setFilter(value);
         setActive(exercises.find(x=>value==="all"||x.skillId===value)?.id??null);
         setFeedback(null);setChoice(null);setText("");}}>
-        <option value="all">All 18 skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{skillById[id]?.label??id}</option>)}
+        <option value="all">All {skills.length} skills</option>{[...new Set(exercises.map(x=>x.skillId))].map(id=><option key={id} value={id}>{skillById[id]?.label??id}</option>)}
       </select></label><span className="note">{history.length} recent saved attempts (unscored)</span></div>
     {pending?<div className="motion-action-status"><ActivityIndicator label="Checking your answer against the guided rubric…" compact/></div>:null}
     <div className="workflow-lab-grid sx-lab-workspace">

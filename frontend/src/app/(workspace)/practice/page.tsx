@@ -9,7 +9,7 @@ import { ActivityIndicator, ActionSpinner, ContentSkeleton } from "@/components/
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { curriculumCatalog, curriculumTopicById } from "@skillmetry/shared/data/curriculum";
 import { diagnosticTopics, isDiagnosticAssessmentId } from "@skillmetry/shared/data/diagnostic-taxonomy";
-import { skillById } from "@skillmetry/shared/data/catalog";
+import { skills, skillById } from "@skillmetry/shared/data/catalog";
 import type { AssessmentId } from "@skillmetry/shared/types/domain";
 
 type PracticeQuestion = {id:string;prompt:string;choices:string[];difficulty?:string;hint?:string};
@@ -24,6 +24,7 @@ function PracticeContent() {
   const params=useSearchParams();
   const assessmentId=params.get("assessment") as AssessmentId|null;
   const requestedTopic=params.get("topic")??"";
+  const requestedSkill=params.get("skill")??"";
   const assessment=assessmentCatalog.find(item=>item.id===assessmentId);
   const diagnosticTopic=useMemo(()=>assessmentId&&isDiagnosticAssessmentId(assessmentId)
     ?diagnosticTopics[assessmentId].find(item=>item.id===requestedTopic):null,[assessmentId,requestedTopic]);
@@ -42,6 +43,12 @@ function PracticeContent() {
   const [skillFilter,setSkillFilter]=useState("all");
 
   const hasSelection=Boolean((assessment&&diagnosticTopic)||curriculumTopic);
+  const linkedSkill=curriculumCatalog.skills.some(item=>item.skillId===requestedSkill)?requestedSkill:"";
+  useEffect(()=>{
+    // Learning and landing links may point to a skill rather than one specific
+    // topic. Honour that intent by narrowing the real topic picker only.
+    if(!hasSelection&&linkedSkill)setSkillFilter(linkedSkill);
+  },[hasSelection,linkedSkill]);
   useEffect(()=>{
     if(!hasSelection){setLoading(false);setQuestions([]);return;}
     const controller=new AbortController();
@@ -99,11 +106,11 @@ function PracticeContent() {
       action={<Link className="btn btn-quiet" href={hasSelection?"/practice":"/assessments"}>{hasSelection?<><ArrowLeft aria-hidden="true"/>All topics</>:"Verified assessments"}</Link>}/>
 
     {!hasSelection?<section className="practice-topic-picker" aria-labelledby="practice-topic-heading">
-      <header><span className="eyebrow">54 curriculum topics</span><h2 id="practice-topic-heading">Choose a skill topic to practice</h2>
+      <header><span className="eyebrow">{curriculumCatalog.topics.length} curriculum topics</span><h2 id="practice-topic-heading">Choose a skill topic to practice</h2>
         <p>Every Phase 2 lesson now has three guided concept checks. Coding and SQL exercises are also available in Coding Practice.</p></header>
       <div className="p3-practice-filters">
         <label>Search topics<input type="search" name="topic-query" autoComplete="off" value={query} onChange={event=>setQuery(event.target.value)} placeholder="e.g. joins or accessibility…"/></label>
-        <label>Skill<select name="skill-filter" value={skillFilter} onChange={event=>setSkillFilter(event.target.value)}><option value="all">All 18 skills</option>
+        <label>Skill<select name="skill-filter" value={skillFilter} onChange={event=>setSkillFilter(event.target.value)}><option value="all">All {skills.length} skills</option>
           {curriculumCatalog.skills.map(item=><option key={item.skillId} value={item.skillId}>{skillById[item.skillId]?.label??item.skillId}</option>)}</select></label>
         <label>Difficulty<select name="difficulty-filter" value={difficulty} onChange={event=>setDifficulty(event.target.value)}><option value="all">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>
       </div>
