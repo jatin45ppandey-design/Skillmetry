@@ -251,7 +251,7 @@
   filter: blur(14px);
 }
 
-.about { position: relative; background: linear-gradient(135deg, #f9f4eb 0%, #f2e9dd 100%); border-top: 1px solid #e3dace; }
+.about { position: relative; background: linear-gradient(135deg, #f9f4eb 0%, #f2e9dd 100%); border-top: 1px solid #e3dace; scroll-margin-top: 6rem; }
 .aboutInner {
   min-height: 680px;
   display: grid;
@@ -331,6 +331,7 @@
 
 .close {
   position: relative;
+  scroll-margin-top: 6rem;
   min-height: clamp(620px, 66vw, 820px);
   display: grid;
   align-items: center;
@@ -345,7 +346,7 @@
   z-index: 1;
   background: linear-gradient(90deg, rgb(5 10 9 / .96) 0%, rgb(5 10 9 / .87) 34%, rgb(5 10 9 / .23) 67%, rgb(5 10 9 / .04) 100%);
 }
-.closeInner { position: relative; z-index: 2; padding-block: clamp(8rem, 10vw, 10rem); scroll-margin-top: 6rem; }
+.closeInner { position: relative; z-index: 2; padding-block: clamp(8rem, 10vw, 10rem); }
 .closeInner .eyebrow { color: #d3d0c9; }
 .close h2 {
   max-width: 10ch;
@@ -413,7 +414,7 @@
       linear-gradient(90deg, rgb(5 10 9 / .95) 0%, rgb(5 10 9 / .78) 48%, rgb(5 10 9 / .14) 79%, rgb(5 10 9 / .03) 100%),
       linear-gradient(180deg, rgb(5 10 9 / .2), transparent 48%);
   }
-  .closeInner { padding-top: 5.5rem; }
+  .closeInner { padding-top: 7rem; }
   .close h2 { font-size: clamp(4.3rem, 15vw, 7rem); }
   .closeInner > p:not(.eyebrow) { max-width: 23rem; }
   .footerInner { grid-template-columns: 1fr auto; padding-block: 1.8rem; }
