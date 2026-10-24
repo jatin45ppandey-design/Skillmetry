@@ -35,6 +35,7 @@ function PracticeContent() {
   const [result,setResult]=useState<PracticeResult|null>(null);
   const [activeIndex,setActiveIndex]=useState(0);
   const [hintVisible,setHintVisible]=useState(false);
+  const [questionDirection,setQuestionDirection]=useState<"forward"|"back">("forward");
   const [loading,setLoading]=useState(Boolean(diagnosticTopic||curriculumTopic));
   const [pending,setPending]=useState(false);
   const [error,setError]=useState<string|null>(null);
@@ -55,7 +56,7 @@ function PracticeContent() {
     const queryString=assessment&&diagnosticTopic
       ?`assessment=${encodeURIComponent(assessment.id)}&diagnosticTopic=${encodeURIComponent(diagnosticTopic.id)}`
       :`topic=${encodeURIComponent(requestedTopic)}`;
-    setLoading(true);setError(null);setQuestions([]);setAnswers({});setResult(null);setActiveIndex(0);setHintVisible(false);
+    setLoading(true);setError(null);setQuestions([]);setAnswers({});setResult(null);setActiveIndex(0);setHintVisible(false);setQuestionDirection("forward");
     void fetch(`/api/assessments/practice?${queryString}`,{signal:controller.signal,cache:"no-store"})
       .then(async response=>{
         const body=await response.json() as PracticePayload;
@@ -83,6 +84,12 @@ function PracticeContent() {
   const current=questions[activeIndex];
   const currentReview=current?result?.review.find(item=>item.id===current.id):undefined;
   const allAnswered=questions.length>0&&questions.every(question=>answers[question.id]!==undefined);
+
+  function moveToQuestion(index:number){
+    if(index===activeIndex)return;
+    setQuestionDirection(index>activeIndex?"forward":"back");
+    setActiveIndex(index);setHintVisible(false);
+  }
 
   async function checkAnswers(){
     if(!hasSelection||!allAnswered)return;
@@ -132,23 +139,23 @@ function PracticeContent() {
         <p>{questions.length} guided exercises · {metadata.difficulty??"focused"} · no code execution or proficiency score</p></div></div>
       <nav className="p3-question-nav" aria-label="Practice question navigation">{questions.map((question,index)=><button type="button" key={question.id}
         aria-current={index===activeIndex?"step":undefined} className={index===activeIndex?"active":""}
-        onClick={()=>{setActiveIndex(index);setHintVisible(false);}}>{index+1}<span className="sr-only">{answers[question.id]===undefined?" unanswered":" answered"}</span></button>)}</nav>
-      <fieldset disabled={Boolean(result)||pending}>
+        onClick={()=>moveToQuestion(index)}>{index+1}<span className="sr-only">{answers[question.id]===undefined?" unanswered":" answered"}</span></button>)}</nav>
+      <fieldset key={current.id} className={`p3-practice-question p3-question-${questionDirection}`} disabled={Boolean(result)||pending}>
         <legend><span>{activeIndex+1}.</span> {current.prompt}</legend>
-        {current.choices.map((choice,index)=><label key={index}><input type="radio" name={current.id} checked={answers[current.id]===index}
+        {current.choices.map((choice,index)=><label key={index} className={answers[current.id]===index?"is-selected":undefined}><input type="radio" name={current.id} checked={answers[current.id]===index}
           onChange={()=>setAnswers(previous=>({...previous,[current.id]:index}))}/>{choice}</label>)}
       </fieldset>
       {!result&&current.hint?<div className="p3-hint"><button type="button" className="btn btn-quiet" aria-expanded={hintVisible} onClick={()=>setHintVisible(value=>!value)}><Lightbulb aria-hidden="true"/>{hintVisible?"Hide hint":"Show hint"}</button>{hintVisible?<p>{current.hint}</p>:null}</div>:null}
-      {currentReview?<article className={answers[current.id]===currentReview.correctIndex?"p3-answer-correct":"p3-answer-review"} role="status">
+      {currentReview?<article className={`${answers[current.id]===currentReview.correctIndex?"p3-answer-correct":"p3-answer-review"} p3-feedback-enter`} role="status">
         <strong>{answers[current.id]===currentReview.correctIndex?"Correct reasoning":"Review this choice"}</strong>
         <p>Your answer: {currentReview.choices[currentReview.selectedIndex]}</p><p>Reviewed answer: {currentReview.choices[currentReview.correctIndex]}</p><small>{currentReview.explanation}</small>
       </article>:null}
       <div className="p3-practice-actions">
-        <button className="btn btn-outline" type="button" disabled={activeIndex===0} onClick={()=>{setActiveIndex(index=>index-1);setHintVisible(false);}}>Previous</button>
-        {activeIndex<questions.length-1?<button className="btn btn-primary" type="button" onClick={()=>{setActiveIndex(index=>index+1);setHintVisible(false);}}>Next question<ArrowRight aria-hidden="true"/></button>:
+        <button className="btn btn-outline" type="button" disabled={activeIndex===0} onClick={()=>moveToQuestion(activeIndex-1)}>Previous</button>
+        {activeIndex<questions.length-1?<button className="btn btn-primary" type="button" onClick={()=>moveToQuestion(activeIndex+1)}>Next question<ArrowRight aria-hidden="true"/></button>:
           !result?<button className="btn btn-primary" type="button" disabled={pending||!allAnswered} onClick={()=>void checkAnswers()}>{pending?<ActionSpinner label="Checking answers…"/>:"Check answers"}</button>:null}
       </div>
-      {result?<div className="diagnostic-practice-feedback">
+      {result?<div className="diagnostic-practice-feedback p3-practice-result">
         <CheckCircle2 aria-hidden="true"/><strong>{result.correctCount}/{result.totalQuestions} practice answers correct</strong><p>{result.trust}</p>
         <div className="p3-result-actions"><button type="button" className="btn btn-outline" onClick={()=>{setResult(null);setAnswers({});setActiveIndex(0);}}><RotateCcw aria-hidden="true"/>Try again</button>
           {metadata.lessonHref?<Link className="btn btn-quiet" href={metadata.lessonHref}>Review related lesson</Link>:null}

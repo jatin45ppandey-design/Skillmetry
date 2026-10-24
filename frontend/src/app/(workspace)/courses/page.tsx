@@ -169,8 +169,8 @@ export default function CoursesPage(){
          onClick={()=>setOpenCourse(openCourse===course.slug?null:course.slug)}>
          {openCourse===course.slug?"Hide lessons":"Explore course lessons"} <ArrowRight size={16}/>
        </button>
-       {openCourse===course.slug?<div className="course-module-list">
-         {course.modules.map((module,mi)=><details className="sx-course-module" key={module.id}>
+       {openCourse===course.slug?<div className="course-module-list p3-course-expanded">
+         {course.modules.map((module,mi)=><details className="sx-course-module" data-phase3-motion="course-module" key={module.id}>
            <summary><strong>Module {mi+1} · {module.title}</strong><span>{module.lessons.length} lessons</span></summary>
            <ol>{module.lessons.map((lesson,li)=><li key={lesson.id}>
              <div><strong>{li+1}. {lesson.title}</strong>

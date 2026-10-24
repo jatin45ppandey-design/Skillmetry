@@ -44,3 +44,21 @@
 @media(max-width:620px){.p3-topic-grid,.p3-revision-grid,.p3-diagnostic-practice>div,.p3-revision-timeline{grid-template-columns:1fr}.p3-practice-filters{grid-template-columns:1fr}.p3-practice-filters label:first-child{grid-column:auto}.p3-project-brief{grid-template-columns:1fr}.p3-project-brief nav{grid-column:auto}.p3-practice-actions>.btn,.p3-result-actions>.btn{flex:1 1 100%;justify-content:center}.p3-saved-revision article{grid-template-columns:1fr;gap:5px}}
 @media(max-width:360px){.studio-app[data-route="practice"] .practice-topic-picker,.p3-revision-focus,.p3-revision-section{padding:16px 13px}.p3-topic-grid article,.p3-revision-grid article{padding:16px}.p3-question-nav button{width:42px;height:42px}}
 @media(prefers-reduced-motion:reduce){.p3-topic-grid *,.p3-revision-grid *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Phase 3: transitions only mirror a real change of lesson, answer, or saved state. */
+@keyframes p3-enter-forward{from{opacity:.35;transform:translateX(.65rem)}to{opacity:1;transform:translateX(0)}}
+@keyframes p3-enter-back{from{opacity:.35;transform:translateX(-.65rem)}to{opacity:1;transform:translateX(0)}}
+@keyframes p3-confirm{0%{opacity:0;transform:translateY(.3rem)}65%{opacity:1;transform:translateY(-.05rem)}100%{transform:translateY(0)}}
+@keyframes p3-check-draw{from{stroke-dashoffset:28}to{stroke-dashoffset:0}}
+.p3-lesson-transition-forward,.p3-question-forward{animation:p3-enter-forward 220ms cubic-bezier(.2,.8,.2,1) both}
+.p3-lesson-transition-back,.p3-question-back{animation:p3-enter-back 220ms cubic-bezier(.2,.8,.2,1) both}
+.p3-practice-question label{transition:border-color 160ms ease,background-color 160ms ease,transform 160ms ease}
+.p3-practice-question label.is-selected{border-color:#d9ed82;background:#264a39;transform:translateX(.2rem)}
+.p3-feedback-enter,.p3-practice-result,.assessment-outcome{animation:p3-confirm 240ms cubic-bezier(.2,.8,.2,1) both}
+.p3-confirmed{animation:p3-confirm 220ms cubic-bezier(.2,.8,.2,1) both}
+.p3-confirmed svg,.p3-practice-result>svg,.assessment-outcome>svg{stroke-dasharray:28;animation:p3-check-draw 340ms ease-out both}
+.p3-practice-handoff svg{transition:transform 180ms ease}.p3-practice-handoff:hover svg,.p3-practice-handoff:focus-visible svg{transform:translateX(.2rem)}
+.p3-course-expanded{animation:p3-confirm 180ms ease-out both}.sx-course-module[data-phase3-motion="course-module"][open]>:not(summary){animation:p3-confirm 180ms ease-out both}.sx-course-module[data-phase3-motion="course-module"] summary{transition:color 160ms ease,background-color 160ms ease}.sx-course-module[data-phase3-motion="course-module"][open] summary{color:#294b35}
+.resource-catalog .resource-grid{animation:p3-confirm 180ms ease-out both}.resource-catalog .resource-card{transition:border-color 160ms ease,transform 160ms ease,background-color 160ms ease}.resource-catalog .resource-card:focus-within{border-color:#789979}
+.sx-mission-details[data-phase3-motion="project-disclosure"][open]>:not(summary){animation:p3-confirm 180ms ease-out both}.p3-project-saving{opacity:.72;pointer-events:none}.p3-revision-focus,.p3-revision-section{animation:p3-confirm 220ms ease-out both}
+@media(prefers-reduced-motion:reduce){.p3-lesson-transition-forward,.p3-lesson-transition-back,.p3-question-forward,.p3-question-back,.p3-feedback-enter,.p3-practice-result,.assessment-outcome,.p3-confirmed,.p3-course-expanded,.sx-course-module[data-phase3-motion="course-module"][open]>:not(summary),.resource-catalog .resource-grid,.sx-mission-details[data-phase3-motion="project-disclosure"][open]>:not(summary),.p3-revision-focus,.p3-revision-section{animation:none!important}.p3-confirmed svg,.p3-practice-result>svg,.assessment-outcome>svg{animation:none!important;stroke-dashoffset:0}.p3-practice-question label,.p3-practice-handoff svg,.sx-course-module[data-phase3-motion="course-module"] summary,.resource-catalog .resource-card{transition:none!important}.p3-practice-question label.is-selected{transform:none}}

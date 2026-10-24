@@ -25,6 +25,7 @@ export function CurriculumLessonReader({
   const { user } = useAuth();
   const [progressState, setProgressState] = useState<ProgressState>(user ? "loading" : "signed-out");
   const [completed, setCompleted] = useState(false);
+  const [lessonDirection, setLessonDirection] = useState<"forward" | "back">("forward");
   const courseSlug = `skillmetry-${skillId}-path`;
   const topicPracticeId = lesson.practiceIds.find(id => id.startsWith("topic-practice:"));
   const assessmentPracticeId = lesson.practiceIds.find(id => id.startsWith("assessment:"));
@@ -45,6 +46,18 @@ export function CurriculumLessonReader({
       }).catch(() => { if (!controller.signal.aborted) setProgressState("error"); });
     return () => controller.abort();
   }, [courseSlug, lesson.id, user]);
+
+  useEffect(() => {
+    try {
+      const direction = sessionStorage.getItem("skillmetry-lesson-direction");
+      setLessonDirection(direction === "back" ? "back" : "forward");
+      sessionStorage.removeItem("skillmetry-lesson-direction");
+    } catch { /* Navigation remains available when session storage is unavailable. */ }
+  }, [lesson.id]);
+
+  function rememberLessonDirection(direction: "forward" | "back") {
+    try { sessionStorage.setItem("skillmetry-lesson-direction", direction); } catch { /* Optional visual continuity only. */ }
+  }
 
   async function updateCompletion() {
     if (!user || !["ready", "saved"].includes(progressState)) return;
@@ -70,7 +83,7 @@ export function CurriculumLessonReader({
       <span aria-current="page">{topic.title}</span>
     </nav>
     <div className="p2-lesson-layout">
-      <article className="p2-lesson-article">
+      <article key={lesson.id} className={`p2-lesson-article p3-lesson-transition-${lessonDirection}`}>
         <header><div><span className="v3-kicker">{topic.difficulty} · LESSON {position} OF {total}</span><h1>{lesson.title}</h1><p>{lesson.summary}</p></div>
           <span className="p2-reading-time"><Clock aria-hidden="true"/>{lesson.estimatedMinutes} min</span></header>
         <section aria-labelledby="lesson-objectives"><h2 id="lesson-objectives">What you will learn</h2><ul>{lesson.learningObjectives.map(objective => <li key={objective}>{objective}</li>)}</ul></section>
@@ -80,8 +93,8 @@ export function CurriculumLessonReader({
         <section className="p2-practical-task" aria-labelledby="lesson-task"><span>PRACTICAL TASK</span><h2 id="lesson-task">Try it yourself</h2><p>{lesson.task}</p></section>
         <section aria-labelledby="lesson-outcomes"><h2 id="lesson-outcomes">After this lesson</h2><ul>{lesson.learningOutcomes.map(outcome => <li key={outcome}>{outcome}</li>)}</ul></section>
         <nav className="p2-lesson-pagination" aria-label="Lesson sequence">
-          {previousHref ? <Link className="btn btn-outline" href={previousHref}><ArrowLeft aria-hidden="true"/>Previous lesson</Link> : <span/>}
-          {nextHref ? <Link className="btn btn-primary" href={nextHref}>Next lesson<ArrowRight aria-hidden="true"/></Link> : <Link className="btn btn-primary" href={`/learn?skill=${encodeURIComponent(skillId)}`}>Review skill path<ArrowRight aria-hidden="true"/></Link>}
+          {previousHref ? <Link className="btn btn-outline" href={previousHref} onClick={() => rememberLessonDirection("back")}><ArrowLeft aria-hidden="true"/>Previous lesson</Link> : <span/>}
+          {nextHref ? <Link className="btn btn-primary" href={nextHref} onClick={() => rememberLessonDirection("forward")}>Next lesson<ArrowRight aria-hidden="true"/></Link> : <Link className="btn btn-primary" href={`/learn?skill=${encodeURIComponent(skillId)}`}>Review skill path<ArrowRight aria-hidden="true"/></Link>}
         </nav>
       </article>
       <aside className="p2-lesson-aside" aria-label="Lesson references and progress">
@@ -93,7 +106,7 @@ export function CurriculumLessonReader({
           {["ready", "saved", "saving"].includes(progressState) ? <button type="button" className={completed ? "btn btn-outline" : "btn btn-primary"}
             aria-pressed={completed} disabled={progressState === "saving"} onClick={() => void updateCompletion()}>
             <Check aria-hidden="true"/>{progressState === "saving" ? "Saving…" : completed ? "Undo studied" : "Mark lesson studied"}</button> : null}
-          {progressState === "saved" ? <p className="p2-save-success" role="status" aria-live="polite"><Check aria-hidden="true"/>Saved to your private lesson activity.</p> : null}
+          {progressState === "saved" ? <p className="p2-save-success p3-confirmed" role="status" aria-live="polite"><Check aria-hidden="true"/>Saved to your private lesson activity.</p> : null}
           <small>Lesson activity is self-reported and never changes proficiency.</small>
         </section>
         <section><span className="v3-kicker">REVIEWED REFERENCES</span><h2>Learn from the source</h2>
@@ -105,7 +118,7 @@ export function CurriculumLessonReader({
         </section>
         {topicPracticeId ? <section><span className="v3-kicker">PRACTICE HANDOFF</span><h2>Apply this lesson</h2>
           <p>Try three guided checks with hints and explanations. Topic practice is learning activity and never creates a proficiency score.</p>
-          <Link className="btn btn-primary" href={`/practice?topic=${encodeURIComponent(topic.id)}`}>Practice this topic<ArrowRight aria-hidden="true"/></Link>
+          <Link className="btn btn-primary p3-practice-handoff" href={`/practice?topic=${encodeURIComponent(topic.id)}`}>Practice this topic<ArrowRight aria-hidden="true"/></Link>
           {assessmentPracticeId ? <><p className="note">When you are ready, the secure assessment is the only place a numerical skill score can be created.</p>
             <Link className="btn btn-outline" href={`/assessments?assessment=${encodeURIComponent(assessmentPracticeId.replace("assessment:", ""))}`}>Open assessment<ArrowRight aria-hidden="true"/></Link></> : null}
         </section> : null}

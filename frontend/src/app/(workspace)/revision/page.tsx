@@ -60,7 +60,7 @@ function RevisionContent(){
       action={<Link className="btn btn-quiet" href="/practice">Topic practice</Link>}/>
     {loading?<ContentSkeleton kind="cards" label="Preparing your revision queue…"/>:null}
     {error?<div className="auth-error" role="alert"><p>{error}</p><button type="button" className="btn btn-outline" onClick={()=>void load()}>Try again</button></div>:null}
-    {notice?<p className="p2-save-success" role="status"><CheckCircle2 aria-hidden="true"/>{notice}</p>:null}
+    {notice?<p className="p2-save-success p3-confirmed" role="status"><CheckCircle2 aria-hidden="true"/>{notice}</p>:null}
     {selectedContext?<section className="p3-revision-focus">
       <div><span className="eyebrow">From your practice session</span><h2>{selectedContext.title}</h2><p>This topic was selected for revision; that is not a claim that you have or have not mastered it.</p></div>
       <ol className="p3-revision-timeline">{selectedDates.map((date,index)=><li key={date}><CalendarClock aria-hidden="true"/><div><strong>{index===0?"Recall":index===1?"Apply again":"Check retention"}</strong><span>{new Intl.DateTimeFormat("en-IN",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(new Date(`${date}T00:00:00Z`))}</span></div></li>)}</ol>

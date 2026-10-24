@@ -31,6 +31,7 @@ function AssessmentExperience() {
   const [pending, setPending] = useState<"start" | "submit" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
+  const [questionDirection, setQuestionDirection] = useState<"forward" | "back">("forward");
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   const submitDialogRef = useRef<HTMLDialogElement>(null);
   const [flagged, setFlagged] = useState<string[]>([]);
@@ -92,6 +93,12 @@ function AssessmentExperience() {
     setActiveQuestionIndex(0);
     setFlagged([]);
     setReviewAttemptId(null);
+  }
+
+  function moveToQuestion(index: number) {
+    if (index === activeQuestionIndex) return;
+    setQuestionDirection(index > activeQuestionIndex ? "forward" : "back");
+    setActiveQuestionIndex(index);
   }
 
   async function start() {
@@ -204,7 +211,7 @@ function AssessmentExperience() {
             <button className="btn btn-outline" type="button" onClick={() => {setSession(null);setAnswers({});}}>Start a new attempt</button>
           </div> : <div className="question-list">
             {session.questions.filter((_,index)=>index===activeQuestionIndex).map(question =>
-              <fieldset key={question.id} disabled={pending === "submit"}>
+              <fieldset key={question.id} className={`p3-assessment-question p3-question-${questionDirection}`} disabled={pending === "submit"}>
                 <legend><span>{String(activeQuestionIndex+1).padStart(2,"0")}</span>{question.prompt}</legend>
                 {question.choices.map((choice,choiceIndex)=>{
                   const selected=answers[question.id]===choiceIndex;
@@ -216,13 +223,13 @@ function AssessmentExperience() {
               </fieldset>)}
             <div className="diagnostic-question-actions">
               <button className="btn btn-quiet" type="button" disabled={activeQuestionIndex===0||pending==="submit"}
-                onClick={()=>setActiveQuestionIndex(index=>Math.max(0,index-1))}>Previous</button>
+                onClick={()=>moveToQuestion(Math.max(0,activeQuestionIndex-1))}>Previous</button>
               <button className="btn btn-outline" type="button" disabled={pending==="submit"}
                 onClick={()=>{const id=session.questions[activeQuestionIndex].id;setFlagged(current=>current.includes(id)?current.filter(item=>item!==id):[...current,id]);}}>
                 {flagged.includes(session.questions[activeQuestionIndex].id)?"Remove flag":"Flag for review"}
               </button>
               <button className="btn btn-primary" type="button" disabled={activeQuestionIndex>=session.questions.length-1||pending==="submit"}
-                onClick={()=>setActiveQuestionIndex(index=>Math.min(session.questions.length-1,index+1))}>Next question</button>
+                onClick={()=>moveToQuestion(Math.min(session.questions.length-1,activeQuestionIndex+1))}>Next question</button>
             </div>
           </div>}
           <div className="assessment-submit"><span><Clock3 aria-hidden="true"/>Expires {new Intl.DateTimeFormat("en-IN",{hour:"numeric",minute:"2-digit"}).format(new Date(session.expiresAt))}</span>

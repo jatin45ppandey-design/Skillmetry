@@ -114,7 +114,7 @@ export default function Missions(){
         const hasEvidence=Boolean(item.repositoryUrl||item.demoUrl);
         const specification=missionSpecificationById[mission.id];
         const references=specification?.referenceResourceIds.flatMap(id=>learningResources.find(resource=>resource.id===id)??[] )??[];
-        return <article key={mission.id} className={"mission-work-card workflow-mission "+(priority.has(mission.skillId)?"priority":"")}>
+        return <article key={mission.id} className={`mission-work-card workflow-mission ${priority.has(mission.skillId)?"priority":""} ${pending===mission.id?"p3-project-saving":""}`}>
           <div className="mission-card-top"><span className="mission-index">M{String(index+1).padStart(2,"0")}</span>
             <div><StatusPill tone={priority.has(mission.skillId)?"accent":"neutral"}>
               {priority.has(mission.skillId)?"Learning path priority":"Curated project"}</StatusPill>
@@ -132,7 +132,7 @@ export default function Missions(){
               {references.map(resource=><a className="text-link" key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer">{resource.title} ↗</a>)}
             </nav>
           </div>:<p className="note">Published project details use the reviewed author brief and checklist.</p>}
-          <details className="sx-mission-details"><summary><FileCheck2 aria-hidden="true"/> View checklist & evidence <span>{item.completedIndices.length}/{mission.deliverables.length} steps</span></summary>
+          <details className="sx-mission-details" data-phase3-motion="project-disclosure"><summary><FileCheck2 aria-hidden="true"/> View checklist & evidence <span>{item.completedIndices.length}/{mission.deliverables.length} steps</span></summary>
           <div className="mission-deliverables"><h3>Acceptance checklist</h3>
             <ul>{mission.deliverables.map((label,i)=><li key={label}><label>
                <input type="checkbox" name={`deliverable-${mission.id}-${i}`} checked={item.completedIndices.includes(i)} disabled={!canSave||pending!==null}
