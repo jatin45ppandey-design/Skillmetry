@@ -12,8 +12,10 @@ describe("Phase 2 career motifs", () => {
     for (const career of careers) expect(motif).toContain(`"${career.id}"`);
   });
 
-  it("uses the shared motifs in the landing and workspace career selectors", () => {
-    expect(source("frontend/src/components/career-chapter-gallery.tsx")).toContain("CareerMotif careerId={career.id}");
+  it("keeps motifs in the workspace while the landing uses its connected path language", () => {
+    const landingPath = source("frontend/src/components/living-learning-path.tsx");
+    expect(landingPath).toContain("careers.map(item");
+    expect(landingPath).toContain("pathPoints");
     expect(source("frontend/src/app/(workspace)/careers/page.tsx")).toContain("CareerMotif careerId={career.id}");
   });
 });
