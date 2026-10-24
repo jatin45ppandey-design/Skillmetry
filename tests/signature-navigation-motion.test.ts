@@ -4,27 +4,33 @@ import { fileURLToPath } from "node:url";
 
 const source = (path: string) => readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), "utf8");
 
-describe("signature navigation motion", () => {
-  it("maps each primary area to a route-aware symbol in the shared shell", () => {
+describe("workspace primary navigation stability", () => {
+  it("keeps the five intended real route targets", () => {
     const shell = source("frontend/src/components/workspace-shell.tsx");
-    const motion = source("frontend/src/components/signature-navigation-motion.tsx");
-    for (const area of ["home", "path", "learn", "practice", "progress"]) {
-      expect(shell).toContain(`area: "${area}"`);
-      expect(motion).toContain(`case "${area}"`);
+    for (const [href, label] of [
+      ["/dashboard", "Home"],
+      ["/roadmap", "My Path"],
+      ["/learn", "Learn"],
+      ["/assessments", "Practice"],
+      ["/twin", "Progress"]
+    ]) {
+      expect(shell).toContain(`href: "${href}", label: "${label}"`);
     }
-    expect(shell).toContain("onSignatureNavigate={beginSignatureNavigation}");
-    expect(shell).toContain("data-signature-phase={signatureTransition?.phase}");
+    expect(shell).toContain('prefetch={true}');
+    expect(shell).toContain('onClick={onNavigate}');
+    expect(shell).toContain('aria-current={active ? "page" : undefined}');
   });
 
-  it("keeps the animation optional, short, and cancellable", () => {
-    const motion = source("frontend/src/components/signature-navigation-motion.tsx");
-    const css = source("frontend/src/app/signature-navigation-motion.css");
-    expect(motion).toContain("prefers-reduced-motion: reduce");
-    expect(motion).toContain("clearTimer()");
-    expect(motion).toContain("sessionStorage");
-    expect(motion).toContain("expectedArea");
-    expect(css).toContain("pointer-events: none");
-    expect(css).toContain("prefers-reduced-motion: reduce");
-    expect(css).toContain("signature-content-arrive");
+  it("does not mount decorative stateful route overlays over functional navigation", () => {
+    const shell = source("frontend/src/components/workspace-shell.tsx");
+    expect(shell).not.toContain("useSignatureNavigation");
+    expect(shell).not.toContain("<SignatureNavigationMotion");
+    expect(shell).not.toContain("onSignatureNavigate");
+  });
+
+  it("renders the approved Skillmetry name without a Signal subtitle", () => {
+    const brand = source("frontend/src/components/brand.tsx");
+    expect(brand).toContain("brand-name");
+    expect(brand).not.toContain("<small>signal</small>");
   });
 });
