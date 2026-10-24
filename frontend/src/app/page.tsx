@@ -41,7 +41,6 @@ export default function Home() {
       <div id="main-content">
         <section className={`${styles.frame} ${styles.hero}`} aria-labelledby="landing-hero-title" data-story-section="hero">
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Learn with direction</p>
             <h1 id="landing-hero-title">
               <span>Learn</span>
               <span>beyond</span>
@@ -62,9 +61,6 @@ export default function Home() {
             <LandingKineticArt />
           </div>
 
-          <div className={styles.heroIndex} aria-hidden="true">
-            <strong>01</strong><span>/</span><span>03</span><i />
-          </div>
         </section>
 
         <section id="about" className={styles.about} aria-labelledby="about-title" data-story-section="about">
@@ -91,7 +87,6 @@ export default function Home() {
 
           <div className={`${styles.frame} ${styles.learningStrip}`} aria-labelledby="learning-strip-title" data-reveal>
             <div className={styles.stripHeading}>
-              <p className={styles.eyebrow}>Simple. Focused. Impactful.</p>
               <h3 id="learning-strip-title">Everything you need<br />to grow, in one place.</h3>
             </div>
             <div className={styles.steps}>
@@ -108,22 +103,30 @@ export default function Home() {
         </section>
 
         <section id="get-started" className={styles.close} aria-labelledby="close-title" data-story-section="close">
-          <Image
-            className={styles.closeArtwork}
-            src="/images/landing/growth-pathway.png"
-            alt="A warm illuminated path leading toward an open doorway"
-            fill
-            loading="eager"
-            sizes="100vw"
-          />
-          <div className={styles.closeShade} aria-hidden="true" />
-          <div className={`${styles.frame} ${styles.closeInner}`} data-reveal>
-            <p className={styles.eyebrow}>Get started</p>
-            <h2 id="close-title">Your <em>growth</em><br />starts here.</h2>
-            <p>Sign in and take the next step in your learning journey.</p>
-            <Link href="/auth/sign-in" className={styles.closeAction}>
-              Sign In <ArrowRight aria-hidden="true" />
-            </Link>
+          <div className={`${styles.frame} ${styles.closeShell}`}>
+            <div className={styles.closeInner} data-reveal>
+              <p className={styles.eyebrow}>Get started</p>
+              <h2 id="close-title">Your <em>growth</em><br />starts here.</h2>
+              <p>Sign in and take the next step in your learning journey.</p>
+              <Link href="/auth/sign-in" className={styles.closeAction}>
+                Sign In <ArrowRight aria-hidden="true" />
+              </Link>
+            </div>
+            <div className={styles.growthArtwork} data-reveal>
+              <Image
+                src="/images/landing/growth-steps-plants.png"
+                alt="Three ascending blocks with progressively larger plants"
+                width={1736}
+                height={906}
+                loading="eager"
+                sizes="(max-width: 768px) 100vw, 62vw"
+              />
+              <ol className={styles.growthLabels} aria-label="Learning growth sequence">
+                <li>Learn</li>
+                <li>Practice</li>
+                <li>Grow</li>
+              </ol>
+            </div>
           </div>
         </section>
       </div>
@@ -136,7 +139,6 @@ export default function Home() {
             <Link href="/feedback">Feedback</Link>
             <Link href="/auth/sign-in">Sign In</Link>
           </nav>
-          <p>Learn with direction.</p>
         </div>
       </footer>
     </main>

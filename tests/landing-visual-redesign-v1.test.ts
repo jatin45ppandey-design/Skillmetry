@@ -15,11 +15,21 @@ describe("final public landing release", () => {
     expect(artwork).not.toContain("career");
   });
 
-  it("uses the approved book and luminous-path artwork in the public story", () => {
+  it("uses the approved book and progressive growth-plant artwork in the public story", () => {
     const page = source("frontend/src/app/page.tsx");
     expect(page).toContain("/images/landing/about-open-book.png");
-    expect(page).toContain("/images/landing/growth-pathway.png");
+    expect(page).toContain("/images/landing/growth-steps-plants.png");
     expect(page).toContain("An open book with learning pages rising from it");
+    expect(page).toContain("Three ascending blocks with progressively larger plants");
+    expect(page).not.toContain("growth-pathway.png");
+  });
+
+  it("removes redundant landing counters and taglines", () => {
+    const page = source("frontend/src/app/page.tsx");
+    expect(page).not.toContain("heroIndex");
+    expect(page).not.toContain("01</strong>");
+    expect(page).not.toContain("Learn with direction");
+    expect(page).not.toContain("Simple. Focused. Impactful.");
   });
 
   it("gives Explore an on-page target and Sign In the real auth route", () => {
