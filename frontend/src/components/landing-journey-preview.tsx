@@ -1,71 +1,62 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowRight, BookOpenCheck, Compass, Fingerprint } from "lucide-react";
-import { assessmentById } from "@skillmetry/shared/data/assessment-catalog";
-import { careers } from "@skillmetry/shared/data/catalog";
+import { useMemo, useState, type CSSProperties } from "react";
+import { ArrowRight, BookOpenCheck, CodeXml, Compass, Fingerprint, ScanSearch } from "lucide-react";
+import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
+import { careers, skillById } from "@skillmetry/shared/data/catalog";
+import type { CareerId } from "@skillmetry/shared/types/domain";
 import styles from "@/app/landing-v2.module.css";
 
-const stages = ["goal", "evidence", "action"] as const;
+const stages = ["career", "learn", "practice", "evidence", "next"] as const;
 type Stage = (typeof stages)[number];
 
-const stageContext: Record<Stage, { label: string; detail: string }> = {
-  goal: { label: "Start with direction", detail: "A chosen path changes context, not your evidence." },
-  evidence: { label: "Check what is known", detail: "No trusted attempt stays explicitly Not assessed." },
-  action: { label: "Move one step", detail: "The next link uses the real assessment catalog." }
+const stageCopy: Record<Stage, { label: string; title: string; copy: string }> = {
+  career: { label: "Career", title: "Choose a direction", copy: "A direction gives the catalog a useful context. It is editable and does not create evidence." },
+  learn: { label: "Learn", title: "Open the relevant concept", copy: "Resources explain the selected topic without creating a proficiency claim." },
+  practice: { label: "Practice", title: "Work through the idea", copy: "Guided practice supports learning activity. It remains separate from quiz evidence." },
+  evidence: { label: "Evidence", title: "Keep unknowns visible", copy: "No trusted attempt in this preview means Not assessed, never an invented zero." },
+  next: { label: "Next step", title: "Take one grounded action", copy: "When a supported assessment exists, it is the route to numerical evidence." }
 };
 
 export function LandingJourneyPreview() {
-  const [activeStage, setActiveStage] = useState<Stage>("goal");
-  const career = careers.find(item => item.id === "backend-developer") ?? careers[0];
-  const assessment = assessmentById["javascript-foundations"];
+  const [activeStage, setActiveStage] = useState<Stage>("career");
+  const [careerId, setCareerId] = useState<CareerId>("backend-developer");
+  const career = careers.find(item => item.id === careerId) ?? careers[0];
+  const focusSkill = skillById[career.skills[0]?.skillId] ?? skillById.javascript;
+  const assessment = useMemo(() => assessmentCatalog.find(item => item.skillId === focusSkill.id) ?? null, [focusSkill.id]);
+  const stage = stageCopy[activeStage];
 
-  return (
-    <section className={styles.loopPreview} aria-labelledby="loop-preview-title" data-stage={activeStage}>
-      <header className={styles.loopHeader}>
-        <div>
-          <h2 id="loop-preview-title">Goal → evidence → action</h2>
-        </div>
-        <span>Catalog data · no fictional score</span>
-      </header>
+  return <section className={styles.journeyCanvas} id="learning-canvas" aria-labelledby="journey-canvas-title" data-stage={activeStage}>
+    <header className={styles.canvasHeader}>
+      <div><p>Illustrative product walkthrough</p><h2 id="journey-canvas-title">A connected learning canvas</h2></div>
+      <span>Catalog-backed &middot; no fictional score</span>
+    </header>
 
-      <div className={styles.loopStageTabs} role="group" aria-label="Preview a learning decision">
-        {stages.map((stage) => (
-          <button key={stage} type="button" aria-pressed={activeStage === stage} onClick={() => setActiveStage(stage)}>
-            {stage === "goal" ? "Goal" : stage === "evidence" ? "Evidence" : "Next action"}
-          </button>
-        ))}
-      </div>
+    <div className={styles.canvasControls} role="tablist" aria-label="Explore the learning journey">
+      {stages.map((item, index) => <button key={item} type="button" role="tab" aria-selected={activeStage === item}
+        aria-controls="journey-canvas-panel" onClick={() => setActiveStage(item)}>
+        <i aria-hidden="true">0{index + 1}</i>{stageCopy[item].label}
+      </button>)}
+    </div>
 
-      <div className={styles.loopStageContext} role="status" aria-live="polite" key={activeStage}>
-        <strong>{stageContext[activeStage].label}</strong>
-        <span>{stageContext[activeStage].detail}</span>
-      </div>
+    <div className={styles.canvasNetwork} aria-hidden="true">
+      <svg viewBox="0 0 760 248" preserveAspectRatio="none"><path d="M18 166C116 166 120 48 220 48s102 152 202 152 87-122 190-122h130" /><path d="M18 207c88 0 120-78 202-78s99 82 202 82 101-43 190-43h130" /></svg>
+      {stages.map((item, index) => <span key={item} className={activeStage === item ? styles.canvasNodeActive : undefined} style={{ "--node-index": index } as CSSProperties} />)}
+    </div>
 
-      <div className={styles.loopCanvas} data-ui>
-        <div className={styles.loopRail} aria-hidden="true"><i /><i /><i /></div>
-
-        <article className={`${styles.loopCard} ${styles.loopGoal} ${activeStage === "goal" ? styles.loopCardActive : ""}`} aria-current={activeStage === "goal" ? "step" : undefined} data-ui>
-          <span className={styles.loopIcon}><Compass aria-hidden="true" /></span>
-          <div><p>Career goal</p><h3>{career.title}</h3><span>{career.subtitle}</span></div>
-          <Link href="/careers" aria-label="Explore career paths">Explore <ArrowRight aria-hidden="true" /></Link>
-        </article>
-
-        <article className={`${styles.loopCard} ${styles.loopEvidence} ${activeStage === "evidence" ? styles.loopCardActive : ""}`} aria-current={activeStage === "evidence" ? "step" : undefined} data-ui>
-          <span className={styles.loopIcon}><Fingerprint aria-hidden="true" /></span>
-          <div><p>Assessment evidence</p><h3>{assessment.title}</h3><span>No trusted attempt in this preview</span></div>
-          <strong>Not assessed</strong>
-        </article>
-
-        <article className={`${styles.loopCard} ${styles.loopAction} ${activeStage === "action" ? styles.loopCardActive : ""}`} aria-current={activeStage === "action" ? "step" : undefined} data-ui>
-          <span className={styles.loopIcon}><BookOpenCheck aria-hidden="true" /></span>
-          <div><p>Grounded next action</p><h3>Take the baseline assessment</h3><span>{assessment.questionCount} questions · about {assessment.estimatedMinutes} minutes</span></div>
-          <Link href={`/assessments?assessment=${encodeURIComponent(assessment.id)}`} aria-label={`View ${assessment.title}`}>Open <ArrowRight aria-hidden="true" /></Link>
-        </article>
-      </div>
-
-      <p className={styles.loopNote}>Learning activity stays separate from measured quiz evidence.</p>
-    </section>
-  );
+    <div className={styles.canvasPanel} id="journey-canvas-panel" role="tabpanel" key={`${activeStage}-${career.id}`} aria-live="polite">
+      <div className={styles.canvasPanelTop}><span>{stage.label}</span><strong>{stage.title}</strong><p>{stage.copy}</p></div>
+      {activeStage === "career" ? <div className={styles.canvasCareerChoice}>
+        <Compass aria-hidden="true" /><label>Career direction<select value={career.id} onChange={event => setCareerId(event.target.value as CareerId)}>{careers.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+        <div><strong>{career.title}</strong><small>{career.skills.length} catalog skills &middot; {career.subtitle}</small></div>
+        <Link href={`/onboarding?career=${encodeURIComponent(career.id)}`}>Use this direction <ArrowRight aria-hidden="true" /></Link>
+      </div> : null}
+      {activeStage === "learn" ? <div className={styles.canvasActionState}><BookOpenCheck aria-hidden="true" /><div><span>Focus skill</span><strong>{focusSkill.label}</strong><small>{focusSkill.description}</small></div><Link href={`/resources?skill=${encodeURIComponent(focusSkill.id)}`}>Browse resources <ArrowRight aria-hidden="true" /></Link></div> : null}
+      {activeStage === "practice" ? <div className={styles.canvasActionState}><CodeXml aria-hidden="true" /><div><span>Topic practice</span><strong>Try {focusSkill.label} in context</strong><small>Practice activity is not a quiz result.</small></div><Link href={`/practice?skill=${encodeURIComponent(focusSkill.id)}`}>Open practice <ArrowRight aria-hidden="true" /></Link></div> : null}
+      {activeStage === "evidence" ? <div className={styles.canvasEvidenceState}><Fingerprint aria-hidden="true" /><div><span>Assessment state</span><strong>Not assessed</strong><small>This preview has no trusted attempt, so it shows no percentage.</small></div><em>Unknown, not 0%</em></div> : null}
+      {activeStage === "next" ? <div className={styles.canvasActionState}><ScanSearch aria-hidden="true" /><div><span>Grounded next step</span><strong>{assessment ? `Check ${assessment.title}` : `Keep learning ${focusSkill.label}`}</strong><small>{assessment ? `${assessment.questionCount} supported questions can establish evidence.` : "No supported assessment is currently available for this focus."}</small></div><Link href={assessment ? `/assessments?assessment=${encodeURIComponent(assessment.id)}` : `/resources?skill=${encodeURIComponent(focusSkill.id)}`}>{assessment ? "View assessment" : "Continue learning"} <ArrowRight aria-hidden="true" /></Link></div> : null}
+    </div>
+    <p className={styles.canvasNote}>The path changes context as you move. Learning activity stays separate from measured quiz evidence.</p>
+  </section>;
 }
