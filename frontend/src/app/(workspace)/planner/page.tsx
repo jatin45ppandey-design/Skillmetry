@@ -1,5 +1,5 @@
 "use client";
-import {ActivityIndicator, ActionSpinner} from "@/components/motion-ui";
+import {ActivityIndicator, ActionSpinner, ActionSuccess} from "@/components/motion-ui";
 import {useCallback,useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {SectionTitle} from "@/components/section-title";
@@ -19,6 +19,7 @@ export default function Planner() {
   const [loading,setLoading]=useState(false);
   const [pending,setPending]=useState<string|null>(null);
   const [error,setError]=useState<string|null>(null);
+  const [confirmation,setConfirmation]=useState<string|null>(null);
   const [week,setWeek]=useState(weekStartUtc(new Date()));
   const preview=useMemo(()=>buildWeeklyStudyPlan({learning:preferences.learning,trustedScores:scores,
     hoursPerWeek:preferences.hoursPerWeek,monday:week}),[preferences,scores,week]);
@@ -36,7 +37,7 @@ export default function Planner() {
   },[persisted]);
   useEffect(()=>{void refresh();},[refresh]);
   async function request(method:"POST"|"PATCH",task?:StudyTask,status?:StudyTaskStatus,plannedDate?:string){
-    setPending(task?.taskKey??"generate");setError(null);
+    setPending(task?.taskKey??"generate");setError(null);setConfirmation(null);
     try{
       const response=await fetch("/api/learning/plan",{
         method,headers:{"Content-Type":"application/json"},
@@ -46,6 +47,7 @@ export default function Planner() {
       if(!response.ok)throw new Error(body.error??"Task could not be saved");
       if(body.tasks)setTasks(body.tasks);
       if(body.task)setTasks(items=>items.map(item=>item.taskKey===body.task?.taskKey?body.task:item));
+      setConfirmation(method === "POST" ? "Your weekly plan was saved." : plannedDate ? "The study date was saved." : "The task status was saved.");
     }catch(e){setError(e instanceof Error?e.message:"Study plan update failed");}
     finally{setPending(null);}
   }
@@ -77,6 +79,7 @@ export default function Planner() {
       {loading?<div className="motion-action-status"><ActivityIndicator label="Loading your saved weekly plan…" compact/></div>:null}
       {pending?<div className="motion-action-status"><ActivityIndicator compact label={pending==="generate"?"Building your plan…":"Saving study task…"} detail="Changes are confirmed only after the server responds."/></div>:null}
       {error?<p className="auth-error" role="alert">{error}</p>:null}
+      {confirmation?<ActionSuccess>{confirmation}</ActionSuccess>:null}
       <p className="note">{completed} completed of {focus.length} active tasks. Progress is self-reported learning activity.</p>
       {!visible.length?<p>Choose a career or skill focus in settings to receive a suggested learning plan.</p>:null}
       <div className="sx-planner-view" role="group" aria-label="Filter weekly tasks">
@@ -85,8 +88,8 @@ export default function Planner() {
        <span>{shownTasks.length} shown</span>
       </div>
       {!shownTasks.length && visible.length ? <p className="workflow-notice" role="status">No tasks match this view. Choose another status to continue.</p> : null}
-      <ol className="workflow-task-list sx-planner-tasks">
-      {shownTasks.map(task=><li key={task.taskKey}>
+      <ol className="workflow-task-list sx-planner-tasks" key={view} data-view={view}>
+      {shownTasks.map(task=><li key={task.taskKey} className={task.status === "completed" ? "p4-planner-task--completed" : undefined}>
         <div><strong>{task.title}</strong><small>{task.plannedDate} · {task.estimatedMinutes} min · {task.kind}</small>
          {(() => { const action=getStudyTaskAction(task); return <Link href={action.href}>{action.label}</Link>; })()}</div>
         {persisted?<div className="workflow-inline-actions"><label className="workflow-task-status">Study date

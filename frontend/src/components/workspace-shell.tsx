@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Activity, ArrowRight, BookMarked, BookOpen, BriefcaseBusiness, Cloud, CloudOff,
-  Compass, Fingerprint, FlaskConical, GitBranch, LogIn, Menu, Settings2, Target,
+  ArrowRight, BookOpen, BriefcaseBusiness, ChartNoAxesCombined, Cloud, CloudOff,
+  Code2, Compass, FlaskConical, House, LogIn, Menu, Route, Settings2, Target,
   UserRound, WandSparkles, X
 } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -15,11 +15,11 @@ import { useSkillmetry } from "@/store/use-skillmetry";
 import { careers } from "@skillmetry/shared/data/catalog";
 
 const primary = [
-  { href: "/dashboard", label: "Home", icon: Activity, area: "home", matches: ["/dashboard"] },
-  { href: "/roadmap", label: "My Path", icon: GitBranch, area: "path", matches: ["/roadmap", "/careers"] },
-  { href: "/learn", label: "Learn", icon: BookMarked, area: "learn", matches: ["/learn", "/resources", "/courses"] },
-  { href: "/assessments", label: "Practice", icon: Target, area: "practice", matches: ["/assessments", "/practice", "/lab", "/missions", "/revision"] },
-  { href: "/twin", label: "Progress", icon: Fingerprint, area: "progress", matches: ["/twin", "/passport"] }
+  { href: "/dashboard", label: "Home", icon: House, area: "home", matches: ["/dashboard"] },
+  { href: "/roadmap", label: "My Path", icon: Route, area: "path", matches: ["/roadmap", "/careers"] },
+  { href: "/learn", label: "Learn", icon: BookOpen, area: "learn", matches: ["/learn", "/resources", "/courses"] },
+  { href: "/assessments", label: "Practice", icon: Code2, area: "practice", matches: ["/assessments", "/practice", "/lab", "/missions", "/revision"] },
+  { href: "/twin", label: "Progress", icon: ChartNoAxesCombined, area: "progress", matches: ["/twin", "/passport"] }
 ] as const;
 
 const areaNavigation = {

@@ -1,0 +1,73 @@
+/* Final signature pass: acknowledge real changes without implying progress or blocking navigation. */
+.studio-app .p4-dashboard-next[data-state="ready"] .mb-now__action > a,
+.studio-app .p4-dashboard-next[data-state="fallback"] .mb-now__action > a {
+  transition: transform 180ms var(--signature-motion-ease), background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.studio-app .p4-dashboard-next[data-state="fallback"] .mb-now__action {
+  box-shadow: inset 3px 0 0 #b97a4e;
+}
+
+.studio-app .p4-continue,
+.studio-app .p4-tool-result,
+.studio-app .p4-twin-career-evidence,
+.studio-app .sx-planner-tasks[data-view] {
+  animation: signature-final-arrive 220ms var(--signature-motion-ease) both;
+}
+
+.studio-app .p4-planner-task--completed {
+  border-left: 3px solid #71966f;
+}
+
+.studio-app .p4-planner-task--completed strong::after {
+  content: "Completed";
+  display: inline-block;
+  margin-left: .5rem;
+  color: #426d49;
+  font-size: .66rem;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.studio-app .p4-tool-result {
+  transform-origin: top center;
+}
+
+.studio-app .p4-twin-career-evidence {
+  transform-origin: left top;
+}
+
+.studio-app .twin-detail-column > .twin-detail-panel {
+  transform-origin: top right;
+}
+
+.studio-app .mb-primary-nav a svg,
+.studio-app .mb-bottom-nav a svg,
+.studio-app .mb-drawer__primary a svg {
+  stroke-width: 1.9;
+}
+
+@keyframes signature-final-arrive {
+  from { opacity: .58; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (hover: hover) {
+  .studio-app .p4-dashboard-next[data-state="ready"] .mb-now__action > a:hover,
+  .studio-app .p4-dashboard-next[data-state="fallback"] .mb-now__action > a:hover {
+    box-shadow: 0 8px 18px rgb(39 72 50 / .16);
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 520px) {
+  .studio-app .p4-planner-task--completed strong::after { display: block; margin: .28rem 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-app .p4-continue,
+  .studio-app .p4-tool-result,
+  .studio-app .p4-twin-career-evidence,
+  .studio-app .sx-planner-tasks[data-view] { animation: none !important; }
+}

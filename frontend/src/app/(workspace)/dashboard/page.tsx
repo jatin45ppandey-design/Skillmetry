@@ -211,7 +211,8 @@ export default function Dashboard() {
         ) : null}
       </div>
 
-      <section className="mb-now" aria-labelledby="mb-now-title" aria-busy={loading} data-ui>
+      <section className="mb-now p4-dashboard-next" aria-labelledby="mb-now-title" aria-busy={loading}
+        data-state={loading ? "loading" : cloudNextStatus === "unavailable" ? "fallback" : "ready"} data-ui>
         <div className="mb-now__action">
           <p>Now</p>
           <h2 id="mb-now-title">{nextTitle}</h2>
@@ -280,7 +281,7 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <section className="mb-continue" aria-labelledby="mb-continue-title" data-ui>
+      <section className="mb-continue p4-continue" key={continuation.href} aria-labelledby="mb-continue-title" data-ui>
         <div><p>Continue Learning</p><h2 id="mb-continue-title">{continuation.title}</h2><p>{continuation.detail}</p><small>{continuation.note}</small></div>
         <Link href={continuation.href}>{continuation.label} <ArrowRight aria-hidden="true" /></Link>
         <BookOpen aria-hidden="true" className="mb-continue__icon" />

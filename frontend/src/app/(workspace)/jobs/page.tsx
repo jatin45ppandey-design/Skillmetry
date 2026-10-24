@@ -74,7 +74,7 @@ export default function Jobs(){
     {pending?<ActivityIndicator compact label="Comparing requirements with your available quiz evidence…" detail="Recognized skills are not a hiring prediction."/>:null}
     {error?<p className="auth-error" role="alert">{error}</p>:null}
    </form>
-   {result||pending?<section className="panel sx-jobs-results" aria-live="polite">
+   {result||pending?<section className="panel sx-jobs-results p4-tool-result" aria-live="polite" key={result ? `${result.matches}-${result.unassessed}-${description.length}` : "loading"}>
     <h2>Requirements and your next steps</h2>
     {pending?<ActivityIndicator compact label="Preparing your skill comparison…"/>:!result?<p>Paste a role description to map known technologies into assessments and learning resources.</p>:
      <>

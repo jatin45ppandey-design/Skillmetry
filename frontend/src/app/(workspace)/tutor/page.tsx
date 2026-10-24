@@ -43,7 +43,7 @@ function TutorContent(){
       {pending?<ActionSpinner label="Preparing guidance…"/>:consent?"Ask AI tutor":"Show curated guidance"}</button>
     {error?<p className="auth-error" role="alert">{error}</p>:null}
    </form>
-   {answer||pending?<section className="panel sx-tutor-answer" aria-live="polite">
+   {answer||pending?<section className="panel sx-tutor-answer p4-tool-result" aria-live="polite" key={answer ? `${skill}-${answer.mode}` : "loading"}>
     <h2>Your study guidance</h2>
     {pending?<ActivityIndicator compact label={consent?"Preparing your consented tutor response…":"Finding curated learning guidance…"} detail="No study results are changed by tutor answers."/>:!answer?<p>Select a topic and ask a question. Start with curated guidance if AI is not configured.</p>:
      <><p><strong>{answer.mode==="ai"?"AI-generated explanation":"Curated learning pathway"}</strong></p>
