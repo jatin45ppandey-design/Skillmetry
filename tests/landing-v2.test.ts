@@ -10,17 +10,18 @@ describe("Public landing experience contracts", () => {
     const styles = read("../frontend/src/app/landing-v2.module.css");
     expect(page).toContain('from "./landing-v2.module.css"');
     expect(page).toContain("data-landing-root");
-    expect(styles).toContain("#f3eee4");
-    expect(styles).toContain("#191a17");
-    expect(styles).toContain("#f15a38");
+    expect(styles).toContain("#f7f1e7");
+    expect(styles).toContain("#101513");
+    expect(styles).toContain("#ff5c3b");
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
   it("keeps the public story to hero, about and closing sections", () => {
     const page = read("../frontend/src/app/page.tsx");
-    for (const label of ["Learn", "Keep curiosity", "Your growth"]) expect(page).toContain(label);
+    for (const label of ["Learn", "A clearer way", "Your <em>growth</em>"]) expect(page).toContain(label);
     expect(page.match(/<section/g)).toHaveLength(3);
     expect(page).toContain('id="about"');
+    expect(page).toContain("Everything you need");
   });
 
   it("uses only Explore and Sign In as public actions", () => {
