@@ -30,9 +30,9 @@ describe("Phase 6 final integration guards",()=>{
   });
 
   it("renders every expanded career on the public landing page",()=>{
-    const gallery=source("frontend/src/components/career-chapter-gallery.tsx");
-    expect(gallery).toContain('CareerMotif careerId={career.id}');
-    expect(gallery).toContain("careers.map(career");
+    const path=source("frontend/src/components/living-learning-path.tsx");
+    expect(path).toContain("careers.map(item");
+    expect(path).toContain("chooseCareer(event.target.value as CareerId)");
   });
 
   it("keeps shared control feedback restrained and disables it for reduced motion",()=>{

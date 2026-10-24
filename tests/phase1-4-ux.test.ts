@@ -4,17 +4,17 @@ import {fileURLToPath} from "node:url";
 const file=(name:string)=>readFileSync(fileURLToPath(new URL("../"+name,import.meta.url)),"utf8");
 
 describe("Skillmetry UI/UX phases 1–4 release contracts",()=>{
- it("provides a catalog-backed landing journey and interactive career explorer",()=>{
-  const preview=file("frontend/src/components/landing-journey-preview.tsx");
+ it("provides a catalog-backed living path and interactive career explorer",()=>{
+  const path=file("frontend/src/components/living-learning-path.tsx");
   const landing=file("frontend/src/app/page.tsx");
-  const gallery=file("frontend/src/components/career-chapter-gallery.tsx");
-  expect(landing).toContain("<LandingJourneyPreview />");
-  expect(preview).toContain('assessmentById["javascript-foundations"]');
-  expect(preview).toContain("Catalog data · no fictional score");
-  expect(gallery).toContain("aria-pressed={active}");
-  expect(gallery).toContain("setSelectedId(career.id);");
-  expect(gallery).toContain('setSelectedSkillId(career.skills[0]?.skillId ?? "");');
-  expect(preview).not.toContain("20/100");
+  expect(landing).toContain('<LivingLearningPath mode="hero" />');
+  expect(landing).toContain('<LivingLearningPath mode="explorer" />');
+  expect(path).toContain('from "@skillmetry/shared/data/catalog"');
+  expect(path).toContain("Catalog-backed");
+  expect(path).toContain("aria-pressed={active}");
+  expect(path).toContain("setCareerId(nextCareer.id);");
+  expect(path).toContain('setSelectedSkillId(nextCareer.skills[0]?.skillId ?? "");');
+  expect(path).not.toContain("20/100");
  });
  it("does not present local edits as a completed remote profile save",()=>{
   const settings=file("frontend/src/app/(workspace)/settings/page.tsx");
