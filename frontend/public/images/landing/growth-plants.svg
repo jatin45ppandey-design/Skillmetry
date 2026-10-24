@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
+  <defs>
+    <linearGradient id="background" x1="230" y1="100" x2="1450" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111815"/>
+      <stop offset=".55" stop-color="#0B100E"/>
+      <stop offset="1" stop-color="#080D0C"/>
+    </linearGradient>
+    <radialGradient id="warmHalo" cx="0" cy="0" r="1" gradientTransform="matrix(460 300 -310 475 1230 430)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D86742" stop-opacity=".3"/>
+      <stop offset=".5" stop-color="#B85D3C" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#B85D3C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="greenHalo" cx="0" cy="0" r="1" gradientTransform="matrix(330 245 -275 370 1165 350)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A9C4A4" stop-opacity=".17"/>
+      <stop offset="1" stop-color="#A9C4A4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leafCoral" x1="1080" y1="175" x2="1395" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFA17C"/>
+      <stop offset=".45" stop-color="#FF704C"/>
+      <stop offset="1" stop-color="#D9472C"/>
+    </linearGradient>
+    <linearGradient id="leafSage" x1="1070" y1="300" x2="1315" y2="565" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D9E3C9"/>
+      <stop offset=".48" stop-color="#AFC8A4"/>
+      <stop offset="1" stop-color="#6E977A"/>
+    </linearGradient>
+    <linearGradient id="leafIvory" x1="1140" y1="205" x2="1320" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4E4"/>
+      <stop offset=".55" stop-color="#E4DACA"/>
+      <stop offset="1" stop-color="#B9C5A6"/>
+    </linearGradient>
+    <linearGradient id="stem" x1="1147" y1="620" x2="1280" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#668C70"/>
+      <stop offset=".52" stop-color="#B9CDAA"/>
+      <stop offset="1" stop-color="#E3DCCB"/>
+    </linearGradient>
+    <linearGradient id="pot" x1="1080" y1="680" x2="1280" y2="835" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4E4"/>
+      <stop offset=".44" stop-color="#DED5C6"/>
+      <stop offset=".78" stop-color="#B6BBA8"/>
+      <stop offset="1" stop-color="#7F9480"/>
+    </linearGradient>
+    <linearGradient id="potLip" x1="1084" y1="660" x2="1280" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF5E8"/>
+      <stop offset=".65" stop-color="#E7DCCB"/>
+      <stop offset="1" stop-color="#AEB7A3"/>
+    </linearGradient>
+    <filter id="softShadow" x="850" y="90" width="650" height="800" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="27"/>
+    </filter>
+    <filter id="leafShadow" x="1020" y="100" width="450" height="540" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#background)"/>
+  <rect width="1600" height="900" fill="url(#warmHalo)"/>
+  <rect width="1600" height="900" fill="url(#greenHalo)"/>
+  <ellipse cx="1192" cy="803" rx="260" ry="44" fill="#000" fill-opacity=".55" filter="url(#softShadow)"/>
+  <ellipse cx="1190" cy="790" rx="218" ry="26" fill="#D66A48" fill-opacity=".1"/>
+  <g opacity=".28" filter="url(#leafShadow)">
+    <path d="M1176 545C1086 525 1062 461 1098 424C1162 433 1207 481 1176 545Z" fill="#000"/>
+    <path d="M1205 430C1265 423 1313 372 1307 326C1242 327 1195 375 1205 430Z" fill="#000"/>
+    <path d="M1213 322C1152 302 1135 244 1152 205C1219 217 1245 267 1213 322Z" fill="#000"/>
+    <path d="M1244 231C1308 217 1355 165 1342 128C1276 136 1232 180 1244 231Z" fill="#000"/>
+  </g>
+  <g id="plant">
+    <path d="M1183 685C1172 622 1185 574 1198 525C1216 463 1195 413 1211 354C1221 314 1259 269 1280 204" stroke="#111B14" stroke-opacity=".8" stroke-width="18" stroke-linecap="round"/>
+    <path d="M1183 685C1172 622 1185 574 1198 525C1216 463 1195 413 1211 354C1221 314 1259 269 1280 204" stroke="url(#stem)" stroke-width="9" stroke-linecap="round"/>
+    <path d="M1194 575C1147 593 1105 576 1091 538C1136 517 1180 533 1194 575Z" fill="url(#leafCoral)"/>
+    <path d="M1190 570C1155 557 1126 548 1096 539" stroke="#FFE1C9" stroke-opacity=".58" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M1204 506C1129 500 1076 451 1091 406C1158 410 1206 455 1204 506Z" fill="url(#leafSage)"/>
+    <path d="M1198 497C1156 465 1123 435 1096 409" stroke="#F5F0DF" stroke-opacity=".63" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M1202 421C1270 425 1325 378 1320 333C1250 329 1200 374 1202 421Z" fill="url(#leafCoral)"/>
+    <path d="M1210 412C1249 381 1281 356 1315 338" stroke="#FFE0CD" stroke-opacity=".62" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M1212 333C1145 321 1111 270 1136 229C1201 234 1239 281 1212 333Z" fill="url(#leafIvory)"/>
+    <path d="M1208 323C1182 290 1160 261 1142 232" stroke="#8A9F85" stroke-opacity=".72" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M1248 267C1312 253 1364 204 1355 162C1285 160 1241 209 1248 267Z" fill="url(#leafSage)"/>
+    <path d="M1254 258C1292 226 1323 195 1351 166" stroke="#F8F0DE" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M1269 219C1233 189 1235 143 1266 119C1312 145 1318 190 1269 219Z" fill="url(#leafCoral)"/>
+    <path d="M1271 207C1271 177 1270 151 1267 123" stroke="#FFE3D1" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g id="planter">
+    <ellipse cx="1182" cy="791" rx="135" ry="24" fill="#000" fill-opacity=".35"/>
+    <path d="M1082 681C1105 710 1258 711 1284 681L1257 801C1222 832 1139 830 1105 801L1082 681Z" fill="url(#pot)"/>
+    <path d="M1082 681C1105 710 1258 711 1284 681L1257 801C1222 832 1139 830 1105 801L1082 681Z" stroke="#FFF5E8" stroke-opacity=".34" stroke-width="2"/>
+    <ellipse cx="1183" cy="682" rx="102" ry="25" fill="url(#potLip)"/>
+    <ellipse cx="1183" cy="682" rx="82" ry="15" fill="#30372C"/>
+    <ellipse cx="1183" cy="680" rx="73" ry="10" fill="#4D4437"/>
+    <path d="M1115 708C1134 723 1156 730 1170 730" stroke="#FFF" stroke-opacity=".26" stroke-width="3" stroke-linecap="round"/>
+    <path d="M1257 724L1244 789" stroke="#6D8170" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -41,7 +41,6 @@ export default function Home() {
       <div id="main-content">
         <section className={`${styles.frame} ${styles.hero}`} aria-labelledby="landing-hero-title" data-story-section="hero">
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Learn with direction</p>
             <h1 id="landing-hero-title">
               <span>Learn</span>
               <span>beyond</span>
@@ -62,9 +61,6 @@ export default function Home() {
             <LandingKineticArt />
           </div>
 
-          <div className={styles.heroIndex} aria-hidden="true">
-            <strong>01</strong><span>/</span><span>03</span><i />
-          </div>
         </section>
 
         <section id="about" className={styles.about} aria-labelledby="about-title" data-story-section="about">
@@ -110,8 +106,8 @@ export default function Home() {
         <section id="get-started" className={styles.close} aria-labelledby="close-title" data-story-section="close">
           <Image
             className={styles.closeArtwork}
-            src="/images/landing/growth-pathway.png"
-            alt="A warm illuminated path leading toward an open doorway"
+            src="/images/landing/growth-plants.svg"
+            alt="A sculptural botanical plant with coral and sage leaves, symbolising growth"
             fill
             loading="eager"
             sizes="100vw"
@@ -136,7 +132,6 @@ export default function Home() {
             <Link href="/feedback">Feedback</Link>
             <Link href="/auth/sign-in">Sign In</Link>
           </nav>
-          <p>Learn with direction.</p>
         </div>
       </footer>
     </main>
