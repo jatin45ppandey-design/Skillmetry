@@ -15,14 +15,14 @@ describe("Connected learning experience source contracts", () => {
     expect(page).toContain('primaryCareerId: null');
     expect(page).toContain("completeOnboarding(");
   });
-  it("makes the homepage outcome-first with a catalog-backed career demo", () => {
+  it("makes the homepage an authenticated product introduction, not a public demo", () => {
     const page = read("../frontend/src/app/page.tsx");
-    const path = read("../frontend/src/components/living-learning-path.tsx");
-    expect(page).toContain("Stop guessing.");
-    expect(page).toContain("Start building.");
-    expect(page).toContain("Find your direction. Build real skills. Make every step count.");
-    expect(page).toContain("LivingLearningPath");
-    expect(path).toContain("careers.map");
+    expect(page).toContain("Learn");
+    expect(page).toContain("beyond");
+    expect(page).toContain("limits.");
+    expect(page).toContain('href="/auth/sign-in"');
+    expect(page).toContain('href="#about"');
+    expect(page).not.toContain("LivingLearningPath");
   });
   it("uses only trusted quiz results for measured skill states", () => {
     const home = read("../frontend/src/app/(workspace)/dashboard/page.tsx");
@@ -57,10 +57,8 @@ describe("Connected learning experience source contracts", () => {
     }
   });
 
-  it("carries a selected landing career into onboarding", () => {
-    const gallery = read("../frontend/src/components/living-learning-path.tsx");
+  it("keeps requested career handling inside authenticated onboarding", () => {
     const onboarding = read("../frontend/src/app/onboarding/page.tsx");
-    expect(gallery).toContain("/onboarding?career=${encodeURIComponent(career.id)}");
     expect(onboarding).toContain('new URLSearchParams(window.location.search).get("career")');
     expect(onboarding).toContain("careers.find(item => item.id === requestedCareer)");
   });

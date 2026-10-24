@@ -65,16 +65,12 @@ describe("Learning Chapters interface boundaries", () => {
     expect(shell).toContain('aria-label="Mobile learning navigation"');
   });
 
-  it("uses real career catalog data in the interactive landing preview", () => {
-    const gallery = read("../frontend/src/components/living-learning-path.tsx");
+  it("keeps real career catalog data behind the public landing", () => {
     const landing = read("../frontend/src/app/page.tsx");
-
-    expect(gallery).toContain('from "@skillmetry/shared/data/catalog"');
-    expect(gallery).toContain("careers.map");
-    expect(gallery).toContain("aria-pressed={active}");
-    expect(landing).toContain("LivingLearningPath");
-    expect(landing).toContain("Explore Careers");
-    expect(gallery).toContain("Catalog-backed");
+    expect(landing).not.toContain('@skillmetry/shared/data/catalog');
+    expect(landing).not.toContain("careers.map");
+    expect(landing).toContain('href="#about"');
+    expect(landing).toContain('href="/auth/sign-in"');
   });
 
   it("requires deliberate confirmation before a trusted quiz submission", () => {

@@ -4,30 +4,28 @@ import { fileURLToPath } from "node:url";
 
 const source = (path: string) => readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), "utf8");
 
-describe("landing final visual release", () => {
-  it("uses a catalog-backed living learning path instead of a dashboard mockup", () => {
-    const path = source("frontend/src/components/living-learning-path.tsx");
-    expect(path).toContain('from "@skillmetry/shared/data/catalog"');
-    expect(path).toContain('from "@skillmetry/shared/data/assessment-catalog"');
-    expect(path).toContain("careers.map");
-    expect(path).toContain('value={career.id}');
-    expect(path).toContain("pathPoints");
+describe("final public landing release", () => {
+  it("uses original pointer-responsive abstract artwork instead of a product demo", () => {
+    const artwork = source("frontend/src/components/landing-kinetic-art.tsx");
+    expect(artwork).toContain("artBackPage");
+    expect(artwork).toContain("artFrontPage");
+    expect(artwork).toContain("onPointerMove={move}");
+    expect(artwork).toContain('(hover: hover) and (pointer: fine)');
+    expect(artwork).not.toContain("career");
   });
 
-  it("gives hero, explorer and closing CTA real route handoffs", () => {
+  it("gives Explore an on-page target and Sign In the real auth route", () => {
     const page = source("frontend/src/app/page.tsx");
-    const path = source("frontend/src/components/living-learning-path.tsx");
-    expect(page).toContain('id="career-explorer"');
-    expect(page).toContain('href="/onboarding"');
+    expect(page).toContain('id="about"');
+    expect(page).toContain('href="#about"');
     expect(page).toContain('href="/auth/sign-in"');
-    expect(path).toContain("/onboarding?career=${encodeURIComponent(career.id)}");
+    expect(page).not.toContain('href="/onboarding"');
   });
 
-  it("keeps static content visible and honours reduced motion", () => {
+  it("keeps content visible without motion and provides touch safeguards", () => {
     const styles = source("frontend/src/app/landing-v2.module.css");
-    expect(styles).toContain(".pathExperience");
-    expect(styles).toContain("opacity: .72");
     expect(styles).toContain("prefers-reduced-motion: reduce");
-    expect(styles).toContain(".pathStroke { stroke: var(--accent)");
+    expect(styles).toContain("(hover: none), (pointer: coarse)");
+    expect(styles).toContain('[data-reveal] { opacity: 1 !important');
   });
 });

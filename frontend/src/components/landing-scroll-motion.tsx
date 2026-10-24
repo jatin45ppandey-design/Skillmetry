@@ -9,6 +9,14 @@ export function LandingScrollMotion(){
   if(!root||!("IntersectionObserver" in window)||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   const reveals=root.querySelectorAll<HTMLElement>("[data-reveal]");
   const sections=root.querySelectorAll<HTMLElement>("[data-story-section]");
+  const exploreLinks=root.querySelectorAll<HTMLAnchorElement>('a[href="#about"]');
+  const scrollToAbout=(event:Event)=>{
+   const about=root.querySelector<HTMLElement>("#about");
+   if(!about)return;
+   event.preventDefault();
+   about.scrollIntoView({behavior:"smooth",block:"start"});
+   window.history.replaceState(null,"","#about");
+  };
   root.dataset.motionReady="true";
   reveals.forEach(node=>{
    Array.from(node.querySelectorAll<HTMLElement>("[data-reveal-part]"))
@@ -29,6 +37,7 @@ export function LandingScrollMotion(){
   },{threshold:[.2,.45,.7],rootMargin:"-18% 0px -48% 0px"});
   reveals.forEach(node=>observer.observe(node));
   sections.forEach(node=>sectionObserver.observe(node));
+  exploreLinks.forEach(link=>link.addEventListener("click",scrollToAbout));
   // Reveals enhance the reading sequence, but content must never depend on an
   // observer continuing to fire (automation, background tabs, browser quirks).
   const revealFallback=window.setTimeout(()=>{
@@ -56,6 +65,7 @@ export function LandingScrollMotion(){
   return()=>{
    observer.disconnect();
    sectionObserver.disconnect();
+   exploreLinks.forEach(link=>link.removeEventListener("click",scrollToAbout));
    window.clearTimeout(revealFallback);
    window.removeEventListener("scroll",onPageScroll);
    window.removeEventListener("resize",onScroll);
