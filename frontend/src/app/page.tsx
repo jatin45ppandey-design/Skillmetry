@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowDownRight, ArrowRight } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { LandingKineticArt } from "@/components/landing-kinetic-art";
 import { LandingScrollMotion } from "@/components/landing-scroll-motion";
-import { LivingLearningPath } from "@/components/living-learning-path";
 import styles from "./landing-v2.module.css";
 
 export default function Home() {
@@ -14,55 +14,59 @@ export default function Home() {
       <div className={`${styles.frame} ${styles.headerInner}`}>
         <Brand />
         <nav aria-label="Public navigation" className={styles.headerNav}>
-          <a href="#career-explorer">Explore Careers</a>
+          <a href="#about">Explore</a>
+          <Link href="/auth/sign-in" className={styles.headerSignIn}>Sign In <ArrowRight aria-hidden="true" /></Link>
         </nav>
-        <div className={styles.headerActions}>
-          <Link href="/auth/sign-in" className={styles.signIn}>Sign In</Link>
-          <Link href="/onboarding" className={`${styles.button} ${styles.buttonCompact}`}>Get Started <ArrowRight aria-hidden="true" /></Link>
-        </div>
       </div>
     </header>
 
     <div id="main-content">
-      <section className={`${styles.frame} ${styles.hero}`} aria-labelledby="landing-hero-title" data-story-section="goal">
-        <div className={styles.heroCopy} data-reveal>
-          <p className={styles.eyebrow}>A clearer way into tech</p>
-          <h1 id="landing-hero-title">Stop guessing.<br /><span>Start building.</span></h1>
-          <p className={styles.heroLead}>Find your direction. Build real skills. Make every step count.</p>
+      <section className={`${styles.frame} ${styles.hero}`} aria-labelledby="landing-hero-title" data-story-section="hero">
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}><span>Skillmetry</span> / Learn with direction</p>
+          <h1 id="landing-hero-title"><span>Learn</span><span>beyond</span><span className={styles.heroAccent}>limits.</span></h1>
+          <p className={styles.heroLead}>A smarter space to learn, practice, and grow with purpose.</p>
           <div className={styles.heroActions}>
-            <Link href="/onboarding" className={styles.button}>Find Your Path <ArrowRight aria-hidden="true" /></Link>
-            <a href="#career-explorer" className={styles.secondaryAction}>Explore Careers <span aria-hidden="true">↘</span></a>
+            <Link href="/auth/sign-in" className={styles.primaryAction}>Sign In <ArrowRight aria-hidden="true" /></Link>
+            <a href="#about" className={styles.exploreAction}>Explore <ArrowDownRight aria-hidden="true" /></a>
           </div>
         </div>
 
-        <div className={styles.heroVisual} data-reveal>
-          <div className={styles.heroIndex} aria-hidden="true"><span>01</span><i /></div>
-          <LivingLearningPath mode="hero" />
+        <div className={styles.heroArt}>
+          <LandingKineticArt />
+        </div>
+
+        <div className={styles.heroFootnote} aria-hidden="true">
+          <span>Curiosity</span><i /><span>Direction</span><i /><span>Growth</span>
         </div>
       </section>
 
-      <section id="career-explorer" className={styles.explorer} aria-labelledby="career-explorer-title" data-story-section="explorer">
-        <div className={`${styles.frame} ${styles.explorerInner}`}>
-          <header className={styles.explorerHeader} data-reveal>
-            <p className={styles.eyebrow}>Fourteen directions. One place to begin.</p>
-            <h2 id="career-explorer-title">Follow what<br />connects.</h2>
-            <p>Choose a role and watch its real curriculum take shape. Select any skill to understand where it fits.</p>
-          </header>
-          <div className={styles.explorerCanvas} data-reveal>
-            <LivingLearningPath mode="explorer" />
+      <section id="about" className={styles.about} aria-labelledby="about-title" data-story-section="about">
+        <div className={`${styles.frame} ${styles.aboutInner}`}>
+          <div className={styles.aboutMarker} aria-hidden="true"><span>02</span><i /></div>
+          <div className={styles.aboutLead} data-reveal>
+            <p className={styles.eyebrow}>Built for purposeful learning</p>
+            <h2 id="about-title">Keep curiosity<br /><em>moving.</em></h2>
+          </div>
+          <div className={styles.aboutCopy} data-reveal>
+            <p>Skillmetry helps students discover a learning direction, learn through structured content, practise with purpose, and understand how they are progressing. It brings the next useful step into focus, so learning feels intentional, connected, and easier to continue.</p>
+            <span>Direction becomes momentum.</span>
+          </div>
+          <div className={styles.aboutArtwork} aria-hidden="true" data-reveal>
+            <span className={styles.aboutRing} />
+            <span className={styles.aboutSlash} />
+            <strong>S</strong>
+            <small>Learn / practise / grow</small>
           </div>
         </div>
       </section>
 
       <section className={styles.close} aria-labelledby="close-title" data-story-section="close">
-        <svg className={styles.closePath} viewBox="0 0 1200 360" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M-40 280 C 150 280, 170 70, 365 70 S 570 285, 760 200 S 950 55, 1240 55" />
-          <circle cx="365" cy="70" r="10" /><circle cx="760" cy="200" r="10" /><circle cx="1130" cy="55" r="10" />
-        </svg>
+        <div className={styles.closeShape} aria-hidden="true"><span /><span /></div>
         <div className={`${styles.frame} ${styles.closeInner}`} data-reveal>
-          <p className={styles.eyebrow}>The first step is a direction</p>
-          <h2 id="close-title">Your next chapter<br />starts here.</h2>
-          <Link href="/onboarding" className={`${styles.button} ${styles.buttonDark}`}>Get Started <ArrowRight aria-hidden="true" /></Link>
+          <p className={styles.eyebrow}>Your space is ready</p>
+          <h2 id="close-title">Your growth<br />starts here.</h2>
+          <Link href="/auth/sign-in" className={styles.primaryAction}>Sign In <ArrowRight aria-hidden="true" /></Link>
         </div>
       </section>
     </div>
@@ -70,8 +74,8 @@ export default function Home() {
     <footer className={styles.footer}>
       <div className={`${styles.frame} ${styles.footerInner}`}>
         <Brand />
-        <nav aria-label="Footer navigation"><a href="#career-explorer">Explore Careers</a><Link href="/feedback">Feedback</Link><Link href="/auth/sign-in">Sign In</Link></nav>
-        <p>Learning direction, grounded in real curriculum.</p>
+        <nav aria-label="Footer navigation"><a href="#about">About</a><Link href="/feedback">Feedback</Link><Link href="/auth/sign-in">Sign In</Link></nav>
+        <p>Learn with direction.</p>
       </div>
     </footer>
   </main>;

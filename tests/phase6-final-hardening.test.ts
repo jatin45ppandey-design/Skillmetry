@@ -29,10 +29,11 @@ describe("Phase 6 final integration guards",()=>{
     expect(practice).toContain("Practice activity stays separate from trusted quiz scores.");
   });
 
-  it("renders every expanded career on the public landing page",()=>{
-    const path=source("frontend/src/components/living-learning-path.tsx");
-    expect(path).toContain("careers.map(item");
-    expect(path).toContain("chooseCareer(event.target.value as CareerId)");
+  it("keeps expanded careers out of the public landing page",()=>{
+    const landing=source("frontend/src/app/page.tsx");
+    expect(landing).not.toContain("careers.map");
+    expect(landing).not.toContain("CareerId");
+    expect(landing).toContain('href="/auth/sign-in"');
   });
 
   it("keeps shared control feedback restrained and disables it for reduced motion",()=>{

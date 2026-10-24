@@ -4,17 +4,16 @@ import {fileURLToPath} from "node:url";
 const file=(name:string)=>readFileSync(fileURLToPath(new URL("../"+name,import.meta.url)),"utf8");
 
 describe("Skillmetry UI/UX phases 1–4 release contracts",()=>{
- it("provides a catalog-backed living path and interactive career explorer",()=>{
-  const path=file("frontend/src/components/living-learning-path.tsx");
+ it("provides a minimal public introduction and keeps product exploration authenticated",()=>{
   const landing=file("frontend/src/app/page.tsx");
-  expect(landing).toContain('<LivingLearningPath mode="hero" />');
-  expect(landing).toContain('<LivingLearningPath mode="explorer" />');
-  expect(path).toContain('from "@skillmetry/shared/data/catalog"');
-  expect(path).toContain("Catalog-backed");
-  expect(path).toContain("aria-pressed={active}");
-  expect(path).toContain("setCareerId(nextCareer.id);");
-  expect(path).toContain('setSelectedSkillId(nextCareer.skills[0]?.skillId ?? "");');
-  expect(path).not.toContain("20/100");
+  const artwork=file("frontend/src/components/landing-kinetic-art.tsx");
+  expect(landing).toContain("Learn");
+  expect(landing).toContain("beyond");
+  expect(landing).toContain("limits.");
+  expect(landing).toContain('id="about"');
+  expect(landing).toContain('href="/auth/sign-in"');
+  expect(landing).not.toContain("LivingLearningPath");
+  expect(artwork).toContain("onPointerMove={move}");
  });
  it("does not present local edits as a completed remote profile save",()=>{
   const settings=file("frontend/src/app/(workspace)/settings/page.tsx");
