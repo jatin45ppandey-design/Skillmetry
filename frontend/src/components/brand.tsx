@@ -5,7 +5,7 @@ export function Brand() {
       <span className="brand-mark" aria-hidden="true">
         <i/><i/><i/><i/>
       </span>
-      <span className="brand-copy"><span className="brand-name">skillmetry<span className="brand-dot">.</span></span><small>signal</small></span>
+      <span className="brand-copy"><span className="brand-name">skillmetry<span className="brand-dot">.</span></span></span>
     </Link>
   );
 }
