@@ -5,13 +5,21 @@ import { fileURLToPath } from "node:url";
 const source = (path: string) => readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), "utf8");
 
 describe("final public landing release", () => {
-  it("uses original pointer-responsive abstract artwork instead of a product demo", () => {
+  it("uses the approved pointer-responsive learning-card artwork instead of a product demo", () => {
     const artwork = source("frontend/src/components/landing-kinetic-art.tsx");
-    expect(artwork).toContain("artBackPage");
-    expect(artwork).toContain("artFrontPage");
+    for (const label of ["Learn", "Practice", "Improve", "Grow"]) expect(artwork).toContain(label);
+    expect(artwork).toContain("cardStack");
+    expect(artwork).toContain("artPath");
     expect(artwork).toContain("onPointerMove={move}");
     expect(artwork).toContain('(hover: hover) and (pointer: fine)');
     expect(artwork).not.toContain("career");
+  });
+
+  it("uses the approved book and luminous-path artwork in the public story", () => {
+    const page = source("frontend/src/app/page.tsx");
+    expect(page).toContain("/images/landing/about-open-book.png");
+    expect(page).toContain("/images/landing/growth-pathway.png");
+    expect(page).toContain("An open book with learning pages rising from it");
   });
 
   it("gives Explore an on-page target and Sign In the real auth route", () => {
