@@ -2,27 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, BrainCircuit, CheckCircle2, Code2, Compass, Layers3, ServerCog } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { CareerMotif } from "@/components/career-motif";
 import { assessmentCatalog } from "@skillmetry/shared/data/assessment-catalog";
 import { careers, skillById } from "@skillmetry/shared/data/catalog";
 import type { CareerId } from "@skillmetry/shared/types/domain";
 import styles from "@/app/landing-v2.module.css";
 
-const careerIcons = {
-  "frontend-developer": Code2,
-  "backend-developer": ServerCog,
-  "ml-engineer": BrainCircuit,
-  "full-stack-developer": Layers3
-} as const;
-
 export function CareerChapterGallery() {
   const [selectedId, setSelectedId] = useState<CareerId>("backend-developer");
   const [selectedSkillId, setSelectedSkillId] = useState<string>("javascript");
   const selected = careers.find(career => career.id === selectedId) ?? careers[0];
-  // Phase 5 added catalog pathways beyond the four illustrated foundations.
-  // A neutral compass keeps every real path explorable without inventing an
-  // icon-specific meaning for it.
-  const SelectedIcon = careerIcons[selected.id as keyof typeof careerIcons] ?? Compass;
+  // Every canonical path has a lightweight, catalog-backed visual motif.
   const selectedSkills = selected.skills.map(item => ({ ...item, skill: skillById[item.skillId] })).filter(item => item.skill);
   const foundations = selectedSkills.filter(item => item.skill.group === "Foundation");
   const applied = selectedSkills.filter(item => item.skill.group !== "Foundation");
@@ -34,7 +25,6 @@ export function CareerChapterGallery() {
     <div className={styles.careerBrowser}>
       <div className={styles.careerChoices} role="group" aria-label="Preview career blueprints">
         {careers.map(career => {
-          const Icon = careerIcons[career.id as keyof typeof careerIcons] ?? Compass;
           const active = career.id === selectedId;
           return (
             <button
@@ -47,7 +37,7 @@ export function CareerChapterGallery() {
               }}
               className={active ? styles.careerChoiceActive : undefined}
             >
-              <Icon aria-hidden="true" />
+              <CareerMotif careerId={career.id} compact />
               <span><strong>{career.title}</strong><small>{career.skills.length} catalog skills</small></span>
               <ArrowRight aria-hidden="true" />
             </button>
@@ -57,7 +47,7 @@ export function CareerChapterGallery() {
 
       <article className={styles.blueprint} aria-live="polite">
         <header className={styles.blueprintHeader}>
-          <span><SelectedIcon aria-hidden="true" /></span>
+          <CareerMotif careerId={selected.id} active key={selected.id} />
           <div><h3>{selected.title}</h3><span>{selected.subtitle}</span></div>
           <Link href={`/onboarding?career=${encodeURIComponent(selected.id)}`}>
             Choose this direction <ArrowRight aria-hidden="true" />

@@ -31,7 +31,7 @@ describe("Phase 6 final integration guards",()=>{
 
   it("renders every expanded career on the public landing page",()=>{
     const gallery=source("frontend/src/components/career-chapter-gallery.tsx");
-    expect(gallery).toContain("?? Compass");
+    expect(gallery).toContain('CareerMotif careerId={career.id}');
     expect(gallery).toContain("careers.map(career");
   });
 

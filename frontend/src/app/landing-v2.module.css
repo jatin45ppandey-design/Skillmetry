@@ -582,6 +582,11 @@
   top: 0;
   background: color-mix(in srgb, var(--paper) 94%, transparent);
 }
+.page[data-scrolled="true"] .publicHeader { box-shadow:0 6px 22px rgb(40 60 48 / .08); }
+.page[data-motion-ready="true"] .heroPreview { animation:hero-preview-settle 620ms cubic-bezier(.2,.8,.2,1) both; }
+.page[data-motion-ready="true"] .heroAtlas path { stroke-dasharray:7 10;animation:hero-connection-flow 2.6s linear infinite; }
+@keyframes hero-preview-settle { from { opacity:.72;transform:translateY(1.6rem); } to { opacity:1;transform:translateY(.85rem); } }
+@keyframes hero-connection-flow { to { stroke-dashoffset:-34; } }
 
 .storyTrail {
   position: fixed;
@@ -825,3 +830,15 @@
   .page[data-motion-ready="true"] [data-reveal],
   .page[data-motion-ready="true"] [data-reveal] [data-reveal-part] { opacity: 1 !important; transform: none !important; }
 }
+
+.career-motif { display:inline-grid;place-items:center;width:3.4rem;height:3.4rem;color:var(--ink); }
+.career-motif-compact { width:1.65rem;height:1.65rem;flex:none; }
+.career-motif svg { width:100%;height:100%;overflow:visible; }
+.career-motif :global(path),.career-motif :global(rect),.career-motif :global(circle) { fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke; }
+.career-motif-active :global(path),.career-motif-active :global(rect),.career-motif-active :global(circle) { stroke-dasharray:130;stroke-dashoffset:130;animation:career-motif-draw 520ms cubic-bezier(.2,.8,.2,1) forwards; }
+.career-motif-active :global(circle) { fill:currentColor; }
+.careerChoices .career-motif { color:currentColor; }
+.blueprintHeader>.career-motif { background:var(--sage); }
+.blueprintHeader>.career-motif svg { width:2.15rem;height:2.15rem; }
+@keyframes career-motif-draw { to { stroke-dashoffset:0; } }
+@media (prefers-reduced-motion:reduce) { .career-motif-active :global(path),.career-motif-active :global(rect),.career-motif-active :global(circle),.page[data-motion-ready="true"] .heroAtlas path { animation:none;stroke-dashoffset:0; } }

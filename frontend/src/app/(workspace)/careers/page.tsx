@@ -2,7 +2,8 @@
 
 import {useMemo,useState} from "react";
 import Link from "next/link";
-import {ArrowRight,BrainCircuit,Check,Compass,GitBranch,Layers3,LayoutPanelTop,ServerCog} from "lucide-react";
+import {ArrowRight,Check,GitBranch} from "lucide-react";
+import {CareerMotif} from "@/components/career-motif";
 import {SectionTitle} from "@/components/section-title";
 import {StatusPill} from "@/components/workspace-ui";
 import {careers,skillById} from "@skillmetry/shared/data/catalog";
@@ -10,9 +11,6 @@ import {useAssessmentProfile} from "@/hooks/use-assessment-profile";
 import {assessmentSnapshot} from "@skillmetry/shared/lib/assessments/grading";
 import {compareCareerCurricula} from "@skillmetry/shared/lib/career-comparison";
 import {useSkillmetry} from "@/store/use-skillmetry";
-
-const careerIcons={"ml-engineer":BrainCircuit,"frontend-developer":LayoutPanelTop,
- "backend-developer":ServerCog,"full-stack-developer":Layers3};
 
 export default function Careers(){
  const {preferences,setCareer,onboardingCompleted}=useSkillmetry();
@@ -43,13 +41,12 @@ export default function Careers(){
     <div className="sx-career-options-header"><h2>Career directions</h2><span>{careers.length} pathways</span></div>
     <div className="sx-career-filters"><label><span className="sr-only">Search career directions</span><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search career directions" type="search"/></label><select aria-label="Filter career catalog" value={catalog} onChange={event=>setCatalog(event.target.value as typeof catalog)}><option value="all">All paths</option><option value="foundation">Foundation paths</option><option value="expanded">New paths</option></select></div>
     {visibleCareers.map(career=>{
-     const Icon=careerIcons[career.id as keyof typeof careerIcons]??Compass;
      const current=career.id===careerId;
      const selected=career.id===preview.id;
      const snapshot=assessmentSnapshot(career,attempts);
      return <button key={career.id} className={"sx-career-option"+(selected?" selected":"")} type="button"
        aria-pressed={selected} onClick={()=>setPreviewId(career.id)}>
-       <span className="sx-career-option-icon"><Icon size={20} aria-hidden="true"/></span>
+       <span className="sx-career-option-icon"><CareerMotif careerId={career.id} compact/></span>
        <span className="sx-career-option-copy"><strong>{career.title}</strong><small>{career.subtitle}</small></span>
        <span className="sx-career-option-status">{current?<Check size={16} aria-label="Current goal"/>:<span>{snapshot.coveragePercent}%<small> assessed</small></span>}</span>
      </button>;
@@ -58,7 +55,7 @@ export default function Careers(){
    </section>
    <section className="sx-career-inspector" aria-live="polite" aria-label="Selected career details">
     <div className="sx-career-inspector-head">
-     <div><span className="eyebrow">SELECTED PATHWAY</span><h2>{preview.title}</h2><p>{preview.subtitle}</p></div>
+     <div><span className="eyebrow">SELECTED PATHWAY</span><CareerMotif careerId={preview.id} compact active key={preview.id}/><h2>{preview.title}</h2><p>{preview.subtitle}</p></div>
      <StatusPill tone={isCurrent?"success":"neutral"}>{isCurrent?"Current goal":"Preview"}</StatusPill>
     </div>
     <div className="sx-career-inspector-metrics">

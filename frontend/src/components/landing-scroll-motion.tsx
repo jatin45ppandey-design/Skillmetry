@@ -47,17 +47,21 @@ export function LandingScrollMotion(){
    if(frame)return;
    frame=window.requestAnimationFrame(updateProgress);
   };
+  const updateHeader=()=>{root.dataset.scrolled=window.scrollY>12?"true":"false";};
+  const onPageScroll=()=>{onScroll();updateHeader();};
+  updateHeader();
   updateProgress();
-  window.addEventListener("scroll",onScroll,{passive:true});
+  window.addEventListener("scroll",onPageScroll,{passive:true});
   window.addEventListener("resize",onScroll);
   return()=>{
    observer.disconnect();
    sectionObserver.disconnect();
    window.clearTimeout(revealFallback);
-   window.removeEventListener("scroll",onScroll);
+   window.removeEventListener("scroll",onPageScroll);
    window.removeEventListener("resize",onScroll);
    if(frame)window.cancelAnimationFrame(frame);
    delete root.dataset.motionReady;
+   delete root.dataset.scrolled;
   };
  },[]);
  return null;
