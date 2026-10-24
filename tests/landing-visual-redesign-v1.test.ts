@@ -15,11 +15,15 @@ describe("final public landing release", () => {
     expect(artwork).not.toContain("career");
   });
 
-  it("uses the approved book and luminous-path artwork in the public story", () => {
+  it("uses the approved open book and botanical growth artwork in the public story", () => {
     const page = source("frontend/src/app/page.tsx");
     expect(page).toContain("/images/landing/about-open-book.png");
-    expect(page).toContain("/images/landing/growth-pathway.png");
+    expect(page).toContain("/images/landing/growth-plants.svg");
     expect(page).toContain("An open book with learning pages rising from it");
+    expect(page).toContain("A sculptural botanical plant with coral and sage leaves");
+    expect(page).not.toContain("growth-pathway.png");
+    expect(page).not.toContain("heroIndex");
+    expect(page).not.toContain("Learn with direction.</p>");
   });
 
   it("gives Explore an on-page target and Sign In the real auth route", () => {
