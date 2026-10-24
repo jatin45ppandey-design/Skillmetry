@@ -55,8 +55,6 @@
   <rect width="1600" height="900" fill="url(#background)"/>
   <rect width="1600" height="900" fill="url(#warmHalo)"/>
   <rect width="1600" height="900" fill="url(#greenHalo)"/>
-  <path d="M830 900C952 784 1004 704 1038 596C1074 481 1094 347 1200 180" stroke="#E56B47" stroke-opacity=".08" stroke-width="1.5"/>
-  <path d="M884 900C1010 788 1061 699 1091 587C1120 480 1150 376 1230 258" stroke="#EADCC8" stroke-opacity=".08" stroke-width="1.5"/>
   <ellipse cx="1192" cy="803" rx="260" ry="44" fill="#000" fill-opacity=".55" filter="url(#softShadow)"/>
   <ellipse cx="1190" cy="790" rx="218" ry="26" fill="#D66A48" fill-opacity=".1"/>
   <g opacity=".28" filter="url(#leafShadow)">
@@ -91,7 +89,4 @@
     <path d="M1115 708C1134 723 1156 730 1170 730" stroke="#FFF" stroke-opacity=".26" stroke-width="3" stroke-linecap="round"/>
     <path d="M1257 724L1244 789" stroke="#6D8170" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
   </g>
-  <circle cx="1383" cy="310" r="3" fill="#FF7954" fill-opacity=".75"/>
-  <circle cx="1432" cy="356" r="2" fill="#E5DAC6" fill-opacity=".7"/>
-  <circle cx="1372" cy="397" r="2" fill="#AFC8A4" fill-opacity=".7"/>
 </svg>
