@@ -842,3 +842,93 @@
 .blueprintHeader>.career-motif svg { width:2.15rem;height:2.15rem; }
 @keyframes career-motif-draw { to { stroke-dashoffset:0; } }
 @media (prefers-reduced-motion:reduce) { .career-motif-active :global(path),.career-motif-active :global(rect),.career-motif-active :global(circle),.page[data-motion-ready="true"] .heroAtlas path { animation:none;stroke-dashoffset:0; } }
+
+/* Visual redesign v1: Connected Learning Canvas. Kept in this scoped module so the workspace remains untouched. */
+.heroEyebrow,
+.sectionKicker {
+  margin: 0 0 .8rem;
+  color: var(--muted);
+  font-family: var(--font-technical), monospace;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.hero {
+  min-height: min(47rem, calc(100dvh - 4.75rem));
+  grid-template-columns: minmax(0, .84fr) minmax(34rem, 1.16fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  padding-block: clamp(3.5rem, 6.5vw, 6.5rem);
+}
+
+.heroCopy { align-self: center; }
+.hero h1 { max-width: 11.5ch; font-size: clamp(4rem, 5.9vw, 6.4rem); line-height: .88; }
+.hero h1 span { color: #4f7257; }
+.heroLead { max-width: 31rem; font-size: 1.08rem; }
+.heroAtlas { top: 2%; right: -3.5rem; width: min(66vw, 61rem); opacity: .2; }
+.heroAtlas path:first-child { stroke-width: 4; }
+.heroAtlas path:nth-child(2) { stroke: #6b8d72; stroke-width: 2; }
+.heroAtlas path:nth-child(n+3) { stroke-width: 1; stroke-dasharray: 2 11; opacity: .48; }
+.heroProof { margin-top: 2.4rem; background: transparent; gap: .65rem; }
+.heroProof div { min-height: 4.8rem; padding: .85rem; border: 1px solid var(--line); background: color-mix(in srgb, var(--white) 70%, transparent); }
+.heroPreview { max-width: 45rem; width: 100%; justify-self: end; transform: none; }
+
+.journeyCanvas {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.2rem, 2.7vw, 2.25rem);
+  border: 1px solid #1c3529;
+  color: var(--white);
+  background: #1e3429;
+  box-shadow: 12px 14px 0 #d9ed82;
+}
+.journeyCanvas::before { content: ""; position: absolute; inset: 0; opacity: .38; pointer-events: none; background-image: linear-gradient(rgb(255 253 247 / .11) 1px, transparent 1px), linear-gradient(90deg, rgb(255 253 247 / .11) 1px, transparent 1px); background-size: 2.2rem 2.2rem; }
+.canvasHeader,.canvasControls,.canvasPanel,.canvasNote { position: relative; z-index: 1; }
+.canvasHeader { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.canvasHeader p { margin: 0; color: #d9ed82; font: 700 .69rem/1.2 var(--font-technical), monospace; letter-spacing: .11em; text-transform: uppercase; }
+.canvasHeader h2 { margin: .45rem 0 0; font: 580 clamp(1.75rem, 3.2vw, 3rem)/.95 var(--font-display), sans-serif; letter-spacing: -.045em; }
+.canvasHeader>span { max-width: 11rem; color: rgb(255 253 247 / .72); font-size: .72rem; line-height: 1.4; text-align: right; }
+.canvasControls { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .35rem; margin-top: 1.5rem; }
+.canvasControls button { min-height: 3.25rem; display: flex; align-items: center; gap: .45rem; padding: .55rem .65rem; border: 1px solid rgb(255 253 247 / .22); color: rgb(255 253 247 / .7); background: rgb(255 253 247 / .04); font: 700 .73rem/1.1 var(--font-ui), sans-serif; text-align: left; cursor: pointer; transition: transform 180ms ease, background-color 180ms ease, color 180ms ease; }
+.canvasControls button i { color: #d9ed82; font: 700 .62rem/1 var(--font-technical), monospace; font-style: normal; }
+.canvasControls button:hover { transform: translateY(-2px); color: var(--white); background: rgb(255 253 247 / .11); }
+.canvasControls button[aria-selected="true"] { color: #1e3429; background: #d9ed82; border-color: #d9ed82; }
+.canvasControls button[aria-selected="true"] i { color: #1e3429; }
+.canvasNetwork { position: relative; height: 8rem; margin: .2rem -1.1rem -.15rem; pointer-events: none; }
+.canvasNetwork svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.canvasNetwork path { fill: none; stroke: rgb(255 253 247 / .4); stroke-width: 1.4; stroke-dasharray: 4 7; }
+.canvasNetwork span { position: absolute; top: 50%; left: calc(7% + var(--node-index) * 21.5%); width: .85rem; height: .85rem; border: 3px solid #d9ed82; border-radius: 50%; background: #1e3429; transform: translate(-50%, -50%); transition: transform 240ms ease, background-color 240ms ease; }
+.canvasNetwork span:nth-child(3) { top: 29%; }.canvasNetwork span:nth-child(4) { top: 68%; }.canvasNetwork span:nth-child(5) { top: 38%; }.canvasNetwork span:nth-child(6) { top: 54%; }
+.canvasNetwork .canvasNodeActive { background: #d9ed82; box-shadow: 0 0 0 .35rem rgb(217 237 130 / .18); transform: translate(-50%, -50%) scale(1.35); }
+.canvasPanel { min-height: 13.75rem; display: grid; grid-template-columns: minmax(11rem, .32fr) minmax(0, .68fr); gap: 1.25rem; padding: 1.1rem; border: 1px solid rgb(255 253 247 / .22); background: rgb(7 21 14 / .32); animation: canvas-panel-in 300ms cubic-bezier(.2,.8,.2,1) both; }
+.canvasPanelTop { display: grid; align-content: start; gap: .5rem; }.canvasPanelTop>span { color: #d9ed82; font: 700 .68rem/1 var(--font-technical), monospace; letter-spacing: .1em; text-transform: uppercase; }.canvasPanelTop strong { font: 560 1.35rem/1 var(--font-display), sans-serif; letter-spacing: -.03em; }.canvasPanelTop p { margin: 0; color: rgb(255 253 247 / .75); font-size: .79rem; line-height: 1.5; }
+.canvasCareerChoice,.canvasActionState,.canvasEvidenceState { align-self: stretch; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; gap: .8rem 1rem; padding: 1rem; background: #fbf5ea; color: #283c30; }
+.canvasCareerChoice>svg,.canvasActionState>svg,.canvasEvidenceState>svg { width: 2.3rem; height: 2.3rem; grid-row: span 2; color: #315f4a; }.canvasCareerChoice label { display: grid; gap: .35rem; font-size: .72rem; font-weight: 750; }.canvasCareerChoice select { width: 100%; min-height: 2.6rem; border: 1px solid #8ca98d; border-radius: 0; color: inherit; background: #fffdf7; font: inherit; font-size: .9rem; padding: .35rem .5rem; }.canvasCareerChoice>div,.canvasActionState>div,.canvasEvidenceState>div { display: grid; gap: .22rem; }.canvasCareerChoice strong,.canvasActionState strong,.canvasEvidenceState strong { font: 650 1.1rem/1.08 var(--font-display), sans-serif; letter-spacing: -.025em; }.canvasCareerChoice small,.canvasActionState small,.canvasEvidenceState small { font-size: .76rem; line-height: 1.35; }.canvasActionState span,.canvasEvidenceState span { color: #58715d; font: 700 .66rem/1 var(--font-technical), monospace; letter-spacing: .08em; text-transform: uppercase; }
+.canvasCareerChoice>a,.canvasActionState>a { grid-column: 2; justify-self: start; min-height: 2.45rem; display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .7rem; color: #fffdf7; background: #283c30; font-size: .76rem; font-weight: 760; text-decoration: none; }.canvasCareerChoice>a svg,.canvasActionState>a svg { width: .9rem; }.canvasEvidenceState { grid-template-columns: auto minmax(0, 1fr) auto; background: #c6ddf2; }.canvasEvidenceState em { align-self: center; padding: .48rem .6rem; border: 1px solid #537487; font: 700 .7rem/1 var(--font-technical), monospace; font-style: normal; }
+.canvasNote { margin: 1rem 0 0; color: rgb(255 253 247 / .7); font-size: .74rem; line-height: 1.45; }
+
+.journey { position: relative; padding-block: clamp(6.5rem, 11vw, 10rem); background: linear-gradient(180deg, #dce9ee 0 46%, #fbf5ea 46%); }.journey::after { content: ""; position: absolute; right: 6vw; bottom: -1.4rem; width: 2.8rem; height: 2.8rem; border: .25rem solid #283c30; border-radius: 50%; background: #d9ed82; }.sectionIntro h2 { font-size: clamp(3.25rem, 5.2vw, 5.7rem); }.sectionKicker { color: #55725b; }.journeyTrack { max-width: 77rem; margin-top: clamp(3.5rem, 6vw, 6rem); }.journeyTrack::before { height: .18rem; background: #283c30; }.journeyTrack li { padding-top: 4.8rem; }.journeyTrack li:nth-child(odd) { transform: translateY(-1rem); }.journeyTrack li:nth-child(even) { transform: translateY(1.25rem); }.journeyMarker { width: 3.2rem; height: 3.2rem; border-width: .2rem; }.journeyTrack h3 { font-size: clamp(1.45rem, 2.2vw, 2rem); }
+
+.careers { padding-block: clamp(6rem, 11vw, 10rem); }.sectionIntroSplit { margin-bottom: clamp(3.25rem, 6vw, 5.5rem); }.careerBrowser { box-shadow: 14px 14px 0 #c6ddf2; }.careerChoices { padding: 1rem; }.careerChoices button { border-left: 2px solid transparent; }.careerChoices button.careerChoiceActive { border-left-color: #fffdf7; }.blueprint { padding: clamp(1.6rem, 4vw, 3.5rem); }
+
+.learning { position: relative; overflow: hidden; padding-block: clamp(6rem, 10vw, 9rem); background: #20372b; }.learning::after { content: ""; position: absolute; right: -7rem; bottom: -10rem; width: 31rem; height: 31rem; border: 1px solid rgb(255 253 247 / .18); border-radius: 50%; box-shadow: 0 0 0 3rem rgb(255 253 247 / .05),0 0 0 6rem rgb(255 253 247 / .04); }.learningLayout { position: relative; z-index: 1; }.learning .sectionKicker { color: #d9ed82; }.learningDesk { box-shadow: 12px 12px 0 rgb(217 237 130 / .75); }.learningPrimary { min-height: 27rem; }.learningSequence > a { min-height: 13.5rem; }
+
+.practice { padding-block: clamp(6rem, 10vw, 9rem); background: #fffdf7; }.practiceLayout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(16rem, .75fr); gap: clamp(2.5rem, 7vw, 7rem); align-items: center; }.practiceCode { overflow: hidden; border: 1px solid #283c30; background: #263b30; color: #ecf4df; box-shadow: 13px 13px 0 #f4b78d; }.practiceCodeBar { min-height: 3.25rem; display: flex; align-items: center; gap: .4rem; padding: 0 .9rem; border-bottom: 1px solid rgb(255 253 247 / .2); background: #1e3127; }.practiceCodeBar span { width: .55rem; height: .55rem; border-radius: 50%; background: #f4b78d; }.practiceCodeBar span:nth-child(2) { background: #d9ed82; }.practiceCodeBar span:nth-child(3) { background: #c6ddf2; }.practiceCodeBar strong { margin-left: .5rem; color: rgb(255 253 247 / .7); font: 700 .67rem/1 var(--font-technical), monospace; letter-spacing: .08em; }.practiceCode pre { min-height: 12rem; margin: 0; padding: clamp(1.25rem, 3vw, 2.6rem); color: #f6f3e7; font: 500 clamp(.82rem, 1.2vw, 1rem)/1.8 var(--font-technical), monospace; white-space: pre-wrap; }.practiceCode code>span { color: #d9ed82; }.practiceCode code i { color: #c6ddf2; font-style: normal; }.practicePrompt { margin: 0 1rem 1rem; padding: 1rem; background: #f4b78d; color: #283c30; }.practicePrompt>span { font: 700 .68rem/1 var(--font-technical), monospace; letter-spacing: .08em; text-transform: uppercase; }.practicePrompt p { margin: .5rem 0; font: 600 1.05rem/1.2 var(--font-display), sans-serif; letter-spacing: -.02em; }.practicePrompt small { font-size: .76rem; line-height: 1.4; }.practiceCopy h2 { max-width: 10ch; margin: 0; font: 560 clamp(3rem, 4.7vw, 5.25rem)/.92 var(--font-display), sans-serif; letter-spacing: -.055em; }.practiceCopy>p:not(.sectionKicker) { max-width: 30rem; margin: 1.4rem 0 0; font-size: 1rem; line-height: 1.55; }.practiceActions { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.8rem; }
+
+.evidence { padding-block: clamp(6rem, 10vw, 9rem); background: #d5c1eb; }.evidenceLayout { grid-template-columns: minmax(15rem, .72fr) minmax(0, 1.28fr); gap: clamp(2.5rem, 8vw, 8rem); }.evidenceCopy .sectionKicker { color: #4c4266; }.evidenceLedger { border: 1px solid #283c30; background: #fffdf7; box-shadow: 11px 11px 0 #283c30; }.ledgerRow { border-radius: 0; }.ledgerRow + .ledgerRow { border-top: 1px solid #c7d6c5; }
+.close { min-height: 27rem; margin-block: 0; padding-block: clamp(6rem, 11vw, 10rem); }.close h2 { font-size: clamp(3.4rem, 5.2vw, 5.9rem); }.footer { border-top: 1px solid rgb(255 253 247 / .16); }
+
+/* A reveal is still perceptible, but content never becomes a blank page while an observer waits. */
+.page[data-motion-ready="true"] [data-reveal]:not(:global(.sx-reveal-active)) { opacity: .74; transform: translateY(.85rem); }
+.page[data-motion-ready="true"] [data-story-section="blueprint"] [data-reveal]:not(:global(.sx-reveal-active)) { transform: translateX(-.9rem); }
+.page[data-motion-ready="true"] [data-story-section="evidence"] [data-reveal]:not(:global(.sx-reveal-active)) { transform: translateX(.9rem); }
+.page[data-motion-ready="true"] [data-story-section="learning"] [data-reveal]:not(:global(.sx-reveal-active)) { transform: translateY(.9rem) rotate(-.3deg); }
+.page[data-motion-ready="true"] [data-reveal]:not(:global(.sx-reveal-active)) [data-reveal-part] { opacity: .82; transform: none; }
+
+@keyframes canvas-panel-in { from { opacity: .6; transform: translateY(.55rem); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 70rem) { .hero { min-height: 0; grid-template-columns: 1fr; }.heroCopy { max-width: 48rem; }.hero h1 { max-width: 12ch; }.heroPreview { justify-self: stretch; max-width: none; }.journeyCanvas { max-width: 54rem; }.practiceLayout { grid-template-columns: 1fr; gap: 3rem; }.practiceCopy h2 { max-width: 13ch; } }
+@media (max-width: 48rem) { .hero { padding-block: 2.3rem 4.5rem; }.hero h1 { font-size: clamp(3.1rem, 12.6vw, 4.35rem); }.heroEyebrow { font-size: .63rem; line-height: 1.5; }.heroProof { grid-template-columns: 1fr 1fr; }.heroProof div:nth-child(3) { grid-column: 1 / -1; }.canvasHeader { display: grid; }.canvasHeader>span { max-width: none; text-align: left; }.canvasControls { grid-template-columns: repeat(3, 1fr); }.canvasControls button { min-height: 2.85rem; font-size: .67rem; }.canvasNetwork { height: 6rem; }.canvasPanel { grid-template-columns: 1fr; min-height: 0; }.canvasCareerChoice,.canvasActionState,.canvasEvidenceState { grid-template-columns: auto minmax(0, 1fr); }.canvasEvidenceState em { grid-column: 2; justify-self: start; }.journey { padding-block: 5.5rem 6.5rem; background: #dce9ee; }.journeyTrack li:nth-child(n) { transform: none; }.careerBrowser { box-shadow: 8px 8px 0 #c6ddf2; }.learningDesk { box-shadow: 8px 8px 0 rgb(217 237 130 / .75); }.practice { padding-block: 5rem; }.practiceCode { box-shadow: 8px 8px 0 #f4b78d; }.evidence { padding-block: 5rem; }.evidenceLedger { box-shadow: 7px 7px 0 #283c30; }.close { min-height: 20rem; padding-block: 5rem; } }
+@media (max-width: 24.4rem) { .hero h1 { font-size: 2.7rem; }.canvasControls { grid-template-columns: repeat(2, 1fr); }.canvasControls button:last-child { grid-column: 1 / -1; }.canvasNetwork { display: none; }.canvasPanel { margin-top: 1rem; }.canvasCareerChoice,.canvasActionState,.canvasEvidenceState { padding: .8rem; gap: .65rem; }.canvasCareerChoice>svg,.canvasActionState>svg,.canvasEvidenceState>svg { width: 1.8rem; height: 1.8rem; }.practiceCode pre { min-height: 10rem; padding: 1rem; font-size: .76rem; }.practiceActions .button,.practiceActions .textLink { width: 100%; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .journeyCanvas *, .practiceCode *, .page[data-motion-ready="true"] [data-reveal] { animation: none !important; transition-duration: .01ms !important; transform: none !important; } }
