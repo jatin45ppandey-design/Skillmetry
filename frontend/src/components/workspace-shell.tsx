@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { useAuth } from "@/components/auth-provider";
-import { SignatureNavigationMotion, type SignatureArea, useSignatureNavigation } from "@/components/signature-navigation-motion";
 import { useSkillmetry } from "@/store/use-skillmetry";
 import { careers } from "@skillmetry/shared/data/catalog";
 
@@ -81,22 +80,14 @@ function routeFamily(pathname: string) {
   return "home";
 }
 
-function signatureAreaForPathname(pathname: string): SignatureArea | null {
-  return primary.find(item => isPrimaryCurrent(pathname, item.matches))?.area ?? null;
-}
-
-function PrimaryLinks({ current, onNavigate, onSignatureNavigate }: {
+function PrimaryLinks({ current, onNavigate }: {
   current: string;
   onNavigate?: () => void;
-  onSignatureNavigate?: (area: SignatureArea) => void;
 }) {
-  return primary.map(({ href, label, icon: Icon, area, matches }) => {
+  return primary.map(({ href, label, icon: Icon, matches }) => {
     const active = isPrimaryCurrent(current, matches);
     return (
-      <Link href={href} key={href} onClick={() => {
-        if (!active) onSignatureNavigate?.(area);
-        onNavigate?.();
-      }} aria-current={active ? "page" : undefined}
+      <Link href={href} key={href} prefetch={true} onClick={onNavigate} aria-current={active ? "page" : undefined}
         className={active ? "is-current" : undefined}>
         <Icon aria-hidden="true" />
         <span>{label}</span>
@@ -107,7 +98,6 @@ function PrimaryLinks({ current, onNavigate, onSignatureNavigate }: {
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { beginSignatureNavigation, signatureTransition } = useSignatureNavigation(pathname, signatureAreaForPathname);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerPanelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -170,14 +160,13 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className={`studio-app mb-shell${isAssessmentPage ? " studio-app--assessment" : ""}`}
-      data-route={pathname.slice(1) || "home"} data-area={routeFamily(pathname)}
-      data-signature-area={signatureTransition?.area} data-signature-phase={signatureTransition?.phase}>
+      data-route={pathname.slice(1) || "home"} data-area={routeFamily(pathname)}>
       <a href="#workspace-main" className="mb-skip-link">Skip to main content</a>
       <header className="mb-shell-header">
         <div className="mb-shell-header__inner">
           <Brand />
           <nav className="mb-primary-nav" aria-label="Primary learning navigation">
-            <PrimaryLinks current={pathname} onSignatureNavigate={beginSignatureNavigation} />
+            <PrimaryLinks current={pathname} />
           </nav>
           <div className="mb-shell-actions">
             <span className="mb-sync-state" title={cloudLabel}><CloudIcon aria-hidden="true" />{cloudLabel}</span>
@@ -214,7 +203,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           <button type="button" className="mb-drawer__backdrop" onClick={closeDrawer} aria-label="Close navigation" />
           <aside className="mb-drawer__panel" ref={drawerPanelRef}>
             <header><Brand /><button type="button" ref={closeButtonRef} onClick={closeDrawer} aria-label="Close navigation"><X aria-hidden="true" /></button></header>
-            <nav className="mb-drawer__primary" aria-label="Primary learning areas"><PrimaryLinks current={pathname} onNavigate={closeDrawer} onSignatureNavigate={beginSignatureNavigation} /></nav>
+            <nav className="mb-drawer__primary" aria-label="Primary learning areas"><PrimaryLinks current={pathname} onNavigate={closeDrawer} /></nav>
             {secondaryGroups.map(group => (
               <section key={group.label} className="mb-drawer__group">
                 <h2>{group.label}</h2>
@@ -237,10 +226,8 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       ) : null}
 
       <nav className="mb-bottom-nav" aria-label="Mobile learning navigation">
-        <PrimaryLinks current={pathname} onSignatureNavigate={beginSignatureNavigation} />
+        <PrimaryLinks current={pathname} />
       </nav>
-
-      <SignatureNavigationMotion transition={signatureTransition} />
 
       <span className="mb-current-area" aria-live="polite">{current?.label ?? "Learning workspace"}</span>
     </div>
